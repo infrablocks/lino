@@ -32,6 +32,13 @@ module Lino
           option_separator: option_separator)
     end
 
+    def with_flag flag
+      CommandLineBuilder.new(
+          command: @command,
+          switches: @switches.add([flag]),
+          option_separator: @option_separator)
+    end
+
     def build
       components = [
           @command,

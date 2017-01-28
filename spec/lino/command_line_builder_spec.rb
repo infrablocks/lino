@@ -29,4 +29,14 @@ RSpec.describe Lino::CommandLineBuilder do
 
     expect(command_line.to_s).to eq('command-with-option-separator --opt1=val1 --opt2=val2')
   end
+
+  it 'includes flags after the command' do
+    command_line = Lino::CommandLineBuilder
+        .for_command('command-with-flags')
+        .with_flag('--verbose')
+        .with_flag('-h')
+        .build
+
+    expect(command_line.to_s).to eq('command-with-flags --verbose -h')
+  end
 end
