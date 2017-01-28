@@ -1,8 +1,12 @@
 require 'hamster'
+require_relative 'utilities'
 require_relative 'command_line'
+require_relative 'subcommand_builder'
 
 module Lino
   class CommandLineBuilder
+    include Lino::Utilities
+
     class <<self
       def for_command command
         CommandLineBuilder.new(command: command)
@@ -24,8 +28,9 @@ module Lino
       @option_separator = option_separator
     end
 
-    def with_subcommand(subcommand)
-      with(subcommands: @subcommands.add(subcommand))
+    def with_subcommand(subcommand, &block)
+      with(subcommands: @subcommands.add((block || lambda { |sub| sub }).call(
+          SubcommandBuilder.for_subcommand(subcommand))))
     end
 
     def with_option(switch, value)
@@ -53,7 +58,7 @@ module Lino
           map_and_join(@environment_variables) { |var| "#{var[0]}=\"#{var[1]}\"" },
           @command,
           map_and_join(@switches, &join_with(@option_separator)),
-          map_and_join(@subcommands, &:to_s),
+          map_and_join(@subcommands) { |sub| sub.build(@option_separator)},
           map_and_join(@arguments, &join_with(' '))
       ]
 
@@ -79,14 +84,6 @@ module Lino
           environment_variables: @environment_variables,
           option_separator: @option_separator
       }
-    end
-
-    def map_and_join(collection, &block)
-      collection.map { |item| block.call(item) }.join(' ')
-    end
-
-    def join_with(separator)
-      lambda { |item| item.join(separator) }
     end
   end
 end
