@@ -11,15 +11,21 @@ module Lino
 
     def initialize(
         command: nil,
+        subcommands: [],
         switches: [],
         arguments: [],
         environment_variables: [],
         option_separator: ' ')
       @command = command
+      @subcommands = Hamster::Vector.new(subcommands)
       @switches = Hamster::Vector.new(switches)
       @arguments = Hamster::Vector.new(arguments)
       @environment_variables = Hamster::Vector.new(environment_variables)
       @option_separator = option_separator
+    end
+
+    def with_subcommand(subcommand)
+      with(subcommands: @subcommands.add(subcommand))
     end
 
     def with_option(switch, value)
@@ -47,6 +53,7 @@ module Lino
           map_and_join(@environment_variables) { |var| "#{var[0]}=\"#{var[1]}\"" },
           @command,
           map_and_join(@switches, &join_with(@option_separator)),
+          map_and_join(@subcommands, &:to_s),
           map_and_join(@arguments, &join_with(' '))
       ]
 
@@ -66,6 +73,7 @@ module Lino
     def state
       {
           command: @command,
+          subcommands: @subcommands,
           switches: @switches,
           arguments: @arguments,
           environment_variables: @environment_variables,

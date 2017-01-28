@@ -61,4 +61,17 @@ RSpec.describe Lino::CommandLineBuilder do
     expect(command_line.to_s).to(
         eq('ENV_VAR1="VAL1" ENV_VAR2="VAL2" command-with-environment-variables'))
   end
+
+  it 'includes command options and flags before subcommands' do
+    command_line = Lino::CommandLineBuilder
+        .for_command('command-with-subcommand')
+        .with_flag('-v')
+        .with_option('--opt', 'val')
+        .with_subcommand('sub1')
+        .with_subcommand('sub2')
+        .build
+
+    expect(command_line.to_s)
+      .to eq('command-with-subcommand -v --opt val sub1 sub2')
+  end
 end
