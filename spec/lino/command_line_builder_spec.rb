@@ -39,4 +39,15 @@ RSpec.describe Lino::CommandLineBuilder do
 
     expect(command_line.to_s).to eq('command-with-flags --verbose -h')
   end
+
+  it 'includes args after the command and all flags and options' do
+    command_line = Lino::CommandLineBuilder
+        .for_command('command-with-args')
+        .with_flag('-v')
+        .with_option('--opt', 'val')
+        .with_argument('path/to/file.txt')
+        .build
+
+    expect(command_line.to_s).to eq('command-with-args -v --opt val path/to/file.txt')
+  end
 end
