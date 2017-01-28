@@ -9,7 +9,7 @@ RSpec.describe Lino::CommandLineBuilder do
     expect(command_line.to_s).to eq('command')
   end
 
-  it 'includes options after the command' do
+  it 'includes options after the command separated by a space by default' do
     command_line = Lino::CommandLineBuilder
         .for_command('command-with-options')
         .with_option('--opt1', 'val1')
