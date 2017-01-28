@@ -6,12 +6,15 @@ module Lino
       @command_line = command_line
     end
 
-    def execute
+    def execute(
+        stdin: '',
+        stdout: STDOUT,
+        stderr: STDERR)
       Open4::spawn(
           @command_line,
-          stdin: '',
-          stdout: STDOUT,
-          stderr: STDERR)
+          stdin: stdin,
+          stdout: stdout,
+          stderr: stderr)
     end
 
     def to_s

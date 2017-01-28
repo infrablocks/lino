@@ -1,4 +1,5 @@
 require 'open4'
+require 'stringio'
 require 'spec_helper'
 
 describe Lino::CommandLine do
@@ -7,8 +8,33 @@ describe Lino::CommandLine do
     command_line = Lino::CommandLine.new(command)
 
     expect(Open4).to(
-        receive(:spawn).with(command, stdin: '', stdout: STDOUT, stderr: STDERR))
+        receive(:spawn).with(
+            command,
+            stdin: '',
+            stdout: STDOUT,
+            stderr: STDERR))
 
     command_line.execute
+  end
+
+  it 'uses the supplied stdin, stdout and stderr when provided' do
+    command = 'ls -la'
+    command_line = Lino::CommandLine.new(command)
+
+    stdin = 'hello'
+    stdout = StringIO.new
+    stderr = StringIO.new
+
+    expect(Open4).to(
+        receive(:spawn).with(
+            command,
+            stdin: stdin,
+            stdout: stdout,
+            stderr: stderr))
+
+    command_line.execute(
+        stdin: stdin,
+        stdout: stdout,
+        stderr: stderr)
   end
 end
