@@ -50,4 +50,15 @@ RSpec.describe Lino::CommandLineBuilder do
 
     expect(command_line.to_s).to eq('command-with-args -v --opt val path/to/file.txt')
   end
+
+  it 'includes environment variables before the command' do
+    command_line = Lino::CommandLineBuilder
+        .for_command('command-with-environment-variables')
+        .with_environment_variable('ENV_VAR1', 'VAL1')
+        .with_environment_variable('ENV_VAR2', 'VAL2')
+        .build
+
+    expect(command_line.to_s).to(
+        eq('ENV_VAR1="VAL1" ENV_VAR2="VAL2" command-with-environment-variables'))
+  end
 end
