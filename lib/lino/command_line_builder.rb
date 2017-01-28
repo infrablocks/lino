@@ -22,57 +22,32 @@ module Lino
       @option_separator = option_separator
     end
 
-    def with_option switch, value
-      CommandLineBuilder.new(
-          command: @command,
-          switches: @switches.add([switch, value]),
-          arguments: @arguments,
-          environment_variables: @environment_variables,
-          option_separator: @option_separator)
+    def with_option(switch, value)
+      with(switches: @switches.add([switch, value]))
     end
 
-    def with_option_separator option_separator
-      CommandLineBuilder.new(
-          command: @command,
-          switches: @switches,
-          arguments: @arguments,
-          environment_variables: @environment_variables,
-          option_separator: option_separator)
+    def with_option_separator(option_separator)
+      with(option_separator: option_separator)
     end
 
-    def with_flag flag
-      CommandLineBuilder.new(
-          command: @command,
-          switches: @switches.add([flag]),
-          arguments: @arguments,
-          environment_variables: @environment_variables,
-          option_separator: @option_separator)
+    def with_flag(flag)
+      with(switches: @switches.add([flag]))
     end
 
-    def with_argument argument
-      CommandLineBuilder.new(
-          command: @command,
-          switches: @switches,
-          arguments: @arguments.add([argument]),
-          environment_variables: @environment_variables,
-          option_separator: @option_separator)
+    def with_argument(argument)
+      with(arguments: @arguments.add([argument]))
     end
 
-    def with_environment_variable environment_variable, value
-      CommandLineBuilder.new(
-          command: @command,
-          switches: @switches,
-          arguments: @arguments,
-          environment_variables: @environment_variables.add([environment_variable, value]),
-          option_separator: @option_separator)
+    def with_environment_variable(environment_variable, value)
+      with(environment_variables: @environment_variables.add([environment_variable, value]))
     end
 
     def build
       components = [
-          @environment_variables.map { |var| "#{var[0]}=\"#{var[1]}\"" }.join(' '),
+          map_and_join(@environment_variables) { |var| "#{var[0]}=\"#{var[1]}\"" },
           @command,
-          @switches.map { |switch| switch.join(@option_separator) }.join(' '),
-          @arguments.map { |argument| argument.join(' ') }.join(' ')
+          map_and_join(@switches, &join_with(@option_separator)),
+          map_and_join(@arguments, &join_with(' '))
       ]
 
       command_string = components
@@ -80,6 +55,30 @@ module Lino
           .join(' ')
 
       CommandLine.new(command_string)
+    end
+
+    private
+
+    def with **replacements
+      CommandLineBuilder.new(**state.merge(replacements))
+    end
+
+    def state
+      {
+          command: @command,
+          switches: @switches,
+          arguments: @arguments,
+          environment_variables: @environment_variables,
+          option_separator: @option_separator
+      }
+    end
+
+    def map_and_join(collection, &block)
+      collection.map { |item| block.call(item) }.join(' ')
+    end
+
+    def join_with(separator)
+      lambda { |item| item.join(separator) }
     end
   end
 end
