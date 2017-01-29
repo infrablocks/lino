@@ -115,6 +115,47 @@ Lino::CommandLineBuilder.for_command('node')
 # => PORT=3030 LOG_LEVEL=debug node ./server.js
 ```
 
+### `Lino::CommandLine`
+
+A `CommandLine` can be executed using the `#execute` method:
+
+```ruby
+command_line = Lino::CommandLineBuilder.for_command('ls')
+    .with_flag('-l')
+    .with_flag('-a')
+    .with_argument('/')
+    .build
+    
+command_line.execute
+  
+# => <contents of / directory> 
+```
+
+By default, the standard input stream is empty and the process writes to the standard output and error streams.
+
+To populate standard input:
+
+```ruby
+command_line.execute(stdin: 'something to be passed to standard input')
+```
+
+The `stdin` option supports any object that responds to `each`, `read` or `to_s`.
+
+To provide custom streams for standard output or standard error:
+
+```ruby
+require 'stringio'
+  
+stdout = StringIO.new
+stderr = StringIO.new
+  
+command_line.execute(stdout: stdout, stderr: stderr)
+  
+puts "[output: #{stdout.string}, error: #{stderr.string}]"
+```
+
+The `stdout` and `stderr` options support any object that responds to `<<`.
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
