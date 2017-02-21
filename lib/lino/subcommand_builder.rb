@@ -18,12 +18,12 @@ module Lino
       @switches = Hamster::Vector.new(switches)
     end
 
-    def with_option(switch, value)
-      with(switches: @switches.add([switch, value]))
+    def with_option(switch, value, separator: nil)
+      with(switches: @switches.add({components: [switch, value], separator: separator}))
     end
 
     def with_flag(flag)
-      with(switches: @switches.add([flag]))
+      with(switches: @switches.add({components: [flag]}))
     end
 
     def build(option_separator)

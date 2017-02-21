@@ -5,7 +5,7 @@ module Lino
     end
 
     def join_with(separator)
-      lambda { |item| item.join(separator) }
+      lambda { |item| item[:components].join(item[:separator] || separator) }
     end
   end
 end

@@ -33,8 +33,8 @@ module Lino
           SubcommandBuilder.for_subcommand(subcommand))))
     end
 
-    def with_option(switch, value)
-      with(switches: @switches.add([switch, value]))
+    def with_option(switch, value, separator: nil)
+      with(switches: @switches.add({components: [switch, value], separator: separator}))
     end
 
     def with_option_separator(option_separator)
@@ -42,11 +42,11 @@ module Lino
     end
 
     def with_flag(flag)
-      with(switches: @switches.add([flag]))
+      with(switches: @switches.add({components: [flag]}))
     end
 
     def with_argument(argument)
-      with(arguments: @arguments.add([argument]))
+      with(arguments: @arguments.add({components: [argument]}))
     end
 
     def with_environment_variable(environment_variable, value)

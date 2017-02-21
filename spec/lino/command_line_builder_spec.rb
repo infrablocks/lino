@@ -30,6 +30,46 @@ RSpec.describe Lino::CommandLineBuilder do
     expect(command_line.to_s).to eq('command-with-option-separator --opt1=val1 --opt2=val2')
   end
 
+  it 'allows the option separator to be overridden on an option by option basis' do
+    command_line = Lino::CommandLineBuilder
+        .for_command('command-with-overridden-separator')
+        .with_option('--opt1', 'val1', separator: ':')
+        .with_option('--opt2', 'val2', separator: '~')
+        .with_option('--opt3', 'val3')
+        .build
+
+    expect(command_line.to_s)
+        .to(eq('command-with-overridden-separator --opt1:val1 --opt2~val2 --opt3 val3'))
+  end
+
+  it 'allows the option separator to be overridden for subcommands on an option by option basis' do
+    command_line = Lino::CommandLineBuilder
+        .for_command('command-with-overridden-separator')
+        .with_subcommand('sub') do |sub|
+          sub
+            .with_option('--opt1', 'val1', separator: ':')
+            .with_option('--opt2', 'val2', separator: '~')
+            .with_option('--opt3', 'val3')
+        end
+        .build
+
+    expect(command_line.to_s)
+        .to(eq('command-with-overridden-separator sub --opt1:val1 --opt2~val2 --opt3 val3'))
+  end
+
+  it 'treats option specific separators as higher precedence than the global option separator' do
+    command_line = Lino::CommandLineBuilder
+        .for_command('command-with-overridden-separator')
+        .with_option_separator('=')
+        .with_option('--opt1', 'val1', separator: ':')
+        .with_option('--opt2', 'val2', separator: '~')
+        .with_option('--opt3', 'val3')
+        .build
+
+    expect(command_line.to_s)
+        .to(eq('command-with-overridden-separator --opt1:val1 --opt2~val2 --opt3=val3'))
+  end
+
   it 'includes flags after the command' do
     command_line = Lino::CommandLineBuilder
         .for_command('command-with-flags')
