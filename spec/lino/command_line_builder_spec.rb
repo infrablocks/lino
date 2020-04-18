@@ -57,6 +57,53 @@ RSpec.describe Lino::CommandLineBuilder do
         .to(eq('command-with-overridden-separator sub --opt1:val1 --opt2~val2 --opt3 val3'))
   end
 
+  it 'uses the specified option quoting character when provided' do
+    command_line = Lino::CommandLineBuilder
+        .for_command('command-with-quoting')
+        .with_option_quoting('"')
+        .with_option('--opt1', 'value1 with spaces')
+        .with_option('--opt2', 'value2 with spaces')
+        .build
+
+    expect(command_line.to_s)
+        .to eq('command-with-quoting ' +
+            '--opt1 "value1 with spaces" ' +
+            '--opt2 "value2 with spaces"')
+  end
+
+  it 'allows the option quoting character to be overridden on an option by option basis' do
+    command_line = Lino::CommandLineBuilder
+        .for_command('command-with-overridden-separator')
+        .with_option('--opt1', 'value 1', quoting: '"')
+        .with_option('--opt2', 'value 2', quoting: "'")
+        .with_option('--opt3', 'value3')
+        .build
+
+    expect(command_line.to_s)
+        .to(eq('command-with-overridden-separator ' +
+            '--opt1 "value 1" ' +
+            '--opt2 \'value 2\' ' +
+            '--opt3 value3'))
+  end
+
+  it 'allows the option quoting character to be overridden for subcommands on an option by option basis' do
+    command_line = Lino::CommandLineBuilder
+        .for_command('command-with-overridden-separator')
+        .with_subcommand('sub') do |sub|
+          sub
+              .with_option('--opt1', 'value 1', quoting: '"')
+              .with_option('--opt2', 'value 2', quoting: "'")
+              .with_option('--opt3', 'value3')
+        end
+        .build
+
+    expect(command_line.to_s)
+        .to(eq('command-with-overridden-separator sub ' +
+            '--opt1 "value 1" ' +
+            '--opt2 \'value 2\' ' +
+            '--opt3 value3'))
+  end
+
   it 'treats option specific separators as higher precedence than the global option separator' do
     command_line = Lino::CommandLineBuilder
         .for_command('command-with-overridden-separator')

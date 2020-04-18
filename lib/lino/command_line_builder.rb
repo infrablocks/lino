@@ -8,7 +8,7 @@ module Lino
     include Lino::Utilities
 
     class <<self
-      def for_command command
+      def for_command(command)
         CommandLineBuilder.new(command: command)
       end
     end
@@ -19,13 +19,15 @@ module Lino
         switches: [],
         arguments: [],
         environment_variables: [],
-        option_separator: ' ')
+        option_separator: ' ',
+        option_quoting: nil)
       @command = command
       @subcommands = Hamster::Vector.new(subcommands)
       @switches = Hamster::Vector.new(switches)
       @arguments = Hamster::Vector.new(arguments)
       @environment_variables = Hamster::Vector.new(environment_variables)
       @option_separator = option_separator
+      @option_quoting = option_quoting
     end
 
     def with_subcommand(subcommand, &block)
@@ -33,12 +35,20 @@ module Lino
           SubcommandBuilder.for_subcommand(subcommand))))
     end
 
-    def with_option(switch, value, separator: nil)
-      with(switches: @switches.add({components: [switch, value], separator: separator}))
+    def with_option(switch, value, separator: nil, quoting: nil)
+      with(switches: @switches.add({
+          components: [switch, value],
+          separator: separator,
+          quoting: quoting
+      }))
     end
 
     def with_option_separator(option_separator)
       with(option_separator: option_separator)
+    end
+
+    def with_option_quoting(character)
+      with(option_quoting: character)
     end
 
     def with_flag(flag)
@@ -55,10 +65,15 @@ module Lino
 
     def build
       components = [
-          map_and_join(@environment_variables) { |var| "#{var[0]}=\"#{var[1]}\"" },
+          map_and_join(@environment_variables) { |var|
+            "#{var[0]}=\"#{var[1]}\""
+          },
           @command,
-          map_and_join(@switches, &join_with(@option_separator)),
-          map_and_join(@subcommands) { |sub| sub.build(@option_separator)},
+          map_and_join(@switches,
+              &(quote_with(@option_quoting) >> join_with(@option_separator))),
+          map_and_join(@subcommands) { |sub|
+            sub.build(@option_separator, @option_quoting)
+          },
           map_and_join(@arguments, &join_with(' '))
       ]
 
@@ -82,7 +97,8 @@ module Lino
           switches: @switches,
           arguments: @arguments,
           environment_variables: @environment_variables,
-          option_separator: @option_separator
+          option_separator: @option_separator,
+          option_quoting: @option_quoting
       }
     end
   end
