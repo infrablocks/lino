@@ -27,8 +27,8 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'hamster', '~> 3.0'
   spec.add_dependency 'open4', '~> 1.3'
 
-  spec.add_development_dependency 'bundler', '~> 1.14'
-  spec.add_development_dependency 'rake', '~> 10.0'
+  spec.add_development_dependency 'bundler', '~> 2.0'
+  spec.add_development_dependency 'rake', '~> 13.0'
   spec.add_development_dependency 'rspec', '~> 3.0'
-  spec.add_development_dependency 'gem-release', '~> 0.7'
+  spec.add_development_dependency 'gem-release', '~> 2.1'
 end
