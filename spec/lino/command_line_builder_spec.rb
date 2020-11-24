@@ -143,10 +143,11 @@ RSpec.describe Lino::CommandLineBuilder do
         .for_command('command-with-environment-variables')
         .with_environment_variable('ENV_VAR1', 'VAL1')
         .with_environment_variable('ENV_VAR2', 'VAL2')
+        .with_environment_variable('ENV_VAR3', '"[1,2,3]"')
         .build
 
     expect(command_line.to_s).to(
-        eq('ENV_VAR1="VAL1" ENV_VAR2="VAL2" command-with-environment-variables'))
+        eq('ENV_VAR1="VAL1" ENV_VAR2="VAL2" ENV_VAR3="\"[1,2,3]\"" command-with-environment-variables'))
   end
 
   it 'includes command options and flags before subcommands' do

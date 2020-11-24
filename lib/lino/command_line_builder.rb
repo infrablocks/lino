@@ -66,7 +66,7 @@ module Lino
     def build
       components = [
           map_and_join(@environment_variables) { |var|
-            "#{var[0]}=\"#{var[1]}\""
+            "#{var[0]}=\"#{var[1].to_s.gsub(/"/, "\\\"")}\""
           },
           @command,
           map_and_join(@switches,
