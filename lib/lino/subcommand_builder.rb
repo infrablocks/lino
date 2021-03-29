@@ -1,9 +1,11 @@
 require 'hamster'
 require_relative 'utilities'
+require_relative 'option_flag_mixin'
 
 module Lino
   class SubcommandBuilder
     include Lino::Utilities
+    include Lino::OptionFlagMixin
 
     class <<self
       def for_subcommand(subcommand)
@@ -14,22 +16,6 @@ module Lino
     def initialize(subcommand: nil, switches: [])
       @subcommand = subcommand
       @switches = Hamster::Vector.new(switches)
-    end
-
-    def with_option(switch, value, separator: nil, quoting: nil)
-      with(
-        switches: @switches.add(
-          {
-            components: [switch, value],
-            separator: separator,
-            quoting: quoting
-          }
-        )
-      )
-    end
-
-    def with_flag(flag)
-      with(switches: @switches.add({ components: [flag] }))
     end
 
     def build(option_separator, option_quoting)

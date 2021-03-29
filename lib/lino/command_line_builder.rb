@@ -2,10 +2,12 @@ require 'hamster'
 require_relative 'utilities'
 require_relative 'command_line'
 require_relative 'subcommand_builder'
+require_relative 'option_flag_mixin'
 
 module Lino
   class CommandLineBuilder
     include Lino::Utilities
+    include Lino::OptionFlagMixin
 
     class <<self
       def for_command(command)
@@ -41,28 +43,12 @@ module Lino
       )
     end
 
-    def with_option(switch, value, separator: nil, quoting: nil)
-      with(
-        switches: @switches.add(
-          {
-            components: [switch, value],
-            separator: separator,
-            quoting: quoting
-          }
-        )
-      )
-    end
-
     def with_option_separator(option_separator)
       with(option_separator: option_separator)
     end
 
     def with_option_quoting(character)
       with(option_quoting: character)
-    end
-
-    def with_flag(flag)
-      with(switches: @switches.add({ components: [flag] }))
     end
 
     def with_argument(argument)
