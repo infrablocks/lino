@@ -255,6 +255,40 @@ RSpec.describe Lino::CommandLineBuilder do
     expect(command_line.to_s).to eq('command-with-args -v --opt val path/to/file.txt')
   end
 
+  it 'includes multiple args after the command and all flags and options' do
+    command_line = Lino::CommandLineBuilder
+                   .for_command('command-with-args')
+                   .with_flag('-v')
+                   .with_option('--opt', 'val')
+                   .with_arguments(%w[path/to/file1.txt path/to/file2.txt])
+                   .build
+
+    expect(command_line.to_s).to eq('command-with-args -v --opt val path/to/file1.txt path/to/file2.txt')
+  end
+
+  it 'ignores empty args when processing arguments' do
+    command_line = Lino::CommandLineBuilder
+                   .for_command('command-with-args')
+                   .with_flag('-v')
+                   .with_option('--opt', 'val')
+                   .with_arguments(['path/to/file1.txt', '', nil, 'path/to/file2.txt'])
+                   .build
+
+    expect(command_line.to_s).to eq('command-with-args -v --opt val path/to/file1.txt path/to/file2.txt')
+  end
+
+  it 'allows multiple args and args to be used together' do
+    command_line = Lino::CommandLineBuilder
+                   .for_command('command-with-args')
+                   .with_flag('-v')
+                   .with_option('--opt', 'val')
+                   .with_arguments(%w[path/to/file1.txt path/to/file2.txt])
+                   .with_argument('another_file.txt')
+                   .build
+
+    expect(command_line.to_s).to eq('command-with-args -v --opt val path/to/file1.txt path/to/file2.txt another_file.txt')
+  end
+
   it 'includes environment variables before the command' do
     command_line = Lino::CommandLineBuilder
                    .for_command('command-with-environment-variables')

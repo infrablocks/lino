@@ -52,7 +52,12 @@ module Lino
     end
 
     def with_argument(argument)
-      with(arguments: @arguments.add({ components: [argument] }))
+      with(arguments: add_argument(argument))
+    end
+
+    def with_arguments(arguments)
+      arguments.each { |argument| add_argument(argument) }
+      with({})
     end
 
     def with_environment_variable(environment_variable, value)
@@ -96,6 +101,12 @@ module Lino
         option_separator: @option_separator,
         option_quoting: @option_quoting
       }
+    end
+
+    def add_argument(argument)
+      return @arguments if missing?(argument)
+
+      @arguments = @arguments.add({ components: [argument] })
     end
   end
 end
