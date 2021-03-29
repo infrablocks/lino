@@ -49,37 +49,53 @@ Lino::CommandLineBuilder.for_command('ls')
     .with_flag('-a')
     .build
     .to_s
-    
+
 # => ls -l -a
-  
+
 # commands with options
 Lino::CommandLineBuilder.for_command('gpg')
     .with_option('--recipient', 'tobyclemson@gmail.com')
     .with_option('--sign', './doc.txt')
     .build
-    .to_s 
-    
+    .to_s
+
 # => gpg --recipient tobyclemson@gmail.com --sign ./doc.txt
-  
-# commands with arguments
+
+# commands with an option repeated multiple times (nil and empty option values are ignored)
+Lino::CommandLineBuilder.for_command('example.sh')
+    .with_repeated_option('--opt', ['file1.txt', nil, '', 'file2.txt'])
+    .build
+    .to_s
+
+# => example.sh --opt file1.txt --opt file2.txt
+
+# commands with arguments 
 Lino::CommandLineBuilder.for_command('diff')
     .with_argument('./file1.txt')
     .with_argument('./file2.txt')
     .build
-    .to_s 
-    
+    .to_s
+
 # => diff ./file1.txt ./file2.txt
-  
+
+# commands with an array of arguments (nil and empty arguments are ignored)
+Lino::CommandLineBuilder.for_command('diff')
+    .with_arguments(['./file1.txt', nil, '', './file2.txt'])
+    .build
+    .to_s
+
+# => diff ./file1.txt ./file2.txt
+
 # commands with custom option separator
 Lino::CommandLineBuilder.for_command('java')
     .with_option_separator(':')
     .with_option('-splash', './images/splash.jpg')
     .with_argument('./application.jar')
     .build
-    .to_s 
-    
+    .to_s
+
 # => java -splash:./images/splash.jpg ./application.jar
-  
+
 # commands using a subcommand style
 Lino::CommandLineBuilder.for_command('git')
     .with_flag('--no-pager')
@@ -88,9 +104,9 @@ Lino::CommandLineBuilder.for_command('git')
     end
     .build
     .to_s
-    
+
 # => git --no-pager log --since 2016-01-01
-  
+
 # commands with multiple levels of subcommand
 Lino::CommandLineBuilder.for_command('gcloud')
     .with_subcommand('sql')
