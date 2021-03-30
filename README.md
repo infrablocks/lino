@@ -61,7 +61,7 @@ Lino::CommandLineBuilder.for_command('gpg')
 
 # => gpg --recipient tobyclemson@gmail.com --sign ./doc.txt
 
-# commands with an option repeated multiple times (nil and empty option values are ignored)
+# commands with an option repeated multiple times
 Lino::CommandLineBuilder.for_command('example.sh')
     .with_repeated_option('--opt', ['file1.txt', nil, '', 'file2.txt'])
     .build
@@ -78,7 +78,7 @@ Lino::CommandLineBuilder.for_command('diff')
 
 # => diff ./file1.txt ./file2.txt
 
-# commands with an array of arguments (nil and empty arguments are ignored)
+# commands with an array of arguments
 Lino::CommandLineBuilder.for_command('diff')
     .with_arguments(['./file1.txt', nil, '', './file2.txt'])
     .build
