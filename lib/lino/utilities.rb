@@ -25,5 +25,9 @@ module Lino
                 components)
       end
     end
+
+    def missing?(value)
+      value.nil? || (value.respond_to?(:empty?) && value.empty?)
+    end
   end
 end

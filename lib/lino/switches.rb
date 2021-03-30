@@ -1,5 +1,5 @@
 module Lino
-  module OptionFlagMixin
+  module Switches
     def with_option(switch, value, separator: nil, quoting: nil)
       with(switches: add_option(switch, value, separator, quoting))
     end
@@ -27,10 +27,6 @@ module Lino
           quoting: quoting
         }
       )
-    end
-
-    def missing?(value)
-      value.nil? || (value.respond_to?(:empty?) && value.empty?)
     end
   end
 end

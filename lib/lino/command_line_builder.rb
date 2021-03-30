@@ -2,12 +2,12 @@ require 'hamster'
 require_relative 'utilities'
 require_relative 'command_line'
 require_relative 'subcommand_builder'
-require_relative 'option_flag_mixin'
+require_relative 'switches'
 
 module Lino
   class CommandLineBuilder
     include Lino::Utilities
-    include Lino::OptionFlagMixin
+    include Lino::Switches
 
     class <<self
       def for_command(command)

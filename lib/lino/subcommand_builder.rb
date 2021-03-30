@@ -1,11 +1,11 @@
 require 'hamster'
 require_relative 'utilities'
-require_relative 'option_flag_mixin'
+require_relative 'switches'
 
 module Lino
   class SubcommandBuilder
     include Lino::Utilities
-    include Lino::OptionFlagMixin
+    include Lino::Switches
 
     class <<self
       def for_subcommand(subcommand)
