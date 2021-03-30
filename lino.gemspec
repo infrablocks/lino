@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.authors = ['Toby Clemson']
   spec.email = ['tobyclemson@gmail.com']
 
-  spec.date = '2017-01-27'
+  spec.date = '2021-03-30'
   spec.summary = 'Command line execution utilities'
   spec.description = 'Command line builders and executors.'
   spec.homepage = 'https://github.com/infrablocks/lino'

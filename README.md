@@ -40,7 +40,8 @@ command_line.execute
 
 ### `Lino::CommandLineBuilder`
 
-The `CommandLineBuilder` allows a number of different styles of commands to be built:
+The `CommandLineBuilder` allows a number of different styles of commands to be 
+built:
 
 ```ruby
 # commands with flags
@@ -147,7 +148,8 @@ command_line.execute
 # => <contents of / directory> 
 ```
 
-By default, the standard input stream is empty and the process writes to the standard output and error streams.
+By default, the standard input stream is empty and the process writes to the 
+standard output and error streams.
 
 To populate standard input:
 
@@ -155,7 +157,8 @@ To populate standard input:
 command_line.execute(stdin: 'something to be passed to standard input')
 ```
 
-The `stdin` option supports any object that responds to `each`, `read` or `to_s`.
+The `stdin` option supports any object that responds to `each`, `read` or 
+`to_s`.
 
 To provide custom streams for standard output or standard error:
 
@@ -174,16 +177,29 @@ The `stdout` and `stderr` options support any object that responds to `<<`.
 
 ## Development
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+To install dependencies and run the build, run the pre-commit build:
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+```shell script
+./go
+```
+
+Tou can also run only the specs:
+
+```shell script
+./go spec
+```
+
+You can also run `bin/console` for an interactive prompt that will allow you to 
+experiment.
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/tobyclemson/lino. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
-
+Bug reports and pull requests are welcome on GitHub at 
+https://github.com/infrablocks/lino. This project is intended to be a safe, 
+welcoming space for collaboration, and contributors are expected to adhere to 
+the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
 
 ## License
 
-The gem is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
-
+The gem is available as open source under the terms of the 
+[MIT License](http://opensource.org/licenses/MIT).
