@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'hamster'
 require_relative 'utilities'
 require_relative 'command_line'
@@ -5,16 +7,18 @@ require_relative 'subcommand_builder'
 require_relative 'switches'
 
 module Lino
+  # rubocop:disable Metrics/ClassLength
   class CommandLineBuilder
     include Lino::Utilities
     include Lino::Switches
 
-    class <<self
+    class << self
       def for_command(command)
         CommandLineBuilder.new(command: command)
       end
     end
 
+    # rubocop:disable Metrics/ParameterLists
     def initialize(
       command: nil,
       subcommands: [],
@@ -32,6 +36,7 @@ module Lino
       @option_separator = option_separator
       @option_quoting = option_quoting
     end
+    # rubocop:enable Metrics/ParameterLists
 
     def with_subcommand(subcommand, &block)
       with(
@@ -61,23 +66,23 @@ module Lino
     end
 
     def with_environment_variable(environment_variable, value)
-      with(environment_variables: @environment_variables.add([environment_variable, value]))
+      with(
+        environment_variables:
+          @environment_variables.add(
+            [
+              environment_variable, value
+            ]
+          )
+      )
     end
 
     def build
       components = [
-        map_and_join(@environment_variables) do |var|
-          "#{var[0]}=\"#{var[1].to_s.gsub(/"/, '\\"')}\""
-        end,
+        formatted_environment_variables,
         @command,
-        map_and_join(
-          @switches,
-          &(quote_with(@option_quoting) >> join_with(@option_separator))
-        ),
-        map_and_join(@subcommands) do |sub|
-          sub.build(@option_separator, @option_quoting)
-        end,
-        map_and_join(@arguments, &join_with(' '))
+        formatted_switches,
+        formatted_subcommands,
+        formatted_arguments
       ]
 
       command_string = components.reject(&:empty?).join(' ')
@@ -86,6 +91,29 @@ module Lino
     end
 
     private
+
+    def formatted_environment_variables
+      map_and_join(@environment_variables) do |var|
+        "#{var[0]}=\"#{var[1].to_s.gsub(/"/, '\\"')}\""
+      end
+    end
+
+    def formatted_switches
+      map_and_join(
+        @switches,
+        &(quote_with(@option_quoting) >> join_with(@option_separator))
+      )
+    end
+
+    def formatted_subcommands
+      map_and_join(@subcommands) do |sub|
+        sub.build(@option_separator, @option_quoting)
+      end
+    end
+
+    def formatted_arguments
+      map_and_join(@arguments, &join_with(' '))
+    end
 
     def with(**replacements)
       CommandLineBuilder.new(**state.merge(replacements))
@@ -109,4 +137,5 @@ module Lino
       @arguments = @arguments.add({ components: [argument] })
     end
   end
+  # rubocop:enable Metrics/ClassLength
 end

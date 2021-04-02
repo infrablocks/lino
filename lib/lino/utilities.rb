@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'pp'
 
 module Lino
@@ -14,20 +16,30 @@ module Lino
 
     def quote_with(global_character)
       lambda do |item|
-        character = item[:quoting] || global_character
-        components = item[:components]
-        switch = components[0]
-        value = components[1]
-
         item.merge(
-            components: (components.count > 1) ?
-                [switch, "#{character}#{value}#{character}"] :
-                components)
+          components: resolve_components(item, global_character)
+        )
       end
     end
 
     def missing?(value)
       value.nil? || (value.respond_to?(:empty?) && value.empty?)
+    end
+
+    private
+
+    def resolve_components(item, global_character)
+      components = item[:components]
+      switch = components[0]
+
+      if components.count > 1
+        character = item[:quoting] || global_character
+        value = components[1]
+
+        [switch, "#{character}#{value}#{character}"]
+      else
+        components
+      end
     end
   end
 end

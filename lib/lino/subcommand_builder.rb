@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'hamster'
 require_relative 'utilities'
 require_relative 'switches'

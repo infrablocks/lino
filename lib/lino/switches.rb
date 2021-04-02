@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Lino
   module Switches
     def with_option(switch, value, separator: nil, quoting: nil)

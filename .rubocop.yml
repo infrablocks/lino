@@ -1,0 +1,17 @@
+AllCops:
+  NewCops: enable
+
+Layout/LineLength:
+  Max: 80
+
+Metrics/BlockLength:
+  IgnoredMethods:
+    - describe
+    - context
+    - shared_examples
+
+Style/Documentation:
+  Enabled: false
+
+Style/FrozenStringLiteralComment:
+  Enabled: false

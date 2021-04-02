@@ -183,7 +183,7 @@ To install dependencies and run the build, run the pre-commit build:
 ./go
 ```
 
-Tou can also run only the specs:
+To run only the specs:
 
 ```shell script
 ./go spec
