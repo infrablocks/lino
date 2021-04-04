@@ -48,6 +48,15 @@ module Lino
       )
     end
 
+    def with_subcommands(subcommands, &block)
+      without_block = subcommands[0...-1]
+      with_block = subcommands.last
+
+      without_block
+        .inject(self) { |s, sc| s.with_subcommand(sc) }
+        .with_subcommand(with_block, &block)
+    end
+
     def with_option_separator(option_separator)
       with(option_separator: option_separator)
     end

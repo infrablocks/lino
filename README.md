@@ -120,6 +120,18 @@ Lino::CommandLineBuilder.for_command('gcloud')
     .to_s
     
 # => gcloud sql instances set-root-password some-database --password super-secure
+
+# ... or alternatively
+Lino::CommandLineBuilder.for_command('gcloud')
+    .with_subcommands(
+      %w[sql instances set-root-password some-database]
+    ) do |sub|
+      sub.with_option('--password', 'super-secure')
+    end
+    .build
+    .to_s
+    
+# => gcloud sql instances set-root-password some-database --password super-secure
   
 # commands controlled by environment variables
 Lino::CommandLineBuilder.for_command('node')

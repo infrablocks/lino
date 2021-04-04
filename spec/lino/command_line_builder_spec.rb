@@ -422,21 +422,52 @@ RSpec.describe Lino::CommandLineBuilder do
   end
 
   it 'includes subcommand options and flags with the subcommand' do
-    command_line = Lino::CommandLineBuilder
-                   .for_command('command-with-subcommands-with-options')
-    command_line = command_line.with_subcommand('sub1') do |sub1|
+    builder = Lino::CommandLineBuilder
+              .for_command('command-with-subcommands-with-options')
+    builder = builder.with_subcommand('sub1') do |sub1|
       sub1.with_flag('-1')
           .with_option('--opt1', 'val1')
     end
-    command_line = command_line.with_subcommand('sub2') do |sub2|
+    builder = builder.with_subcommand('sub2') do |sub2|
       sub2.with_option('--opt2', 'val2')
           .with_flag('-2')
     end
-    command_line = command_line.with_option('--opt', 'val')
-    command_line = command_line.build
+    builder = builder.with_option('--opt', 'val')
+    result = builder.build
 
-    expect(command_line.to_s)
+    expect(result.to_s)
       .to eq('command-with-subcommands-with-options --opt val sub1 -1 ' \
                '--opt1 val1 sub2 --opt2 val2 -2')
+  end
+
+  it 'allows multiple subcommands to be passed at once ' do
+    result = Lino::CommandLineBuilder
+             .for_command('command-with-subcommand')
+             .with_flag('-v')
+             .with_option('--opt', 'val')
+             .with_subcommands(%w[sub1 sub2])
+             .build
+
+    expect(result.to_s)
+      .to eq('command-with-subcommand -v --opt val sub1 sub2')
+  end
+
+  it 'applies subcommand block to last subcommand when multiple ' \
+     'subcommands passed' do
+    builder = Lino::CommandLineBuilder
+              .for_command('command-with-subcommand')
+              .with_flag('-v')
+              .with_option('--opt', 'val')
+              .with_argument('/some/file.txt')
+
+    builder = builder.with_subcommands(%w[sub1 sub2]) do |sub|
+      sub.with_option('--subopt', 'subval')
+    end
+
+    result = builder.build
+
+    expect(result.to_s)
+      .to eq('command-with-subcommand -v --opt val sub1 sub2 --subopt subval ' \
+               '/some/file.txt')
   end
 end
