@@ -183,10 +183,25 @@ To install dependencies and run the build, run the pre-commit build:
 ./go
 ```
 
-To run only the specs:
+This runs all unit tests and other checks including coverage and code linting / 
+formatting.
+
+To run only the unit tests, including coverage:
 
 ```shell script
-./go spec
+./go test:unit
+```
+
+To attempt to fix any code linting / formatting issues:
+
+```shell script
+./go library:fix
+```
+
+To check for code linting / formatting issues without fixing:
+
+```shell script
+./go library:check
 ```
 
 You can also run `bin/console` for an interactive prompt that will allow you to 
