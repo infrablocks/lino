@@ -2,12 +2,12 @@
 
 require 'hamster'
 require_relative 'utilities'
-require_relative 'switches'
+require_relative 'options'
 
 module Lino
   class SubcommandBuilder
     include Lino::Utilities
-    include Lino::Switches
+    include Lino::Options
 
     class <<self
       def for_subcommand(subcommand)
@@ -15,16 +15,16 @@ module Lino
       end
     end
 
-    def initialize(subcommand: nil, switches: [])
+    def initialize(subcommand: nil, options: [])
       @subcommand = subcommand
-      @switches = Hamster::Vector.new(switches)
+      @options = Hamster::Vector.new(options)
     end
 
     def build(option_separator, option_quoting)
       components = [
         @subcommand,
         map_and_join(
-          @switches,
+          @options,
           &(quote_with(option_quoting) >> join_with(option_separator))
         )
       ]
@@ -40,7 +40,7 @@ module Lino
     def state
       {
         subcommand: @subcommand,
-        switches: @switches
+        options: @options
       }
     end
   end

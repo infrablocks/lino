@@ -4,13 +4,13 @@ require 'hamster'
 require_relative 'utilities'
 require_relative 'command_line'
 require_relative 'subcommand_builder'
-require_relative 'switches'
+require_relative 'options'
 
 module Lino
   # rubocop:disable Metrics/ClassLength
   class CommandLineBuilder
     include Lino::Utilities
-    include Lino::Switches
+    include Lino::Options
 
     class << self
       def for_command(command)
@@ -22,7 +22,7 @@ module Lino
     def initialize(
       command: nil,
       subcommands: [],
-      switches: [],
+      options: [],
       arguments: [],
       environment_variables: [],
       option_separator: ' ',
@@ -30,7 +30,7 @@ module Lino
     )
       @command = command
       @subcommands = Hamster::Vector.new(subcommands)
-      @switches = Hamster::Vector.new(switches)
+      @options = Hamster::Vector.new(options)
       @arguments = Hamster::Vector.new(arguments)
       @environment_variables = Hamster::Vector.new(environment_variables)
       @option_separator = option_separator
@@ -57,12 +57,13 @@ module Lino
     end
 
     def with_argument(argument)
-      with(arguments: add_argument(argument))
+      return self if missing?(argument)
+
+      with(arguments: @arguments.add({ components: [argument] }))
     end
 
     def with_arguments(arguments)
-      arguments.each { |argument| add_argument(argument) }
-      with({})
+      arguments.inject(self) { |s, argument| s.with_argument(argument) }
     end
 
     def with_environment_variable(environment_variable, value)
@@ -80,7 +81,7 @@ module Lino
       components = [
         formatted_environment_variables,
         @command,
-        formatted_switches,
+        formatted_options,
         formatted_subcommands,
         formatted_arguments
       ]
@@ -98,9 +99,9 @@ module Lino
       end
     end
 
-    def formatted_switches
+    def formatted_options
       map_and_join(
-        @switches,
+        @options,
         &(quote_with(@option_quoting) >> join_with(@option_separator))
       )
     end
@@ -112,7 +113,10 @@ module Lino
     end
 
     def formatted_arguments
-      map_and_join(@arguments, &join_with(' '))
+      map_and_join(
+        @arguments,
+        &join_with(' ')
+      )
     end
 
     def with(**replacements)
@@ -123,18 +127,12 @@ module Lino
       {
         command: @command,
         subcommands: @subcommands,
-        switches: @switches,
+        options: @options,
         arguments: @arguments,
         environment_variables: @environment_variables,
         option_separator: @option_separator,
         option_quoting: @option_quoting
       }
-    end
-
-    def add_argument(argument)
-      return @arguments if missing?(argument)
-
-      @arguments = @arguments.add({ components: [argument] })
     end
   end
   # rubocop:enable Metrics/ClassLength
