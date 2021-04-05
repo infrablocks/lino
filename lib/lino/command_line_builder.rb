@@ -9,6 +9,15 @@ require_relative 'options'
 module Lino
   # rubocop:disable Metrics/ClassLength
   class CommandLineBuilder
+    SELECTORS = {
+      after_command:
+        %i[environment_variables command options subcommands arguments],
+      after_subcommands:
+        %i[environment_variables command subcommands options arguments],
+      after_arguments:
+        %i[environment_variables command subcommands arguments options]
+    }.freeze
+
     include Lino::Utilities
     include Lino::Options
 
@@ -26,7 +35,8 @@ module Lino
       arguments: [],
       environment_variables: [],
       option_separator: ' ',
-      option_quoting: nil
+      option_quoting: nil,
+      option_placement: :after_command
     )
       @command = command
       @subcommands = Hamster::Vector.new(subcommands)
@@ -35,6 +45,7 @@ module Lino
       @environment_variables = Hamster::Vector.new(environment_variables)
       @option_separator = option_separator
       @option_quoting = option_quoting
+      @option_placement = option_placement
     end
     # rubocop:enable Metrics/ParameterLists
 
@@ -65,6 +76,18 @@ module Lino
       with(option_quoting: character)
     end
 
+    def with_options_after_command
+      with(option_placement: :after_command)
+    end
+
+    def with_options_after_subcommands
+      with(option_placement: :after_subcommands)
+    end
+
+    def with_options_after_arguments
+      with(option_placement: :after_arguments)
+    end
+
     def with_argument(argument)
       return self if missing?(argument)
 
@@ -87,20 +110,26 @@ module Lino
     end
 
     def build
-      components = [
-        formatted_environment_variables,
-        @command,
-        formatted_options,
-        formatted_subcommands,
-        formatted_arguments
-      ]
+      components = formatted_components
+      command_line = SELECTORS[@option_placement]
+                     .inject([]) { |c, key| c << components[key] }
+                     .reject(&:empty?)
+                     .join(' ')
 
-      command_string = components.reject(&:empty?).join(' ')
-
-      CommandLine.new(command_string)
+      CommandLine.new(command_line)
     end
 
     private
+
+    def formatted_components
+      {
+        environment_variables: formatted_environment_variables,
+        command: @command,
+        options: formatted_options,
+        subcommands: formatted_subcommands,
+        arguments: formatted_arguments
+      }
+    end
 
     def formatted_environment_variables
       map_and_join(@environment_variables) do |var|
@@ -140,7 +169,8 @@ module Lino
         arguments: @arguments,
         environment_variables: @environment_variables,
         option_separator: @option_separator,
-        option_quoting: @option_quoting
+        option_quoting: @option_quoting,
+        option_placement: @option_placement
       }
     end
   end

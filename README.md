@@ -79,7 +79,7 @@ Lino::CommandLineBuilder.for_command('diff')
 
 # => diff ./file1.txt ./file2.txt
 
-# commands with an array of arguments
+# ... or alternatively
 Lino::CommandLineBuilder.for_command('diff')
     .with_arguments(['./file1.txt', nil, '', './file2.txt'])
     .build
@@ -142,6 +142,39 @@ Lino::CommandLineBuilder.for_command('node')
     .to_s
     
 # => PORT=3030 LOG_LEVEL=debug node ./server.js
+
+# note: by default, options are placed after the command, before all subcommands
+#       and arguments
+
+# this can be expressed explicitly
+Lino::CommandLineBuilder.for_command('gcloud')
+    .with_options_after_command
+    .with_option('--password', 'super-secure')
+    .with_subcommands(%w[sql instances set-root-password some-database])
+    .build
+    .to_s
+
+# => gcloud --password super-secure sql instances set-root-password some-database
+
+# options can also come after subcommands
+Lino::CommandLineBuilder.for_command('gcloud')
+    .with_options_after_subcommands
+    .with_option('--password', 'super-secure')
+    .with_subcommands(%w[sql instances set-root-password some-database])
+    .build
+    .to_s
+
+# => gcloud sql instances set-root-password some-database --password super-secure
+
+# options can also come after arguments, although usages of this are rare
+Lino::CommandLineBuilder.for_command('ls')
+    .with_options_after_arguments
+    .with_flag('-l')
+    .with_argument('/some/directory')
+    .build
+    .to_s
+
+# => ls /some/directory -l
 ```
 
 ### `Lino::CommandLine`
