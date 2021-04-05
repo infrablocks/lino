@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe Lino::CommandLineBuilder do
   it 'includes the provided command in the resulting command line' do
-    result = Lino::CommandLineBuilder
+    result = described_class
              .for_command('command')
              .build
 
@@ -12,7 +12,7 @@ RSpec.describe Lino::CommandLineBuilder do
   end
 
   it 'includes single options after the command' do
-    result = Lino::CommandLineBuilder
+    result = described_class
              .for_command('command-with-options')
              .with_option('--opt1', 'val1')
              .with_option('--opt2', 'val2')
@@ -23,7 +23,7 @@ RSpec.describe Lino::CommandLineBuilder do
   end
 
   it 'ignores single options without a value' do
-    result = Lino::CommandLineBuilder
+    result = described_class
              .for_command('command-with-options')
              .with_option('--opt1', 'val1')
              .with_option('--opt2', nil)
@@ -34,7 +34,7 @@ RSpec.describe Lino::CommandLineBuilder do
   end
 
   it 'includes multiple options passed as a hash after the command' do
-    result = Lino::CommandLineBuilder
+    result = described_class
              .for_command('command-with-options')
              .with_options(
                {
@@ -49,7 +49,7 @@ RSpec.describe Lino::CommandLineBuilder do
   end
 
   it 'includes multiple options passed as an array after the command' do
-    result = Lino::CommandLineBuilder
+    result = described_class
              .for_command('command-with-options')
              .with_options(
                [
@@ -70,7 +70,7 @@ RSpec.describe Lino::CommandLineBuilder do
   end
 
   it 'ignores multiple options passed as a hash without a value' do
-    result = Lino::CommandLineBuilder
+    result = described_class
              .for_command('command-with-options')
              .with_options(
                {
@@ -87,7 +87,7 @@ RSpec.describe Lino::CommandLineBuilder do
   end
 
   it 'ignores multiple options passed as an array without a value' do
-    result = Lino::CommandLineBuilder
+    result = described_class
              .for_command('command-with-options')
              .with_options(
                [
@@ -105,7 +105,7 @@ RSpec.describe Lino::CommandLineBuilder do
 
   it 'does nothing when nil or empty options provided when ' \
      'passing multiple options' do
-    result = Lino::CommandLineBuilder
+    result = described_class
              .for_command('command-with-options')
              .with_options(nil)
              .with_options([])
@@ -116,7 +116,7 @@ RSpec.describe Lino::CommandLineBuilder do
   end
 
   it 'includes repeated options after the command' do
-    result = Lino::CommandLineBuilder
+    result = described_class
              .for_command('command-with-options')
              .with_repeated_option('--opt', %w[val1 val2])
              .build
@@ -126,7 +126,7 @@ RSpec.describe Lino::CommandLineBuilder do
   end
 
   it 'ignores nil and empty repeated option values' do
-    result = Lino::CommandLineBuilder
+    result = described_class
              .for_command('command-with-options')
              .with_repeated_option(
                '--opt', ['val1', '', nil, 'val2']
@@ -139,7 +139,7 @@ RSpec.describe Lino::CommandLineBuilder do
 
   it 'uses the specified option separator when provided when passing ' \
      'single options' do
-    result = Lino::CommandLineBuilder
+    result = described_class
              .for_command('command-with-option-separator')
              .with_option_separator('=')
              .with_option('--opt1', 'val1')
@@ -152,7 +152,7 @@ RSpec.describe Lino::CommandLineBuilder do
 
   it 'uses the specified option separator when provided when passing ' \
      'multiple options' do
-    result = Lino::CommandLineBuilder
+    result = described_class
              .for_command('command-with-option-separator')
              .with_option_separator('=')
              .with_options(
@@ -169,7 +169,7 @@ RSpec.describe Lino::CommandLineBuilder do
 
   it 'uses the specified option separator when provided when passing ' \
      'repeated options' do
-    result = Lino::CommandLineBuilder
+    result = described_class
              .for_command('command-with-options')
              .with_option_separator('=')
              .with_repeated_option('--opt', %w[val1 val2])
@@ -180,7 +180,7 @@ RSpec.describe Lino::CommandLineBuilder do
   end
 
   it 'allows the option separator to be overridden for each single option' do
-    result = Lino::CommandLineBuilder
+    result = described_class
              .for_command('command-with-overridden-separator')
              .with_option('--opt1', 'val1', separator: ':')
              .with_option('--opt2', 'val2', separator: '~')
@@ -194,7 +194,7 @@ RSpec.describe Lino::CommandLineBuilder do
 
   it 'allows the option separator to be overridden for each multiple option ' \
      'when passed as an array' do
-    result = Lino::CommandLineBuilder
+    result = described_class
              .for_command('command-with-overridden-separator')
              .with_options(
                [
@@ -222,7 +222,7 @@ RSpec.describe Lino::CommandLineBuilder do
   end
 
   it 'allows the option separator to be overridden for each repeated option' do
-    result = Lino::CommandLineBuilder
+    result = described_class
              .for_command('command-with-options')
              .with_repeated_option(
                '--opt1', %w[val1 val2], separator: ':'
@@ -242,7 +242,7 @@ RSpec.describe Lino::CommandLineBuilder do
 
   it 'allows the option separator to be overridden for single options ' \
      'on subcommands' do
-    result = Lino::CommandLineBuilder
+    result = described_class
              .for_command('command-with-overridden-separator')
              .with_subcommand('sub') do |sub|
       sub.with_option('--opt1', 'val1', separator: ':')
@@ -258,7 +258,7 @@ RSpec.describe Lino::CommandLineBuilder do
 
   it 'allows the option separator to be overridden for multiple options ' \
      'passed as an array on subcommands' do
-    builder = Lino::CommandLineBuilder
+    builder = described_class
               .for_command('command-with-overridden-separator')
     builder = builder.with_subcommand('sub') do |sub|
       sub
@@ -290,7 +290,7 @@ RSpec.describe Lino::CommandLineBuilder do
 
   it 'allows the option separator to be overridden for repeated options ' \
      'on subcommands' do
-    result = Lino::CommandLineBuilder
+    result = described_class
              .for_command('command-with-overridden-separator')
              .with_subcommand('sub') do |sub|
       sub.with_repeated_option(
@@ -314,7 +314,7 @@ RSpec.describe Lino::CommandLineBuilder do
 
   it 'uses the specified option quoting character for single options ' \
      'when provided' do
-    result = Lino::CommandLineBuilder
+    result = described_class
              .for_command('command-with-quoting')
              .with_option_quoting('"')
              .with_option('--opt1', 'value1 with spaces')
@@ -328,7 +328,7 @@ RSpec.describe Lino::CommandLineBuilder do
 
   it 'uses the specified option quoting character for multiple options ' \
      'when provided' do
-    result = Lino::CommandLineBuilder
+    result = described_class
              .for_command('command-with-quoting')
              .with_option_quoting('"')
              .with_options(
@@ -346,7 +346,7 @@ RSpec.describe Lino::CommandLineBuilder do
 
   it 'uses the specified option quoting character for repeated options ' \
      'when provided' do
-    result = Lino::CommandLineBuilder
+    result = described_class
              .for_command('command-with-quoting')
              .with_option_quoting('"')
              .with_repeated_option(
@@ -362,7 +362,7 @@ RSpec.describe Lino::CommandLineBuilder do
 
   it 'allows the option quoting character to be overridden ' \
      'for single options' do
-    result = Lino::CommandLineBuilder
+    result = described_class
              .for_command('command-with-overridden-quoting')
              .with_option('--opt1', 'value 1', quoting: '"')
              .with_option('--opt2', 'value 2', quoting: "'")
@@ -376,7 +376,7 @@ RSpec.describe Lino::CommandLineBuilder do
 
   it 'allows the option quoting character to be overridden ' \
      'for multiple options' do
-    result = Lino::CommandLineBuilder
+    result = described_class
              .for_command('command-with-overridden-quoting')
              .with_options(
                [
@@ -405,7 +405,7 @@ RSpec.describe Lino::CommandLineBuilder do
 
   it 'allows the option quoting character to be overridden ' \
      'for repeated options' do
-    result = Lino::CommandLineBuilder
+    result = described_class
              .for_command('command-with-overridden-quoting')
              .with_repeated_option(
                '--opt1', %w[val1 val2], quoting: '"'
@@ -422,7 +422,7 @@ RSpec.describe Lino::CommandLineBuilder do
 
   it 'allows the option quoting character to be overridden ' \
      'for single options on subcommands' do
-    builder = Lino::CommandLineBuilder
+    builder = described_class
               .for_command('command-with-overridden-quoting')
     builder = builder.with_subcommand('sub') do |sub|
       sub
@@ -439,7 +439,7 @@ RSpec.describe Lino::CommandLineBuilder do
 
   it 'allows the option quoting character to be overridden ' \
      'for multiple options on subcommands' do
-    builder = Lino::CommandLineBuilder
+    builder = described_class
               .for_command('command-with-overridden-quoting')
     builder = builder.with_subcommand('sub') do |sub|
       sub
@@ -471,7 +471,7 @@ RSpec.describe Lino::CommandLineBuilder do
 
   it 'allows the option quoting character to be overridden ' \
      'for repeated options on subcommands' do
-    result = Lino::CommandLineBuilder
+    result = described_class
              .for_command('command-with-overridden-quoting')
              .with_subcommand('sub') do |sub|
       sub.with_repeated_option(
@@ -495,7 +495,7 @@ RSpec.describe Lino::CommandLineBuilder do
 
   it 'treats option specific separators as higher precedence than the ' \
      'global option separator for single options' do
-    result = Lino::CommandLineBuilder
+    result = described_class
              .for_command('command-with-overridden-separator')
              .with_option_separator('=')
              .with_option('--opt1', 'val1', separator: ':')
@@ -510,7 +510,7 @@ RSpec.describe Lino::CommandLineBuilder do
 
   it 'treats option specific separators as higher precedence than the ' \
      'global option separator for multiple options' do
-    result = Lino::CommandLineBuilder
+    result = described_class
              .for_command('command-with-overridden-separator')
              .with_option_separator('=')
              .with_options(
@@ -540,7 +540,7 @@ RSpec.describe Lino::CommandLineBuilder do
 
   it 'treats option specific separators as higher precedence than ' \
      'the global option separator for repeated options' do
-    result = Lino::CommandLineBuilder
+    result = described_class
              .for_command('command-with-overridden-separator')
              .with_option_separator('=')
              .with_repeated_option(
@@ -559,9 +559,9 @@ RSpec.describe Lino::CommandLineBuilder do
                '--opt2~val3 --opt2~val4 --opt3=val5 --opt3=val6'))
   end
 
-  it 'allows single options, multiple options and repeated options ' +
-       'to be used together' do
-    result = Lino::CommandLineBuilder
+  it 'allows single options, multiple options and repeated options ' \
+     'to be used together' do
+    result = described_class
              .for_command('command-with-options')
              .with_repeated_option(
                '--opt1', %w[val1 val2]
@@ -578,13 +578,13 @@ RSpec.describe Lino::CommandLineBuilder do
              .build
 
     expect(result.to_s)
-      .to eq('command-with-options --opt1 val1 --opt1 val2 --opt2 val3 ' +
+      .to eq('command-with-options --opt1 val1 --opt1 val2 --opt2 val3 ' \
                '--opt3 val4 --opt4 val5')
   end
 
   it 'allows single options, multiple options and repeated options ' \
      'to be used together for subcommands' do
-    builder = Lino::CommandLineBuilder
+    builder = described_class
               .for_command('command-with-options')
 
     builder = builder.with_subcommand('sub') do |sub|
@@ -609,7 +609,7 @@ RSpec.describe Lino::CommandLineBuilder do
   end
 
   it 'ignores nil and empty repeated option values on subcommands' do
-    builder = Lino::CommandLineBuilder
+    builder = described_class
               .for_command('command-with-options')
 
     builder = builder.with_subcommand('sub') do |sub|
@@ -626,7 +626,7 @@ RSpec.describe Lino::CommandLineBuilder do
   end
 
   it 'includes single flags after the command' do
-    result = Lino::CommandLineBuilder
+    result = described_class
              .for_command('command-with-flags')
              .with_flag('--verbose')
              .with_flag('-h')
@@ -636,7 +636,7 @@ RSpec.describe Lino::CommandLineBuilder do
   end
 
   it 'includes multiple flags after the command' do
-    result = Lino::CommandLineBuilder
+    result = described_class
              .for_command('command-with-flags')
              .with_flags(['--verbose', '-h'])
              .build
@@ -645,7 +645,7 @@ RSpec.describe Lino::CommandLineBuilder do
   end
 
   it 'ignores nil flags when passing a single flag' do
-    result = Lino::CommandLineBuilder
+    result = described_class
              .for_command('command-with-flags')
              .with_flag(nil)
              .with_flag('-h')
@@ -655,7 +655,7 @@ RSpec.describe Lino::CommandLineBuilder do
   end
 
   it 'ignores empty flags when passing a single flag' do
-    result = Lino::CommandLineBuilder
+    result = described_class
              .for_command('command-with-flags')
              .with_flag('')
              .with_flag('-h')
@@ -665,7 +665,7 @@ RSpec.describe Lino::CommandLineBuilder do
   end
 
   it 'ignores nil and empty flags when passing multiple flags' do
-    result = Lino::CommandLineBuilder
+    result = described_class
              .for_command('command-with-flags')
              .with_flags(['--verbose', nil, '', '-h'])
              .build
@@ -675,7 +675,7 @@ RSpec.describe Lino::CommandLineBuilder do
 
   it 'does nothing when nil or empty array provided when ' \
      'passing multiple flags' do
-    result = Lino::CommandLineBuilder
+    result = described_class
              .for_command('command-with-flags')
              .with_flags(nil)
              .with_flags([])
@@ -685,7 +685,7 @@ RSpec.describe Lino::CommandLineBuilder do
   end
 
   it 'includes single args after the command and all flags and options' do
-    result = Lino::CommandLineBuilder
+    result = described_class
              .for_command('command-with-args')
              .with_flag('-v')
              .with_option('--opt', 'val')
@@ -697,7 +697,7 @@ RSpec.describe Lino::CommandLineBuilder do
   end
 
   it 'includes multiple args after the command and all flags and options' do
-    result = Lino::CommandLineBuilder
+    result = described_class
              .for_command('command-with-args')
              .with_flag('-v')
              .with_option('--opt', 'val')
@@ -710,7 +710,7 @@ RSpec.describe Lino::CommandLineBuilder do
   end
 
   it 'ignores nil args when passing a single arg' do
-    result = Lino::CommandLineBuilder
+    result = described_class
              .for_command('command-with-args')
              .with_flag('-v')
              .with_option('--opt', 'val')
@@ -722,7 +722,7 @@ RSpec.describe Lino::CommandLineBuilder do
   end
 
   it 'ignores empty args when passing a single arg' do
-    result = Lino::CommandLineBuilder
+    result = described_class
              .for_command('command-with-args')
              .with_flag('-v')
              .with_option('--opt', 'val')
@@ -734,7 +734,7 @@ RSpec.describe Lino::CommandLineBuilder do
   end
 
   it 'ignores nil and empty args when passing multiple args' do
-    result = Lino::CommandLineBuilder
+    result = described_class
              .for_command('command-with-args')
              .with_flag('-v')
              .with_option('--opt', 'val')
@@ -752,7 +752,7 @@ RSpec.describe Lino::CommandLineBuilder do
 
   it 'does nothing when nil or empty arguments provided when ' \
      'passing multiple arguments' do
-    result = Lino::CommandLineBuilder
+    result = described_class
              .for_command('command-with-flags')
              .with_arguments(nil)
              .with_arguments([])
@@ -762,7 +762,7 @@ RSpec.describe Lino::CommandLineBuilder do
   end
 
   it 'allows single and multiple args to be used together' do
-    result = Lino::CommandLineBuilder
+    result = described_class
              .for_command('command-with-args')
              .with_flag('-v')
              .with_option('--opt', 'val')
@@ -776,7 +776,7 @@ RSpec.describe Lino::CommandLineBuilder do
   end
 
   it 'includes environment variables before the command' do
-    result = Lino::CommandLineBuilder
+    result = described_class
              .for_command('command-with-environment-variables')
              .with_environment_variable(
                'ENV_VAR1', 'VAL1'
@@ -796,7 +796,7 @@ RSpec.describe Lino::CommandLineBuilder do
   end
 
   it 'includes command options and flags before subcommands by default' do
-    result = Lino::CommandLineBuilder
+    result = described_class
              .for_command('command-with-subcommand')
              .with_flag('-v')
              .with_option('--opt', 'val')
@@ -809,7 +809,7 @@ RSpec.describe Lino::CommandLineBuilder do
   end
 
   it 'includes command options and flags before subcommands when specified' do
-    result = Lino::CommandLineBuilder
+    result = described_class
              .for_command('command-with-subcommand')
              .with_options_after_command
              .with_flag('-v')
@@ -823,7 +823,7 @@ RSpec.describe Lino::CommandLineBuilder do
   end
 
   it 'includes command options and flags after subcommands when specified' do
-    result = Lino::CommandLineBuilder
+    result = described_class
              .for_command('command-with-subcommand')
              .with_options_after_subcommands
              .with_flag('-v')
@@ -837,7 +837,7 @@ RSpec.describe Lino::CommandLineBuilder do
   end
 
   it 'includes command options and flags after arguments when specified' do
-    result = Lino::CommandLineBuilder
+    result = described_class
              .for_command('command-with-subcommand')
              .with_options_after_arguments
              .with_flag('-v')
@@ -852,7 +852,7 @@ RSpec.describe Lino::CommandLineBuilder do
   end
 
   it 'includes args after all subcommands' do
-    result = Lino::CommandLineBuilder
+    result = described_class
              .for_command('command-with-subcommand-and-args')
              .with_subcommand('sub1')
              .with_argument('path/to/file.txt')
@@ -864,7 +864,7 @@ RSpec.describe Lino::CommandLineBuilder do
   end
 
   it 'includes subcommand options and flags with the subcommand' do
-    builder = Lino::CommandLineBuilder
+    builder = described_class
               .for_command('command-with-subcommands-with-options')
     builder = builder.with_subcommand('sub1') do |sub1|
       sub1.with_flag('-1')
@@ -883,7 +883,7 @@ RSpec.describe Lino::CommandLineBuilder do
   end
 
   it 'allows multiple subcommands to be passed at once ' do
-    result = Lino::CommandLineBuilder
+    result = described_class
              .for_command('command-with-subcommand')
              .with_flag('-v')
              .with_option('--opt', 'val')
@@ -896,7 +896,7 @@ RSpec.describe Lino::CommandLineBuilder do
 
   it 'applies subcommand block to last subcommand when multiple ' \
      'subcommands passed' do
-    builder = Lino::CommandLineBuilder
+    builder = described_class
               .for_command('command-with-subcommand')
               .with_flag('-v')
               .with_option('--opt', 'val')
