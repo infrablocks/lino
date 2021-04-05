@@ -41,10 +41,13 @@ command_line.execute
 ### `Lino::CommandLineBuilder`
 
 The `CommandLineBuilder` allows a number of different styles of commands to be 
-built:
+built.
+
+#### Flags
+
+Flags can be added with `#with_flag`:
 
 ```ruby
-# commands with flags
 Lino::CommandLineBuilder.for_command('ls')
     .with_flag('-l')
     .with_flag('-a')
@@ -52,8 +55,24 @@ Lino::CommandLineBuilder.for_command('ls')
     .to_s
 
 # => ls -l -a
+```
 
-# commands with options
+or `#with_flags`:
+
+```ruby
+Lino::CommandLineBuilder.for_command('ls')
+    .with_flags(%w[-l -a])
+    .build
+    .to_s
+
+# => ls -l -a
+```
+
+#### Options
+
+Options with values can be added with `#with_option`:
+
+```ruby
 Lino::CommandLineBuilder.for_command('gpg')
     .with_option('--recipient', 'tobyclemson@gmail.com')
     .with_option('--sign', './doc.txt')
@@ -61,8 +80,11 @@ Lino::CommandLineBuilder.for_command('gpg')
     .to_s
 
 # => gpg --recipient tobyclemson@gmail.com --sign ./doc.txt
+```
 
-# ... or alternatively
+or `#with_options`, either as a hash:
+
+```ruby
 Lino::CommandLineBuilder.for_command('gpg')
     .with_options({
       '--recipient' => 'tobyclemson@gmail.com',
@@ -72,8 +94,11 @@ Lino::CommandLineBuilder.for_command('gpg')
     .to_s
 
 # => gpg --recipient tobyclemson@gmail.com --sign ./doc.txt
+```
 
-# ... or alternatively
+or as an array:
+
+```ruby
 Lino::CommandLineBuilder.for_command('gpg')
     .with_options(
       [
@@ -85,16 +110,27 @@ Lino::CommandLineBuilder.for_command('gpg')
     .to_s
 
 # => gpg --recipient tobyclemson@gmail.com --sign ./doc.txt
+```
 
-# commands with an option repeated multiple times
+Some commands allow options to be repeated:
+
+```ruby
 Lino::CommandLineBuilder.for_command('example.sh')
     .with_repeated_option('--opt', ['file1.txt', nil, '', 'file2.txt'])
     .build
     .to_s
 
 # => example.sh --opt file1.txt --opt file2.txt
+```
 
-# commands with arguments 
+> Note: `lino` ignores `nil` or empty option values in the resulting command 
+>       line. 
+
+#### Arguments
+
+Arguments can be added using `#with_argument`:
+
+```ruby 
 Lino::CommandLineBuilder.for_command('diff')
     .with_argument('./file1.txt')
     .with_argument('./file2.txt')
@@ -102,16 +138,28 @@ Lino::CommandLineBuilder.for_command('diff')
     .to_s
 
 # => diff ./file1.txt ./file2.txt
+```
 
-# ... or alternatively
+or `#with_arguments`, as an array:
+
+```ruby
 Lino::CommandLineBuilder.for_command('diff')
     .with_arguments(['./file1.txt', nil, '', './file2.txt'])
     .build
     .to_s
 
 # => diff ./file1.txt ./file2.txt
+```
 
-# commands with custom option separator
+> Note: `lino` ignores `nil` or empty argument values in the resulting command 
+>        line.
+
+#### Option Separators
+
+By default, `lino` separates option values from the option by a space. This
+can be overridden globally using `#with_option_separator`:
+
+```ruby
 Lino::CommandLineBuilder.for_command('java')
     .with_option_separator(':')
     .with_option('-splash', './images/splash.jpg')
@@ -120,8 +168,112 @@ Lino::CommandLineBuilder.for_command('java')
     .to_s
 
 # => java -splash:./images/splash.jpg ./application.jar
+```
 
-# commands using a subcommand style
+The option separator can be overridden on an option by option basis:
+
+```ruby
+Lino::CommandLineBuilder.for_command('java')
+    .with_option('-splash', './images/splash.jpg', separator: ':')
+    .with_argument('./application.jar')
+    .build
+    .to_s
+
+# => java -splash:./images/splash.jpg ./application.jar
+```
+
+> Note: `#with_options` supports separator overriding when the options are
+>       passed as an array of hashes and a `separator` key is included in the 
+>       hash.
+
+> Note: `#with_repeated_option` also supports the `separator` named parameter.
+
+> Note: option specific separators take precedence over the global option 
+>       separator 
+
+#### Option Quoting
+
+By default, `lino` does not quote option values. This can be overridden 
+globally using `#with_option_quoting`:
+
+```ruby
+Lino::CommandLineBuilder.for_command('gpg')
+    .with_option_quoting('"')
+    .with_option('--sign', 'some file.txt')
+    .build
+    .to_s
+
+# => gpg --sign "some file.txt"
+```
+
+The option quoting can be overridden on an option by option basis:
+
+```ruby
+Lino::CommandLineBuilder.for_command('java')
+    .with_option('-splash', './images/splash.jpg', quoting: '"')
+    .with_argument('./application.jar')
+    .build
+    .to_s
+
+# => java -splash "./images/splash.jpg" ./application.jar
+```
+
+> Note: `#with_options` supports quoting overriding when the options are
+>       passed as an array of hashes and a `quoting` key is included in the 
+>       hash.
+
+> Note: `#with_repeated_option` also supports the `quoting` named parameter.
+
+> Note: option specific quoting take precedence over the global option 
+>       quoting 
+
+#### Subcommands
+
+Subcommands can be added using `#with_subcommand`:
+
+```ruby
+Lino::CommandLineBuilder.for_command('git')
+    .with_flag('--no-pager')
+    .with_subcommand('log')
+    .build
+    .to_s
+
+# => git --no-pager log
+```
+
+Multi-level subcommands can be added using multiple `#with_subcommand` 
+invocations:
+
+```ruby
+Lino::CommandLineBuilder.for_command('gcloud')
+    .with_subcommand('sql')
+    .with_subcommand('instances')
+    .with_subcommand('set-root-password')
+    .with_subcommand('some-database')
+    .build
+    .to_s
+
+# => gcloud sql instances set-root-password some-database
+```
+
+or using `#with_subcommands`:
+     
+```ruby
+Lino::CommandLineBuilder.for_command('gcloud')
+    .with_subcommands(
+      %w[sql instances set-root-password some-database]
+    )
+    .build
+    .to_s
+    
+# => gcloud sql instances set-root-password some-database
+```
+
+Subcommands also support options via `#with_flag`, `#with_flags`, 
+`#with_option`, `#with_options` and `#with_repeated_option` just like commands,
+via a block, for example: 
+
+```ruby
 Lino::CommandLineBuilder.for_command('git')
     .with_flag('--no-pager')
     .with_subcommand('log') do |sub|
@@ -131,33 +283,17 @@ Lino::CommandLineBuilder.for_command('git')
     .to_s
 
 # => git --no-pager log --since 2016-01-01
+```
 
-# commands with multiple levels of subcommand
-Lino::CommandLineBuilder.for_command('gcloud')
-    .with_subcommand('sql')
-    .with_subcommand('instances')
-    .with_subcommand('set-root-password')
-    .with_subcommand('some-database') do |sub|
-      sub.with_option('--password', 'super-secure')
-    end
-    .build
-    .to_s
-    
-# => gcloud sql instances set-root-password some-database --password super-secure
+> Note: `#with_subcommands` also supports a block, which applies in the context
+>       of the last subcommand in the passed array.
 
-# ... or alternatively
-Lino::CommandLineBuilder.for_command('gcloud')
-    .with_subcommands(
-      %w[sql instances set-root-password some-database]
-    ) do |sub|
-      sub.with_option('--password', 'super-secure')
-    end
-    .build
-    .to_s
-    
-# => gcloud sql instances set-root-password some-database --password super-secure
+#### Environment Variables
+
+Command lines can be prefixed with environment variables using 
+`#with_environment_variable`:
   
-# commands controlled by environment variables
+```ruby
 Lino::CommandLineBuilder.for_command('node')
     .with_environment_variable('PORT', '3030')
     .with_environment_variable('LOG_LEVEL', 'debug')
@@ -166,31 +302,73 @@ Lino::CommandLineBuilder.for_command('node')
     .to_s
     
 # => PORT=3030 LOG_LEVEL=debug node ./server.js
+```
 
-# note: by default, options are placed after the command, before all subcommands
-#       and arguments
+or `#with_environment_variables`, either as a hash:
 
-# this can be expressed explicitly
+```ruby
+Lino::CommandLineBuilder.for_command('node')
+    .with_environment_variables({
+      'PORT' => '3030',
+      'LOG_LEVEL' => 'debug'
+    })
+    .build
+    .to_s
+    
+# => PORT=3030 LOG_LEVEL=debug node ./server.js
+```
+
+or as an array:
+
+```ruby
+Lino::CommandLineBuilder.for_command('node')
+    .with_environment_variables(
+      [
+        { name: 'PORT', value: '3030' },
+        { name: 'LOG_LEVEL', value: 'debug' }
+      ]
+    )
+    .build
+    .to_s
+    
+# => PORT=3030 LOG_LEVEL=debug node ./server.js
+```
+
+#### Option Placement
+
+By default, `lino` places top-level options after the command, before all 
+subcommands and arguments.
+
+This is equivalent to calling `#with_options_after_command`:
+
+```ruby
 Lino::CommandLineBuilder.for_command('gcloud')
     .with_options_after_command
     .with_option('--password', 'super-secure')
-    .with_subcommands(%w[sql instances set-root-password some-database])
+    .with_subcommands(%w[sql instances set-root-password])
     .build
     .to_s
 
-# => gcloud --password super-secure sql instances set-root-password some-database
+# => gcloud --password super-secure sql instances set-root-password
+```
 
-# options can also come after subcommands
+Alternatively, top-level options can be placed after all subcommands using
+`#with_options_after_subcommands`:
+
+```ruby
 Lino::CommandLineBuilder.for_command('gcloud')
     .with_options_after_subcommands
     .with_option('--password', 'super-secure')
-    .with_subcommands(%w[sql instances set-root-password some-database])
+    .with_subcommands(%w[sql instances set-root-password])
     .build
     .to_s
 
-# => gcloud sql instances set-root-password some-database --password super-secure
+# => gcloud sql instances set-root-password --password super-secure
+```
 
-# options can also come after arguments, although usages of this are rare
+or, after all arguments, using `#with_options_after_arguments`:
+
+```ruby
 Lino::CommandLineBuilder.for_command('ls')
     .with_options_after_arguments
     .with_flag('-l')
@@ -200,6 +378,59 @@ Lino::CommandLineBuilder.for_command('ls')
 
 # => ls /some/directory -l
 ```
+
+#### Appliables
+
+Command and subcommand builders both support passing 'appliables' that are
+applied to the builder allowing an operation to be encapsulated in an object.
+
+Given an appliable type:
+
+```ruby
+class AppliableOption
+  def initialize(option, value)
+    @option = option
+    @value = value
+  end
+
+  def apply(builder)
+    builder.with_option(@option, @value)
+  end
+end
+```
+
+an instance of the appliable can be applied using `#with_appliable`:
+
+```ruby
+Lino::CommandLineBuilder.for_command('gpg')
+    .with_appliable(AppliableOption.new('--recipient', 'tobyclemson@gmail.com'))
+    .with_flag('--sign')
+    .with_argument('/some/file.txt')
+    .build
+    .to_s
+
+# => gpg --recipient tobyclemson@gmail.com --sign /some/file.txt 
+```
+
+or multiple with `#with_appliables`:
+
+```ruby
+Lino::CommandLineBuilder.for_command('gpg')
+    .with_appliables([
+      AppliableOption.new('--recipient', 'user@example.com'),
+      AppliableOption.new('--output', '/signed.txt')
+    ])
+    .with_flag('--sign')
+    .with_argument('/file.txt')
+    .build
+    .to_s
+
+# => gpg --recipient user@example.com --output /signed.txt --sign /file.txt 
+```
+
+> Note: an 'appliable' is any object that has an `#apply` method.
+
+> Note: `lino` ignores `nil` or empty appliables in the resulting command line.
 
 ### `Lino::CommandLine`
 

@@ -9,6 +9,17 @@ and this project adheres to
 
 ## [Unreleased]
 
+## [2.3.0] - 2021-04-05
+
+### Added
+
+* Versions of `#with_flag`, `#with_option`, `#with_environment_variable` that
+  accept multiple of each type, namely `#with_flags`, `#with_options` and 
+  `#with_environment_variables` respectively.
+* Support for 'appliables', any object that has an `#apply` method, taking the
+  builder as an argument and returning an updated builder, allowing operations
+  to be encapsulated inside instances of some class.
+
 ## [2.0.0] — 2021-04-04
 
 ### Changed
