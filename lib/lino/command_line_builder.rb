@@ -95,6 +95,8 @@ module Lino
     end
 
     def with_arguments(arguments)
+      return self if missing?(arguments)
+
       arguments.inject(self) { |s, argument| s.with_argument(argument) }
     end
 

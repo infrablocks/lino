@@ -21,7 +21,15 @@ module Lino
     end
 
     def with_flag(flag)
+      return self if missing?(flag)
+
       with(options: @options.add({ components: [flag] }))
+    end
+
+    def with_flags(flags)
+      return self if missing?(flags)
+
+      flags.inject(self) { |s, flag| s.with_flag(flag) }
     end
   end
 end

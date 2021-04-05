@@ -136,7 +136,7 @@ RSpec.describe Lino::CommandLineBuilder do
     expect(result.to_s)
       .to(eq(
             'command-with-overridden-separator sub --opt1:val1 --opt1:val2 ' \
-              '--opt2~val3 --opt2~val4 --opt3 val5 --opt3 val6'
+                  '--opt2~val3 --opt2~val4 --opt3 val5 --opt3 val6'
           ))
   end
 
@@ -237,8 +237,8 @@ RSpec.describe Lino::CommandLineBuilder do
 
     expect(result.to_s)
       .to(
-        eq('command-with-overridden-quoting sub --opt1 "val1" --opt1 ' \
-             '"val2" --opt2 \'val3\' --opt2 \'val4\' --opt3 val5 --opt3 val6')
+        eq('command-with-overridden-quoting sub --opt1 "val1" --opt1 "val2" ' \
+             '--opt2 \'val3\' --opt2 \'val4\' --opt3 val5 --opt3 val6')
       )
   end
 
@@ -295,23 +295,25 @@ RSpec.describe Lino::CommandLineBuilder do
 
   it 'allows single options and repeated options to be used together ' \
      'for subcommands' do
-    result = Lino::CommandLineBuilder
-             .for_command('command-with-options')
-             .with_subcommand('sub') do |sub|
+    builder = Lino::CommandLineBuilder
+              .for_command('command-with-options')
+
+    builder = builder.with_subcommand('sub') do |sub|
       sub
         .with_repeated_option(
           '--opt1', %w[val1 val2], quoting: '"'
         )
         .with_option('--opt2', 'val3')
     end
-             .build
+
+    result = builder.build
 
     expect(result.to_s)
       .to(eq('command-with-options sub --opt1 "val1" --opt1 "val2" ' \
              '--opt2 val3'))
   end
 
-  it 'includes flags after the command' do
+  it 'includes single flags after the command' do
     result = Lino::CommandLineBuilder
              .for_command('command-with-flags')
              .with_flag('--verbose')
@@ -319,6 +321,55 @@ RSpec.describe Lino::CommandLineBuilder do
              .build
 
     expect(result.to_s).to eq('command-with-flags --verbose -h')
+  end
+
+  it 'includes multiple flags after the command' do
+    result = Lino::CommandLineBuilder
+             .for_command('command-with-flags')
+             .with_flags(['--verbose', '-h'])
+             .build
+
+    expect(result.to_s).to eq('command-with-flags --verbose -h')
+  end
+
+  it 'ignores nil flags when passing a single flag' do
+    result = Lino::CommandLineBuilder
+             .for_command('command-with-flags')
+             .with_flag(nil)
+             .with_flag('-h')
+             .build
+
+    expect(result.to_s).to eq('command-with-flags -h')
+  end
+
+  it 'ignores empty flags when passing a single flag' do
+    result = Lino::CommandLineBuilder
+             .for_command('command-with-flags')
+             .with_flag('')
+             .with_flag('-h')
+             .build
+
+    expect(result.to_s).to eq('command-with-flags -h')
+  end
+
+  it 'ignores nil and empty flags when passing multiple flags' do
+    result = Lino::CommandLineBuilder
+             .for_command('command-with-flags')
+             .with_flags(['--verbose', nil, '', '-h'])
+             .build
+
+    expect(result.to_s).to eq('command-with-flags --verbose -h')
+  end
+
+  it 'does nothing when nil or empty array provided when ' \
+     'passing multiple flags' do
+    result = Lino::CommandLineBuilder
+             .for_command('command-with-flags')
+             .with_flags(nil)
+             .with_flags([])
+             .build
+
+    expect(result.to_s).to eq('command-with-flags')
   end
 
   it 'includes single args after the command and all flags and options' do
@@ -387,6 +438,17 @@ RSpec.describe Lino::CommandLineBuilder do
              'path/to/file1.txt path/to/file2.txt')
   end
 
+  it 'does nothing when nil or empty arguments provided when ' \
+     'passing multiple arguments' do
+    result = Lino::CommandLineBuilder
+             .for_command('command-with-flags')
+             .with_arguments(nil)
+             .with_arguments([])
+             .build
+
+    expect(result.to_s).to eq('command-with-flags')
+  end
+
   it 'allows single and multiple args to be used together' do
     result = Lino::CommandLineBuilder
              .for_command('command-with-args')
@@ -417,7 +479,7 @@ RSpec.describe Lino::CommandLineBuilder do
 
     expect(result.to_s).to(
       eq('ENV_VAR1="VAL1" ENV_VAR2="VAL2" ENV_VAR3="\"[1,2,3]\"" ' \
-         'command-with-environment-variables')
+           'command-with-environment-variables')
     )
   end
 
