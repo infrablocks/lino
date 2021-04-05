@@ -62,6 +62,30 @@ Lino::CommandLineBuilder.for_command('gpg')
 
 # => gpg --recipient tobyclemson@gmail.com --sign ./doc.txt
 
+# ... or alternatively
+Lino::CommandLineBuilder.for_command('gpg')
+    .with_options({
+      '--recipient' => 'tobyclemson@gmail.com',
+      '--sign' => './doc.txt'
+    })
+    .build
+    .to_s
+
+# => gpg --recipient tobyclemson@gmail.com --sign ./doc.txt
+
+# ... or alternatively
+Lino::CommandLineBuilder.for_command('gpg')
+    .with_options(
+      [
+        { option: '--recipient', value: 'tobyclemson@gmail.com' },
+        { option: '--sign', value: './doc.txt' }
+      ]
+    )
+    .build
+    .to_s
+
+# => gpg --recipient tobyclemson@gmail.com --sign ./doc.txt
+
 # commands with an option repeated multiple times
 Lino::CommandLineBuilder.for_command('example.sh')
     .with_repeated_option('--opt', ['file1.txt', nil, '', 'file2.txt'])

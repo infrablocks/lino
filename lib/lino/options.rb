@@ -14,6 +14,19 @@ module Lino
       ))
     end
 
+    def with_options(options)
+      return self if missing?(options)
+
+      options.entries.inject(self) do |s, entry|
+        s.with_option(
+          entry.include?(:option) ? entry[:option] : entry[0],
+          entry.include?(:value) ? entry[:value] : entry[1],
+          separator: (entry.include?(:separator) ? entry[:separator] : nil),
+          quoting: (entry.include?(:quoting) ? entry[:quoting] : nil)
+        )
+      end
+    end
+
     def with_repeated_option(option, values, separator: nil, quoting: nil)
       values.inject(self) do |s, value|
         s.with_option(option, value, separator: separator, quoting: quoting)
