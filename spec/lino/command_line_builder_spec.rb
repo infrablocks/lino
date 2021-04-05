@@ -883,7 +883,7 @@ RSpec.describe Lino::CommandLineBuilder do
              'path/to/file1.txt path/to/file2.txt another_file.txt')
   end
 
-  it 'includes environment variables before the command' do
+  it 'includes single environment variables before the command' do
     result = described_class
              .for_command('command-with-environment-variables')
              .with_environment_variable(
@@ -894,6 +894,76 @@ RSpec.describe Lino::CommandLineBuilder do
              )
              .with_environment_variable(
                'ENV_VAR3', '"[1,2,3]"'
+             )
+             .build
+
+    expect(result.to_s).to(
+      eq('ENV_VAR1="VAL1" ENV_VAR2="VAL2" ENV_VAR3="\"[1,2,3]\"" ' \
+           'command-with-environment-variables')
+    )
+  end
+
+  it 'includes multiple environment variables passed as a hash ' \
+     'before the command' do
+    result = described_class
+             .for_command('command-with-environment-variables')
+             .with_environment_variables(
+               {
+                 'ENV_VAR1' => 'VAL1',
+                 'ENV_VAR2' => 'VAL2',
+                 'ENV_VAR3' => '"[1,2,3]"'
+               }
+             )
+             .build
+
+    expect(result.to_s).to(
+      eq('ENV_VAR1="VAL1" ENV_VAR2="VAL2" ENV_VAR3="\"[1,2,3]\"" ' \
+           'command-with-environment-variables')
+    )
+  end
+
+  it 'includes multiple environment variables passed as an array ' \
+     'before the command' do
+    result = described_class
+             .for_command('command-with-environment-variables')
+             .with_environment_variables(
+               [
+                 { name: 'ENV_VAR1', value: 'VAL1' },
+                 { name: 'ENV_VAR2', value: 'VAL2' },
+                 { name: 'ENV_VAR3', value: '"[1,2,3]"' }
+               ]
+             )
+             .build
+
+    expect(result.to_s).to(
+      eq('ENV_VAR1="VAL1" ENV_VAR2="VAL2" ENV_VAR3="\"[1,2,3]\"" ' \
+           'command-with-environment-variables')
+    )
+  end
+
+  it 'does nothing when nil or empty environment variables provided when ' \
+     'passing multiple environment variables' do
+    result = described_class
+             .for_command('command-with-flags')
+             .with_environment_variables(nil)
+             .with_environment_variables([])
+             .with_environment_variables({})
+             .build
+
+    expect(result.to_s).to eq('command-with-flags')
+  end
+
+  it 'allows single and multiple environment variables to be used together' do
+    result = described_class
+             .for_command('command-with-environment-variables')
+             .with_environment_variable(
+               'ENV_VAR1', 'VAL1'
+             )
+             .with_environment_variables(
+               {
+                 'ENV_VAR2' => 'VAL2',
+                 'ENV_VAR3' => '"[1,2,3]"'
+               }
              )
              .build
 

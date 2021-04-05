@@ -113,6 +113,17 @@ module Lino
       )
     end
 
+    def with_environment_variables(environment_variables)
+      return self if missing?(environment_variables)
+
+      environment_variables.entries.inject(self) do |s, var|
+        s.with_environment_variable(
+          var.include?(:name) ? var[:name] : var[0],
+          var.include?(:value) ? var[:value] : var[1]
+        )
+      end
+    end
+
     def build
       components = formatted_components
       command_line = SELECTORS[@option_placement]
