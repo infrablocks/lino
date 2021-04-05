@@ -1,5 +1,5 @@
 # frozen_string_literal: true
 
 module Lino
-  VERSION = '2.2.0.pre.6'
+  VERSION = '2.3.0'
 end
