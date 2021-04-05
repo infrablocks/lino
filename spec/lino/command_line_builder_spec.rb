@@ -45,6 +45,18 @@ RSpec.describe Lino::CommandLineBuilder do
       .to eq('command-with-options --opt val1 --opt val2')
   end
 
+  it 'ignores nil and empty repeated option values' do
+    result = Lino::CommandLineBuilder
+             .for_command('command-with-options')
+             .with_repeated_option(
+               '--opt', ['val1', '', nil, 'val2']
+             )
+             .build
+
+    expect(result.to_s)
+      .to eq('command-with-options --opt val1 --opt val2')
+  end
+
   it 'uses the specified option separator when provided for single options' do
     result = Lino::CommandLineBuilder
              .for_command('command-with-option-separator')
@@ -311,6 +323,23 @@ RSpec.describe Lino::CommandLineBuilder do
     expect(result.to_s)
       .to(eq('command-with-options sub --opt1 "val1" --opt1 "val2" ' \
              '--opt2 val3'))
+  end
+
+  it 'ignores nil and empty repeated option values on subcommands' do
+    builder = Lino::CommandLineBuilder
+              .for_command('command-with-options')
+
+    builder = builder.with_subcommand('sub') do |sub|
+      sub
+        .with_repeated_option(
+          '--opt', ['val1', '', nil, 'val2']
+        )
+    end
+
+    result = builder.build
+
+    expect(result.to_s)
+      .to eq('command-with-options sub --opt val1 --opt val2')
   end
 
   it 'includes single flags after the command' do
