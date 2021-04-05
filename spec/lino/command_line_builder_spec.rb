@@ -2,6 +2,17 @@
 
 require 'spec_helper'
 
+class AppliableOption
+  def initialize(option, value)
+    @option = option
+    @value = value
+  end
+
+  def apply(command)
+    command.with_option(@option, @value)
+  end
+end
+
 RSpec.describe Lino::CommandLineBuilder do
   it 'includes the provided command in the resulting command line' do
     result = described_class
@@ -9,6 +20,49 @@ RSpec.describe Lino::CommandLineBuilder do
              .build
 
     expect(result.to_s).to eq('command')
+  end
+
+  it 'applies single appliable' do
+    result = described_class
+             .for_command('command-with-options')
+             .with_appliable(
+               AppliableOption.new('--opt', 'val')
+             )
+             .build
+
+    expect(result.to_s).to eq('command-with-options --opt val')
+  end
+
+  it 'does nothing when nil single appliable provided' do
+    result = described_class
+             .for_command('command-with-options')
+             .with_appliable(nil)
+             .build
+
+    expect(result.to_s).to eq('command-with-options')
+  end
+
+  it 'applies multiple appliables' do
+    result = described_class
+             .for_command('command-with-options')
+             .with_appliables(
+               [
+                 AppliableOption.new('--opt1', 'val1'),
+                 AppliableOption.new('--opt2', 'val2')
+               ]
+             )
+             .build
+
+    expect(result.to_s).to eq('command-with-options --opt1 val1 --opt2 val2')
+  end
+
+  it 'does nothing when nil multiple appliables provided' do
+    result = described_class
+             .for_command('command-with-options')
+             .with_appliables(nil)
+             .build
+
+    expect(result.to_s).to eq('command-with-options')
   end
 
   it 'includes single options after the command' do
@@ -135,6 +189,60 @@ RSpec.describe Lino::CommandLineBuilder do
 
     expect(result.to_s)
       .to eq('command-with-options --opt val1 --opt val2')
+  end
+
+  it 'includes single appliable on subcommands' do
+    builder = described_class
+              .for_command('command-with-options')
+    builder = builder.with_subcommand('sub') do |sub|
+      sub
+        .with_appliable(
+          AppliableOption.new('--opt', 'val')
+        )
+    end
+    result = builder.build
+
+    expect(result.to_s).to eq('command-with-options sub --opt val')
+  end
+
+  it 'does nothing when nil single appliable provided on subcommand' do
+    builder = described_class
+              .for_command('command-with-options')
+    builder = builder.with_subcommand('sub') do |sub|
+      sub.with_appliable(nil)
+    end
+    result = builder.build
+
+    expect(result.to_s).to eq('command-with-options sub')
+  end
+
+  it 'includes multiple appliables on subcommand' do
+    builder = described_class
+              .for_command('command-with-options')
+    builder = builder.with_subcommand('sub') do |sub|
+      sub
+        .with_appliables(
+          [
+            AppliableOption.new('--opt1', 'val1'),
+            AppliableOption.new('--opt2', 'val2')
+          ]
+        )
+    end
+    result = builder.build
+
+    expect(result.to_s)
+      .to eq('command-with-options sub --opt1 val1 --opt2 val2')
+  end
+
+  it 'does nothing when nil multiple appliables provided on subcommand' do
+    builder = described_class
+              .for_command('command-with-options')
+    builder = builder.with_subcommand('sub') do |sub|
+      sub.with_appliables(nil)
+    end
+    result = builder.build
+
+    expect(result.to_s).to eq('command-with-options sub')
   end
 
   it 'uses the specified option separator when provided when passing ' \

@@ -5,6 +5,7 @@ require_relative 'utilities'
 require_relative 'command_line'
 require_relative 'subcommand_builder'
 require_relative 'options'
+require_relative 'appliables'
 
 module Lino
   # rubocop:disable Metrics/ClassLength
@@ -20,6 +21,7 @@ module Lino
 
     include Lino::Utilities
     include Lino::Options
+    include Lino::Appliables
 
     class << self
       def for_command(command)

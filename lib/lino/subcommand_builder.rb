@@ -3,11 +3,13 @@
 require 'hamster'
 require_relative 'utilities'
 require_relative 'options'
+require_relative 'appliables'
 
 module Lino
   class SubcommandBuilder
     include Lino::Utilities
     include Lino::Options
+    include Lino::Appliables
 
     class <<self
       def for_subcommand(subcommand)

@@ -1,7 +1,11 @@
 # frozen_string_literal: true
 
+require_relative 'utilities'
+
 module Lino
   module Options
+    include Lino::Utilities
+
     def with_option(option, value, separator: nil, quoting: nil)
       return self if missing?(value)
 
