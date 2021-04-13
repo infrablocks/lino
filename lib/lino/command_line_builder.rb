@@ -52,6 +52,8 @@ module Lino
     # rubocop:enable Metrics/ParameterLists
 
     def with_subcommand(subcommand, &block)
+      return self if missing?(subcommand)
+
       with(
         subcommands: @subcommands.add(
           (block || ->(sub) { sub }).call(
@@ -62,6 +64,8 @@ module Lino
     end
 
     def with_subcommands(subcommands, &block)
+      return self if missing?(subcommands)
+
       without_block = subcommands[0...-1]
       with_block = subcommands.last
 

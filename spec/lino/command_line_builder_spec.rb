@@ -762,6 +762,16 @@ RSpec.describe Lino::CommandLineBuilder do
     expect(result.to_s).to eq('command-with-flags -h')
   end
 
+  it 'ignores nil and empty subcommands when passing a single subcommand' do
+    result = described_class
+             .for_command('command-without-subcommands')
+             .with_subcommand(nil)
+             .with_subcommand('')
+             .build
+
+    expect(result.to_s).to eq('command-without-subcommands')
+  end
+
   it 'ignores empty flags when passing a single flag' do
     result = described_class
              .for_command('command-with-flags')
@@ -1089,5 +1099,31 @@ RSpec.describe Lino::CommandLineBuilder do
     expect(result.to_s)
       .to eq('command-with-subcommand -v --opt val sub1 sub2 --subopt subval ' \
                '/some/file.txt')
+  end
+
+  it 'ignores nil and empty subcommands when passing multiple subcommands' do
+    result = described_class
+             .for_command('command-with-subcommands')
+             .with_subcommands(
+               [
+                 'sub1', '', nil, 'sub2'
+               ]
+             )
+             .build
+
+    expect(result.to_s)
+      .to eq('command-with-subcommands sub1 sub2')
+  end
+
+  it 'does nothing when nil or empty subcommands provided when passing ' \
+     'multiple subcommands' do
+    result = described_class
+             .for_command('command-without-subcommands')
+             .with_subcommands(nil)
+             .with_subcommands([])
+             .with_subcommands([]) { |s| s }
+             .build
+
+    expect(result.to_s).to eq('command-without-subcommands')
   end
 end
