@@ -9,6 +9,13 @@ and this project adheres to
 
 ## [Unreleased]
 
+## [2.4.0] - 2021-04-14
+
+### Added
+
+* `#with_subcommand` and `#with_subcommands` now ignores `nil` or empty
+  arguments.
+
 ## [2.3.0] - 2021-04-05
 
 ### Added
