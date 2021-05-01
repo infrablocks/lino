@@ -6,8 +6,15 @@ The format is based on [Keep a Changelog](http://keepachangelog.com)
 and this project adheres to 
 [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-
 ## [Unreleased]
+
+## [2.7.0] - 2021-05-01
+
+### Added
+
+* `#with_option`, `#with_options` and `#with_repeated_option` all now accept a
+  `:placement` keyword argument allowing option placement to be overridden on an
+  option by option basis.
 
 ## [2.5.0] - 2021-04-14
 

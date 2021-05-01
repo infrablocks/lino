@@ -6,14 +6,21 @@ module Lino
   module Options
     include Lino::Utilities
 
-    def with_option(option, value, separator: nil, quoting: nil)
+    def with_option(
+      option,
+      value,
+      separator: nil,
+      quoting: nil,
+      placement: nil
+    )
       return self if missing?(value)
 
       with(options: @options.add(
         {
           components: [option, value],
           separator: separator,
-          quoting: quoting
+          quoting: quoting,
+          placement: placement
         }
       ))
     end
@@ -23,17 +30,30 @@ module Lino
 
       options.entries.inject(self) do |s, entry|
         s.with_option(
-          entry.include?(:option) ? entry[:option] : entry[0],
-          entry.include?(:value) ? entry[:value] : entry[1],
-          separator: (entry.include?(:separator) ? entry[:separator] : nil),
-          quoting: (entry.include?(:quoting) ? entry[:quoting] : nil)
+          or_nth(entry, :option, 0),
+          or_nth(entry, :value, 1),
+          separator: or_nil(entry, :separator),
+          quoting: or_nil(entry, :quoting),
+          placement: or_nil(entry, :placement)
         )
       end
     end
 
-    def with_repeated_option(option, values, separator: nil, quoting: nil)
+    def with_repeated_option(
+      option,
+      values,
+      separator: nil,
+      quoting: nil,
+      placement: nil
+    )
       values.inject(self) do |s, value|
-        s.with_option(option, value, separator: separator, quoting: quoting)
+        s.with_option(
+          option,
+          value,
+          separator: separator,
+          quoting: quoting,
+          placement: placement
+        )
       end
     end
 

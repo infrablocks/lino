@@ -1039,6 +1039,82 @@ RSpec.describe Lino::CommandLineBuilder do
       .to eq('command-with-subcommand sub1 sub2 /some/path.txt -v --opt val')
   end
 
+  it 'allows option placement to be overridden for single options' do
+    result = described_class
+             .for_command('command-with-overridden-placement')
+             .with_option(
+               '--opt1', 'val1', placement: :after_command
+             )
+             .with_option(
+               '--opt2', 'val2', placement: :after_subcommands
+             )
+             .with_option(
+               '--opt3', 'val3', placement: :after_arguments
+             )
+             .with_subcommands(%w[sub cmd])
+             .with_argument('arg')
+             .build
+
+    expect(result.to_s)
+      .to(eq('command-with-overridden-placement --opt1 val1 sub cmd ' \
+             '--opt2 val2 arg --opt3 val3'))
+  end
+
+  it 'allows option placement to be overridden for multiple options' do
+    result = described_class
+             .for_command('command-with-overridden-placement')
+             .with_options(
+               [
+                 {
+                   option: '--opt1',
+                   value: 'val1',
+                   placement: :after_command
+                 },
+                 {
+                   option: '--opt2',
+                   value: 'val2',
+                   placement: :after_subcommands
+                 },
+                 {
+                   option: '--opt3',
+                   value: 'val3',
+                   placement: :after_arguments
+                 }
+               ]
+             )
+             .with_subcommands(%w[sub cmd])
+             .with_argument('arg')
+             .build
+
+    expect(result.to_s)
+      .to(eq('command-with-overridden-placement --opt1 val1 sub cmd ' \
+             '--opt2 val2 arg --opt3 val3'))
+  end
+
+  it 'allows option placement to be overridden for repeated options' do
+    result = described_class
+             .for_command('command-with-overridden-placement')
+             .with_repeated_option(
+               '--opt1', %w[val1 val2],
+               placement: :after_command
+             )
+             .with_repeated_option(
+               '--opt2', %w[val3 val4],
+               placement: :after_subcommands
+             )
+             .with_repeated_option(
+               '--opt3', %w[val5 val6],
+               placement: :after_arguments
+             )
+             .with_subcommands(%w[sub cmd])
+             .with_argument('arg')
+             .build
+
+    expect(result.to_s)
+      .to eq('command-with-overridden-placement --opt1 val1 --opt1 val2 ' \
+             'sub cmd --opt2 val3 --opt2 val4 arg --opt3 val5 --opt3 val6')
+  end
+
   it 'includes args after all subcommands' do
     result = described_class
              .for_command('command-with-subcommand-and-args')

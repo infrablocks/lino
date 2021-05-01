@@ -379,6 +379,33 @@ Lino::CommandLineBuilder.for_command('ls')
 # => ls /some/directory -l
 ```
 
+The option placement can be overridden on an option by option basis:
+
+```ruby
+Lino::CommandLineBuilder.for_command('gcloud')
+    .with_options_after_subcommands
+    .with_option('--log-level', 'debug', placement: :after_command)
+    .with_option('--password', 'super-secure')
+    .with_subcommands(%w[sql instances set-root-password])
+    .build
+    .to_s
+
+# => gcloud --log-level debug sql instances set-root-password \ 
+#      --password super-secure
+```
+
+The `:placement` keyword argument accepts placement values of `:after_command`,
+`:after_subcommands` and `:after_arguments`.
+
+> Note: `#with_options` supports placement overriding when the options are
+>       passed as an array of hashes and a `placement` key is included in the
+>       hash.
+
+> Note: `#with_repeated_option` also supports the `placement` named parameter.
+
+> Note: option specific placement take precedence over the global option
+>       placement
+
 #### Appliables
 
 Command and subcommand builders both support passing 'appliables' that are

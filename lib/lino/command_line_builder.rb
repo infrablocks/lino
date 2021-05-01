@@ -10,15 +10,6 @@ require_relative 'appliables'
 module Lino
   # rubocop:disable Metrics/ClassLength
   class CommandLineBuilder
-    SELECTORS = {
-      after_command:
-        %i[environment_variables command options subcommands arguments],
-      after_subcommands:
-        %i[environment_variables command subcommands options arguments],
-      after_arguments:
-        %i[environment_variables command subcommands arguments options]
-    }.freeze
-
     include Lino::Utilities
     include Lino::Options
     include Lino::Appliables
@@ -49,6 +40,7 @@ module Lino
       @option_quoting = option_quoting
       @option_placement = option_placement
     end
+
     # rubocop:enable Metrics/ParameterLists
 
     def with_subcommand(subcommand, &block)
@@ -82,16 +74,20 @@ module Lino
       with(option_quoting: character)
     end
 
+    def with_option_placement(option_placement)
+      with(option_placement: option_placement)
+    end
+
     def with_options_after_command
-      with(option_placement: :after_command)
+      with_option_placement(:after_command)
     end
 
     def with_options_after_subcommands
-      with(option_placement: :after_subcommands)
+      with_option_placement(:after_subcommands)
     end
 
     def with_options_after_arguments
-      with(option_placement: :after_arguments)
+      with_option_placement(:after_arguments)
     end
 
     def with_argument(argument)
@@ -130,15 +126,28 @@ module Lino
 
     def build
       components = formatted_components
-      command_line = SELECTORS[@option_placement]
-                     .inject([]) { |c, key| c << components[key] }
-                     .reject(&:empty?)
-                     .join(' ')
+      command_line =
+        component_paths
+        .collect { |path| path.inject(components) { |c, p| c && c[p] } }
+        .reject(&:empty?)
+        .join(' ')
 
       CommandLine.new(command_line)
     end
 
     private
+
+    def component_paths
+      [
+        %i[environment_variables],
+        %i[command],
+        %i[options after_command],
+        %i[subcommands],
+        %i[options after_subcommands],
+        %i[arguments],
+        %i[options after_arguments]
+      ]
+    end
 
     def formatted_components
       {
@@ -156,11 +165,22 @@ module Lino
       end
     end
 
-    def formatted_options
+    def formatted_options_with_placement(placement)
       map_and_join(
-        @options,
+        options_with_placement(placement),
         &(quote_with(@option_quoting) >> join_with(@option_separator))
       )
+    end
+
+    def formatted_options
+      %i[
+        after_command
+        after_subcommands
+        after_arguments
+      ].inject({}) do |options, placement|
+        options
+          .merge({ placement => formatted_options_with_placement(placement) })
+      end
     end
 
     def formatted_subcommands
@@ -174,6 +194,13 @@ module Lino
         @arguments,
         &join_with(' ')
       )
+    end
+
+    def options_with_placement(placement)
+      @options.select { |o| o[:placement] == placement } +
+        if @option_placement == placement
+          @options.select { |o| o[:placement].nil? }
+        end
     end
 
     def with(**replacements)
@@ -193,5 +220,6 @@ module Lino
       }
     end
   end
+
   # rubocop:enable Metrics/ClassLength
 end
