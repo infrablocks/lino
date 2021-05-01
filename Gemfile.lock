@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    lino (2.6.0.pre.3)
+    lino (2.7.0)
       hamster (~> 3.0)
       open4 (~> 1.3)
 
