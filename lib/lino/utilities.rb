@@ -22,8 +22,16 @@ module Lino
       end
     end
 
-    def missing?(value)
-      value.nil? || (value.respond_to?(:empty?) && value.empty?)
+    def nil?(value)
+      value.nil?
+    end
+
+    def empty?(value)
+      value.respond_to?(:empty?) && value.empty?
+    end
+
+    def nil_or_empty?(value)
+      nil?(value) || empty?(value)
     end
 
     private

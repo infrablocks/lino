@@ -8,6 +8,13 @@ and this project adheres to
 
 ## [Unreleased]
 
+## [3.0.0]
+
+### Changed
+
+* All `with*` methods now retain empty string values as sometimes these are
+  intentional, e.g., to indicate no password should be set. 
+
 ## [2.7.0] - 2021-05-01
 
 ### Added

@@ -44,7 +44,7 @@ module Lino
     # rubocop:enable Metrics/ParameterLists
 
     def with_subcommand(subcommand, &block)
-      return self if missing?(subcommand)
+      return self if nil?(subcommand)
 
       with(
         subcommands: @subcommands.add(
@@ -56,7 +56,7 @@ module Lino
     end
 
     def with_subcommands(subcommands, &block)
-      return self if missing?(subcommands)
+      return self if nil_or_empty?(subcommands)
 
       without_block = subcommands[0...-1]
       with_block = subcommands.last
@@ -91,13 +91,13 @@ module Lino
     end
 
     def with_argument(argument)
-      return self if missing?(argument)
+      return self if nil?(argument)
 
       with(arguments: @arguments.add({ components: [argument] }))
     end
 
     def with_arguments(arguments)
-      return self if missing?(arguments)
+      return self if nil_or_empty?(arguments)
 
       arguments.inject(self) { |s, argument| s.with_argument(argument) }
     end
@@ -114,7 +114,7 @@ module Lino
     end
 
     def with_environment_variables(environment_variables)
-      return self if missing?(environment_variables)
+      return self if nil_or_empty?(environment_variables)
 
       environment_variables.entries.inject(self) do |s, var|
         s.with_environment_variable(

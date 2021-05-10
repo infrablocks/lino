@@ -76,12 +76,11 @@ RSpec.describe Lino::CommandLineBuilder do
       .to eq('command-with-options --opt1 val1 --opt2 val2')
   end
 
-  it 'ignores single options without a value' do
+  it 'ignores nil single options' do
     result = described_class
              .for_command('command-with-options')
              .with_option('--opt1', 'val1')
              .with_option('--opt2', nil)
-             .with_option('--opt3', '')
              .build
 
     expect(result.to_s).to eq('command-with-options --opt1 val1')
@@ -123,13 +122,12 @@ RSpec.describe Lino::CommandLineBuilder do
       .to eq('command-with-options --opt1 val1 --opt2 val2')
   end
 
-  it 'ignores multiple options passed as a hash without a value' do
+  it 'ignores nil multiple option values passed as a hash' do
     result = described_class
              .for_command('command-with-options')
              .with_options(
                {
                  '--opt1' => 'val1',
-                 '--opt2' => '',
                  '--opt3' => nil,
                  '--opt4' => 'val4'
                }
@@ -146,7 +144,6 @@ RSpec.describe Lino::CommandLineBuilder do
              .with_options(
                [
                  { option: '--opt1', value: 'val1' },
-                 { option: '--opt2', value: '' },
                  { option: '--opt3', value: nil },
                  { option: '--opt4', value: 'val4' }
                ]
@@ -179,11 +176,11 @@ RSpec.describe Lino::CommandLineBuilder do
       .to eq('command-with-options --opt val1 --opt val2')
   end
 
-  it 'ignores nil and empty repeated option values' do
+  it 'ignores nil repeated option values' do
     result = described_class
              .for_command('command-with-options')
              .with_repeated_option(
-               '--opt', ['val1', '', nil, 'val2']
+               '--opt', ['val1', nil, 'val2']
              )
              .build
 
@@ -716,14 +713,14 @@ RSpec.describe Lino::CommandLineBuilder do
              '--opt2 val3 --opt3 val4 --opt4 val5'))
   end
 
-  it 'ignores nil and empty repeated option values on subcommands' do
+  it 'ignores nil repeated option values on subcommands' do
     builder = described_class
               .for_command('command-with-options')
 
     builder = builder.with_subcommand('sub') do |sub|
       sub
         .with_repeated_option(
-          '--opt', ['val1', '', nil, 'val2']
+          '--opt', ['val1', nil, 'val2']
         )
     end
 
@@ -772,20 +769,10 @@ RSpec.describe Lino::CommandLineBuilder do
     expect(result.to_s).to eq('command-without-subcommands')
   end
 
-  it 'ignores empty flags when passing a single flag' do
+  it 'ignores nil flags when passing multiple flags' do
     result = described_class
              .for_command('command-with-flags')
-             .with_flag('')
-             .with_flag('-h')
-             .build
-
-    expect(result.to_s).to eq('command-with-flags -h')
-  end
-
-  it 'ignores nil and empty flags when passing multiple flags' do
-    result = described_class
-             .for_command('command-with-flags')
-             .with_flags(['--verbose', nil, '', '-h'])
+             .with_flags(['--verbose', nil, '-h'])
              .build
 
     expect(result.to_s).to eq('command-with-flags --verbose -h')
@@ -851,14 +838,14 @@ RSpec.describe Lino::CommandLineBuilder do
       .to eq('command-with-args -v --opt val')
   end
 
-  it 'ignores nil and empty args when passing multiple args' do
+  it 'ignores nil args when passing multiple args' do
     result = described_class
              .for_command('command-with-args')
              .with_flag('-v')
              .with_option('--opt', 'val')
              .with_arguments(
                [
-                 'path/to/file1.txt', '', nil, 'path/to/file2.txt'
+                 'path/to/file1.txt', nil, 'path/to/file2.txt'
                ]
              )
              .build
@@ -1177,12 +1164,12 @@ RSpec.describe Lino::CommandLineBuilder do
                '/some/file.txt')
   end
 
-  it 'ignores nil and empty subcommands when passing multiple subcommands' do
+  it 'ignores nil subcommands when passing multiple subcommands' do
     result = described_class
              .for_command('command-with-subcommands')
              .with_subcommands(
                [
-                 'sub1', '', nil, 'sub2'
+                 'sub1', nil, 'sub2'
                ]
              )
              .build

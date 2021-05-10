@@ -7,13 +7,13 @@ module Lino
     include Lino::Utilities
 
     def with_appliable(appliable)
-      return self if missing?(appliable)
+      return self if nil?(appliable)
 
       appliable.apply(self)
     end
 
     def with_appliables(appliables)
-      return self if missing?(appliables)
+      return self if nil_or_empty?(appliables)
 
       appliables.inject(self) do |s, appliable|
         s.with_appliable(appliable)
