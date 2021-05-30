@@ -18,8 +18,8 @@ files = %w[
 Gem::Specification.new do |spec|
   spec.name = 'lino'
   spec.version = Lino::VERSION
-  spec.authors = ['Toby Clemson']
-  spec.email = ['tobyclemson@gmail.com']
+  spec.authors = ['InfraBlocks Maintainers']
+  spec.email = ['maintainers@infrablocks.io']
 
   spec.summary = 'Command line execution utilities'
   spec.description = 'Command line builders and executors.'
