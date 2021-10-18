@@ -294,7 +294,7 @@ RSpec.describe Lino::CommandLineBuilder do
 
     expect(result.to_s)
       .to(eq('command-with-overridden-separator ' \
-               '--opt1:val1 --opt2~val2 --opt3 val3'))
+             '--opt1:val1 --opt2~val2 --opt3 val3'))
   end
 
   it 'allows the option separator to be overridden for each multiple option ' \
@@ -323,7 +323,7 @@ RSpec.describe Lino::CommandLineBuilder do
 
     expect(result.to_s)
       .to(eq('command-with-overridden-separator ' \
-               '--opt1:val1 --opt2~val2 --opt3 val3'))
+             '--opt1:val1 --opt2~val2 --opt3 val3'))
   end
 
   it 'allows the option separator to be overridden for each repeated option' do
@@ -342,7 +342,7 @@ RSpec.describe Lino::CommandLineBuilder do
 
     expect(result.to_s)
       .to eq('command-with-options --opt1:val1 --opt1:val2 ' \
-               '--opt2~val3 --opt2~val4 --opt3 val5 --opt3 val6')
+             '--opt2~val3 --opt2~val4 --opt3 val5 --opt3 val6')
   end
 
   it 'allows the option separator to be overridden for single options ' \
@@ -358,7 +358,7 @@ RSpec.describe Lino::CommandLineBuilder do
 
     expect(result.to_s)
       .to(eq('command-with-overridden-separator sub ' \
-               '--opt1:val1 --opt2~val2 --opt3 val3'))
+             '--opt1:val1 --opt2~val2 --opt3 val3'))
   end
 
   it 'allows the option separator to be overridden for multiple options ' \
@@ -390,7 +390,7 @@ RSpec.describe Lino::CommandLineBuilder do
 
     expect(result.to_s)
       .to(eq('command-with-overridden-separator sub ' \
-               '--opt1:val1 --opt2~val2 --opt3 val3'))
+             '--opt1:val1 --opt2~val2 --opt3 val3'))
   end
 
   it 'allows the option separator to be overridden for repeated options ' \
@@ -413,7 +413,7 @@ RSpec.describe Lino::CommandLineBuilder do
     expect(result.to_s)
       .to(eq(
             'command-with-overridden-separator sub --opt1:val1 --opt1:val2 ' \
-                  '--opt2~val3 --opt2~val4 --opt3 val5 --opt3 val6'
+            '--opt2~val3 --opt2~val4 --opt3 val5 --opt3 val6'
           ))
   end
 
@@ -428,7 +428,7 @@ RSpec.describe Lino::CommandLineBuilder do
 
     expect(result.to_s)
       .to eq('command-with-quoting --opt1 "value1 with spaces" ' \
-               '--opt2 "value2 with spaces"')
+             '--opt2 "value2 with spaces"')
   end
 
   it 'uses the specified option quoting character for multiple options ' \
@@ -446,7 +446,7 @@ RSpec.describe Lino::CommandLineBuilder do
 
     expect(result.to_s)
       .to eq('command-with-quoting --opt1 "value1 with spaces" ' \
-               '--opt2 "value2 with spaces"')
+             '--opt2 "value2 with spaces"')
   end
 
   it 'uses the specified option quoting character for repeated options ' \
@@ -462,7 +462,7 @@ RSpec.describe Lino::CommandLineBuilder do
 
     expect(result.to_s)
       .to eq('command-with-quoting --opt "value with spaces" ' \
-               '--opt "another value with spaces"')
+             '--opt "another value with spaces"')
   end
 
   it 'allows the option quoting character to be overridden ' \
@@ -476,7 +476,7 @@ RSpec.describe Lino::CommandLineBuilder do
 
     expect(result.to_s)
       .to(eq('command-with-overridden-quoting --opt1 "value 1" ' \
-               "--opt2 'value 2' --opt3 value3"))
+             "--opt2 'value 2' --opt3 value3"))
   end
 
   it 'allows the option quoting character to be overridden ' \
@@ -505,7 +505,7 @@ RSpec.describe Lino::CommandLineBuilder do
 
     expect(result.to_s)
       .to(eq('command-with-overridden-quoting --opt1 "value 1" ' \
-               "--opt2 'value 2' --opt3 value3"))
+             "--opt2 'value 2' --opt3 value3"))
   end
 
   it 'allows the option quoting character to be overridden ' \
@@ -522,7 +522,7 @@ RSpec.describe Lino::CommandLineBuilder do
 
     expect(result.to_s)
       .to eq('command-with-overridden-quoting --opt1 "val1" ' \
-               "--opt1 \"val2\" --opt2 'val3' --opt2 'val4'")
+             "--opt1 \"val2\" --opt2 'val3' --opt2 'val4'")
   end
 
   it 'allows the option quoting character to be overridden ' \
@@ -539,7 +539,7 @@ RSpec.describe Lino::CommandLineBuilder do
 
     expect(result.to_s)
       .to(eq('command-with-overridden-quoting sub --opt1 "value 1" ' \
-               '--opt2 \'value 2\' --opt3 value3'))
+             '--opt2 \'value 2\' --opt3 value3'))
   end
 
   it 'allows the option quoting character to be overridden ' \
@@ -571,7 +571,7 @@ RSpec.describe Lino::CommandLineBuilder do
 
     expect(result.to_s)
       .to(eq('command-with-overridden-quoting sub --opt1 "value 1" ' \
-               '--opt2 \'value 2\' --opt3 value3'))
+             '--opt2 \'value 2\' --opt3 value3'))
   end
 
   it 'allows the option quoting character to be overridden ' \
@@ -594,7 +594,7 @@ RSpec.describe Lino::CommandLineBuilder do
     expect(result.to_s)
       .to(
         eq('command-with-overridden-quoting sub --opt1 "val1" --opt1 "val2" ' \
-             '--opt2 \'val3\' --opt2 \'val4\' --opt3 val5 --opt3 val6')
+           '--opt2 \'val3\' --opt2 \'val4\' --opt3 val5 --opt3 val6')
       )
   end
 
@@ -610,7 +610,7 @@ RSpec.describe Lino::CommandLineBuilder do
 
     expect(result.to_s)
       .to(eq('command-with-overridden-separator --opt1:val1 --opt2~val2 ' \
-               '--opt3=val3'))
+             '--opt3=val3'))
   end
 
   it 'treats option specific separators as higher precedence than the ' \
@@ -640,7 +640,7 @@ RSpec.describe Lino::CommandLineBuilder do
 
     expect(result.to_s)
       .to(eq('command-with-overridden-separator --opt1:val1 --opt2~val2 ' \
-               '--opt3=val3'))
+             '--opt3=val3'))
   end
 
   it 'treats option specific separators as higher precedence than ' \
@@ -661,7 +661,7 @@ RSpec.describe Lino::CommandLineBuilder do
 
     expect(result.to_s)
       .to(eq('command-with-overridden-separator --opt1:val1 --opt1:val2 ' \
-               '--opt2~val3 --opt2~val4 --opt3=val5 --opt3=val6'))
+             '--opt2~val3 --opt2~val4 --opt3=val5 --opt3=val6'))
   end
 
   it 'allows single options, multiple options and repeated options ' \
@@ -684,7 +684,7 @@ RSpec.describe Lino::CommandLineBuilder do
 
     expect(result.to_s)
       .to eq('command-with-options --opt1 val1 --opt1 val2 --opt2 val3 ' \
-               '--opt3 val4 --opt4 val5')
+             '--opt3 val4 --opt4 val5')
   end
 
   it 'allows single options, multiple options and repeated options ' \
@@ -896,7 +896,7 @@ RSpec.describe Lino::CommandLineBuilder do
 
     expect(result.to_s).to(
       eq('ENV_VAR1="VAL1" ENV_VAR2="VAL2" ENV_VAR3="\"[1,2,3]\"" ' \
-           'command-with-environment-variables')
+         'command-with-environment-variables')
     )
   end
 
@@ -915,7 +915,7 @@ RSpec.describe Lino::CommandLineBuilder do
 
     expect(result.to_s).to(
       eq('ENV_VAR1="VAL1" ENV_VAR2="VAL2" ENV_VAR3="\"[1,2,3]\"" ' \
-           'command-with-environment-variables')
+         'command-with-environment-variables')
     )
   end
 
@@ -934,7 +934,7 @@ RSpec.describe Lino::CommandLineBuilder do
 
     expect(result.to_s).to(
       eq('ENV_VAR1="VAL1" ENV_VAR2="VAL2" ENV_VAR3="\"[1,2,3]\"" ' \
-           'command-with-environment-variables')
+         'command-with-environment-variables')
     )
   end
 
@@ -966,7 +966,7 @@ RSpec.describe Lino::CommandLineBuilder do
 
     expect(result.to_s).to(
       eq('ENV_VAR1="VAL1" ENV_VAR2="VAL2" ENV_VAR3="\"[1,2,3]\"" ' \
-           'command-with-environment-variables')
+         'command-with-environment-variables')
     )
   end
 
@@ -1130,10 +1130,10 @@ RSpec.describe Lino::CommandLineBuilder do
 
     expect(result.to_s)
       .to eq('command-with-subcommands-with-options --opt val sub1 -1 ' \
-               '--opt1 val1 sub2 --opt2 val2 -2')
+             '--opt1 val1 sub2 --opt2 val2 -2')
   end
 
-  it 'allows multiple subcommands to be passed at once ' do
+  it 'allows multiple subcommands to be passed at once' do
     result = described_class
              .for_command('command-with-subcommand')
              .with_flag('-v')
@@ -1161,7 +1161,7 @@ RSpec.describe Lino::CommandLineBuilder do
 
     expect(result.to_s)
       .to eq('command-with-subcommand -v --opt val sub1 sub2 --subopt subval ' \
-               '/some/file.txt')
+             '/some/file.txt')
   end
 
   it 'ignores nil subcommands when passing multiple subcommands' do

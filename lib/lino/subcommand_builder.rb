@@ -11,7 +11,7 @@ module Lino
     include Lino::Options
     include Lino::Appliables
 
-    class <<self
+    class << self
       def for_subcommand(subcommand)
         SubcommandBuilder.new(subcommand: subcommand)
       end
