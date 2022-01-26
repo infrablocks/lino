@@ -42,7 +42,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'gem-release', '~> 2.0'
   spec.add_development_dependency 'rake', '~> 13.0'
   spec.add_development_dependency 'rake_circle_ci', '~> 0.9'
-  spec.add_development_dependency 'rake_github', '~> 0.5'
+  spec.add_development_dependency 'rake_github', '0.8.0.pre.9'
   spec.add_development_dependency 'rake_gpg', '~> 0.12'
   spec.add_development_dependency 'rake_ssh', '~> 0.4'
   spec.add_development_dependency 'rspec', '~> 3.9'

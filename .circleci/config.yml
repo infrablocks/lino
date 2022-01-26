@@ -22,7 +22,6 @@ jobs:
       - checkout
       - run: ./scripts/ci/common/install-git-crypt.sh
       - run: ./scripts/ci/common/install-gpg-key.sh
-      - run: ./scripts/ci/common/install-gh.sh
       - run: ./scripts/ci/common/configure-git.sh
       - run: ./scripts/ci/steps/merge-pull-request.sh
   prerelease:

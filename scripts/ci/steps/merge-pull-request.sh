@@ -9,4 +9,6 @@ PROJECT_DIR="$( cd "$SCRIPT_DIR/../../.." && pwd )"
 
 cd "$PROJECT_DIR"
 
-gh pr merge
+CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+
+./go github:pull_requests:merge["$CURRENT_BRANCH"]
