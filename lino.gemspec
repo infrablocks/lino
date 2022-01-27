@@ -15,7 +15,7 @@ files = %w[
   README.md
 ]
 
-Gem::Specification.new do |spec|
+Gem::Specification.new do |spec| # rubocop:disable Gemspec/RequireMFA
   spec.name = 'lino'
   spec.version = Lino::VERSION
   spec.authors = ['InfraBlocks Maintainers']
