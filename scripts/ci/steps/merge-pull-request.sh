@@ -13,4 +13,4 @@ git-crypt unlock
 
 CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 
-./go github:pull_requests:merge["$CURRENT_BRANCH"]
+./go github:pull_requests:merge["$CURRENT_BRANCH","%s [skip ci]"]

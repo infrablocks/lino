@@ -94,6 +94,7 @@ RakeGithub.define_repository_tasks(
     }
   ]
   t.branch_name = args.branch_name
+  t.commit_message = args.commit_message
 end
 
 namespace :pipeline do
