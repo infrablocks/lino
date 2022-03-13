@@ -18,7 +18,7 @@ namespace :encryption do
   namespace :passphrase do
     desc 'Generate encryption passphrase for CI GPG key'
     task :generate do
-      FileUtils.mkdir_p("config/secrets/ci/")
+      FileUtils.mkdir_p('config/secrets/ci/')
       File.write('config/secrets/ci/encryption.passphrase',
                  SecureRandom.base64(36))
     end
