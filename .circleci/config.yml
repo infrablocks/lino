@@ -5,7 +5,6 @@ orbs:
 
 jobs:
   build:
-    working_directory: ~/source
     docker:
       - image: ruby:2.7.5
     steps:
@@ -21,7 +20,6 @@ jobs:
           channel: builds
           template: SLACK_SUCCESS_NOTIFICATION
   test:
-    working_directory: ~/source
     docker:
       - image: ruby:2.7.5
     steps:
@@ -38,7 +36,6 @@ jobs:
           template: SLACK_SUCCESS_NOTIFICATION
 
   prerelease:
-    working_directory: ~/source
     docker:
       - image: ruby:2.7.5
     steps:
@@ -59,7 +56,6 @@ jobs:
           template: SLACK_SUCCESS_NOTIFICATION
 
   release:
-    working_directory: ~/source
     docker:
       - image: ruby:2.7.5
     steps:
@@ -80,7 +76,6 @@ jobs:
           template: SLACK_SUCCESS_NOTIFICATION
 
   merge_pull_request:
-    working_directory: ~/source
     docker:
       - image: ruby:2.7.5
     steps:
