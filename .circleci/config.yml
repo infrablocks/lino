@@ -10,8 +10,8 @@ jobs:
       - image: ruby:2.7.5
     steps:
       - checkout
+      - run: ./scripts/ci/common/install-orb-deps.sh
       - run: ./scripts/ci/steps/build.sh
-      - run: ./scripts/ci/steps/install-orb-deps.sh
       - slack/notify:
           event: fail
           channel: dev
@@ -26,8 +26,8 @@ jobs:
       - image: ruby:2.7.5
     steps:
       - checkout
+      - run: ./scripts/ci/common/install-orb-deps.sh
       - run: ./scripts/ci/steps/test.sh
-      - run: ./scripts/ci/steps/install-orb-deps.sh
       - slack/notify:
           event: fail
           channel: dev
@@ -47,7 +47,7 @@ jobs:
       - run: ./scripts/ci/common/install-gpg-key.sh
       - run: ./scripts/ci/common/configure-git.sh
       - run: ./scripts/ci/common/configure-rubygems.sh
-      - run: ./scripts/ci/steps/install-orb-deps.sh
+      - run: ./scripts/ci/common/install-orb-deps.sh
       - run: ./scripts/ci/steps/prerelease.sh
       - slack/notify:
           event: fail
@@ -68,7 +68,7 @@ jobs:
       - run: ./scripts/ci/common/install-gpg-key.sh
       - run: ./scripts/ci/common/configure-git.sh
       - run: ./scripts/ci/common/configure-rubygems.sh
-      - run: ./scripts/ci/steps/install-orb-deps.sh
+      - run: ./scripts/ci/common/install-orb-deps.sh
       - run: ./scripts/ci/steps/release.sh
       - slack/notify:
           event: fail
@@ -88,7 +88,7 @@ jobs:
       - run: ./scripts/ci/common/install-git-crypt.sh
       - run: ./scripts/ci/common/install-gpg-key.sh
       - run: ./scripts/ci/common/configure-git.sh
-      - run: ./scripts/ci/steps/install-orb-deps.sh
+      - run: ./scripts/ci/common/install-orb-deps.sh
       - run: ./scripts/ci/steps/merge-pull-request.sh
       - slack/notify:
           event: fail
