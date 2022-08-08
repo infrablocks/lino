@@ -803,9 +803,9 @@ RSpec.describe Lino::CommandLineBuilder do
 
   it 'converts a numeric argument to a string' do
     result = described_class
-               .for_command('command-with-args')
-               .with_argument(10)
-               .build
+             .for_command('command-with-args')
+             .with_argument(10)
+             .build
 
     expect(result.to_s)
       .to eq('command-with-args 10')
@@ -813,9 +813,9 @@ RSpec.describe Lino::CommandLineBuilder do
 
   it 'converts a boolean argument to a string' do
     result = described_class
-               .for_command('command-with-args')
-               .with_argument(true)
-               .build
+             .for_command('command-with-args')
+             .with_argument(true)
+             .build
 
     expect(result.to_s)
       .to eq('command-with-args true')
@@ -827,9 +827,9 @@ RSpec.describe Lino::CommandLineBuilder do
       'some-argument'
     end
     result = described_class
-               .for_command('command-with-args')
-               .with_argument(value)
-               .build
+             .for_command('command-with-args')
+             .with_argument(value)
+             .build
 
     expect(result.to_s)
       .to eq('command-with-args some-argument')
