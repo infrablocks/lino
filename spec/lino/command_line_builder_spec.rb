@@ -801,6 +801,40 @@ RSpec.describe Lino::CommandLineBuilder do
       .to eq('command-with-args -v --opt val path/to/file.txt')
   end
 
+  it 'converts a numeric argument to a string' do
+    result = described_class
+               .for_command('command-with-args')
+               .with_argument(10)
+               .build
+
+    expect(result.to_s)
+      .to eq('command-with-args 10')
+  end
+
+  it 'converts a boolean argument to a string' do
+    result = described_class
+               .for_command('command-with-args')
+               .with_argument(true)
+               .build
+
+    expect(result.to_s)
+      .to eq('command-with-args true')
+  end
+
+  it 'converts an object argument to a string using its #to_s method' do
+    value = Object.new
+    value.define_singleton_method :to_s do
+      'some-argument'
+    end
+    result = described_class
+               .for_command('command-with-args')
+               .with_argument(value)
+               .build
+
+    expect(result.to_s)
+      .to eq('command-with-args some-argument')
+  end
+
   it 'includes multiple args after the command and all flags and options' do
     result = described_class
              .for_command('command-with-args')
