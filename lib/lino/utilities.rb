@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'pp'
-
 module Lino
   module Utilities
     def map_and_join(collection, &block)
