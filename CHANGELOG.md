@@ -8,7 +8,14 @@ and this project adheres to
 
 ## [Unreleased]
 
-## [3.0.0]
+## [3.1.0] - 2022-12-24
+
+### Changed
+
+* The minimum supported Ruby version is now 2.7.
+* All dependencies have been updated.
+
+## [3.0.0] - 2021-05-10
 
 ### Changed
 
