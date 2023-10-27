@@ -15,7 +15,7 @@ files = %w[
   README.md
 ]
 
-Gem::Specification.new do |spec| # rubocop:disable Gemspec/RequireMFA
+Gem::Specification.new do |spec|
   spec.name = 'lino'
   spec.version = Lino::VERSION
   spec.authors = ['InfraBlocks Maintainers']
@@ -42,6 +42,8 @@ Gem::Specification.new do |spec| # rubocop:disable Gemspec/RequireMFA
   spec.add_development_dependency 'gem-release'
   spec.add_development_dependency 'rake'
   spec.add_development_dependency 'rake_circle_ci'
+  spec.add_development_dependency 'rake_git'
+  spec.add_development_dependency 'rake_git_crypt'
   spec.add_development_dependency 'rake_github'
   spec.add_development_dependency 'rake_gpg'
   spec.add_development_dependency 'rake_ssh'
@@ -50,4 +52,6 @@ Gem::Specification.new do |spec| # rubocop:disable Gemspec/RequireMFA
   spec.add_development_dependency 'rubocop-rake'
   spec.add_development_dependency 'rubocop-rspec'
   spec.add_development_dependency 'simplecov'
+
+  spec.metadata['rubygems_mfa_required'] = 'false'
 end

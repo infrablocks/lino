@@ -20,3 +20,9 @@ Style/Documentation:
 
 RSpec/ExampleLength:
   Max: 40
+
+Gemspec/RequireMFA:
+  Enabled: false
+
+Gemspec/DevelopmentDependencies:
+  Enabled: false

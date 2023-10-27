@@ -161,7 +161,7 @@ module Lino
 
     def formatted_environment_variables
       map_and_join(@environment_variables) do |var|
-        "#{var[0]}=\"#{var[1].to_s.gsub(/"/, '\\"')}\""
+        "#{var[0]}=\"#{var[1].to_s.gsub('"', '\\"')}\""
       end
     end
 
