@@ -13,7 +13,8 @@ module Lino
                 :option_separator,
                 :option_quoting
 
-    def initialize(subcommand, opts)
+    def initialize(subcommand, opts = {})
+      opts = with_defaults(opts)
       @subcommand = subcommand
       @options = Hamster::Vector.new(opts[:options])
       @option_separator = opts[:option_separator]
@@ -45,7 +46,11 @@ module Lino
     private
 
     def with_defaults(opts)
-      opts.merge({ options: opts.fetch(:options, []) })
+      {
+        options: opts.fetch(:options, []),
+        option_separator: opts.fetch(:option_separator, ' '),
+        option_quoting: opts.fetch(:option_quoting, nil)
+      }
     end
   end
 end

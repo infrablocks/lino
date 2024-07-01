@@ -20,7 +20,7 @@ module Lino
                 :option_quoting,
                 :option_placement
 
-    def initialize(command, opts)
+    def initialize(command, opts = {})
       opts = with_defaults(opts)
       @command = command
       @subcommands = Hamster::Vector.new(opts[:subcommands])
@@ -38,6 +38,7 @@ module Lino
       stderr: $stderr
     )
       Open4.spawn(
+        env,
         *to_a,
         stdin: stdin,
         stdout: stdout,
@@ -77,6 +78,10 @@ module Lino
         option_quoting: opts.fetch(:option_quoting, nil),
         option_placement: opts.fetch(:option_placement, :after_command)
       }
+    end
+
+    def env
+      @environment_variables.to_h
     end
 
     def array_component_paths
