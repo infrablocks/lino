@@ -7,8 +7,10 @@ require 'spec_helper'
 describe Lino::CommandLine do
   it 'executes the command line with an empty stdin and default ' \
      'stdout and stderr when not provided' do
-    command = 'ls -la'
-    command_line = described_class.new(command)
+    command_line = described_class.new(
+      'ls',
+      options: [{ components: ['-la'] }]
+    )
 
     allow(Open4).to(receive(:spawn))
 
@@ -16,7 +18,7 @@ describe Lino::CommandLine do
 
     expect(Open4).to(
       have_received(:spawn).with(
-        command,
+        'ls', '-la',
         stdin: '',
         stdout: $stdout,
         stderr: $stderr
@@ -25,8 +27,10 @@ describe Lino::CommandLine do
   end
 
   it 'uses the supplied stdin, stdout and stderr when provided' do
-    command = 'ls -la'
-    command_line = described_class.new(command)
+    command_line = described_class.new(
+      'ls',
+      options: [{ components: ['-la'] }]
+    )
 
     stdin = 'hello'
     stdout = StringIO.new
@@ -42,7 +46,7 @@ describe Lino::CommandLine do
 
     expect(Open4).to(
       have_received(:spawn).with(
-        command,
+        'ls', '-la',
         stdin: stdin,
         stdout: stdout,
         stderr: stderr

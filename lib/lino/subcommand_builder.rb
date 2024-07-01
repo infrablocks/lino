@@ -1,15 +1,14 @@
 # frozen_string_literal: true
 
 require 'hamster'
-require_relative 'utilities'
+require_relative 'subcommand'
 require_relative 'options'
 require_relative 'appliables'
 
 module Lino
   class SubcommandBuilder
-    include Lino::Utilities
-    include Lino::Options
-    include Lino::Appliables
+    include Options
+    include Appliables
 
     class << self
       def for_subcommand(subcommand)
@@ -23,14 +22,13 @@ module Lino
     end
 
     def build(option_separator, option_quoting)
-      components = [
+      Subcommand.new(
         @subcommand,
-        map_and_join(
-          @options,
-          &(quote_with(option_quoting) >> join_with(option_separator))
+        state.merge(
+          option_separator: option_separator,
+          option_quoting: option_quoting
         )
-      ]
-      components.reject(&:empty?).join(' ')
+      )
     end
 
     private

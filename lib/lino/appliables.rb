@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-require_relative 'utilities'
+require_relative 'construction'
 
 module Lino
   module Appliables
-    include Lino::Utilities
+    include Validation
 
     def with_appliable(appliable)
       return self if nil?(appliable)

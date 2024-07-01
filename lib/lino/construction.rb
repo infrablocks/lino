@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Lino
-  module Utilities
+  module Construction
     def map_and_join(collection, &block)
       collection.map { |item| block.call(item) }.join(' ')
     end
@@ -20,18 +20,6 @@ module Lino
       end
     end
 
-    def nil?(value)
-      value.nil?
-    end
-
-    def empty?(value)
-      value.respond_to?(:empty?) && value.empty?
-    end
-
-    def nil_or_empty?(value)
-      nil?(value) || empty?(value)
-    end
-
     private
 
     def resolve_components(item, global_character)
@@ -46,14 +34,6 @@ module Lino
       else
         components
       end
-    end
-
-    def or_nil(enumerable, key)
-      enumerable.include?(key) ? enumerable[key] : nil
-    end
-
-    def or_nth(enumerable, key, index)
-      enumerable.include?(key) ? enumerable[key] : enumerable[index]
     end
   end
 end

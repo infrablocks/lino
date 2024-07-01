@@ -1,10 +1,12 @@
 # frozen_string_literal: true
 
-require_relative 'utilities'
+require_relative 'validation'
+require_relative 'defaulting'
 
 module Lino
   module Options
-    include Lino::Utilities
+    include Validation
+    include Defaulting
 
     def with_option(
       option,
