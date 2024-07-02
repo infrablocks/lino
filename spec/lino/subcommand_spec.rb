@@ -26,7 +26,7 @@ describe Lino::Subcommand do
     end
 
     it 'returns false when class different' do
-      first = Class.new(Lino::Subcommand).new(
+      first = Class.new(described_class).new(
         'sub',
         option_separator: ' ',
         option_quoting: nil,
@@ -154,7 +154,7 @@ describe Lino::Subcommand do
     end
 
     it 'returns false when class different' do
-      first = Class.new(Lino::Subcommand).new(
+      first = Class.new(described_class).new(
         'sub',
         option_separator: ' ',
         option_quoting: nil,
@@ -282,7 +282,7 @@ describe Lino::Subcommand do
     end
 
     it 'has different hash when class different' do
-      first = Class.new(Lino::Subcommand).new(
+      first = Class.new(described_class).new(
         'sub',
         option_separator: ' ',
         option_quoting: nil,

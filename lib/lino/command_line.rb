@@ -54,6 +54,7 @@ module Lino
         .reject(&:empty?)
         .flatten
     end
+
     alias to_a array
 
     def string
@@ -64,7 +65,33 @@ module Lino
         .reject(&:empty?)
         .join(' ')
     end
+
     alias to_s string
+
+    def ==(other)
+      self.class == other.class &&
+        state == other.state
+    end
+    alias eql? ==
+
+    def hash
+      [self.class, state].hash
+    end
+
+    protected
+
+    def state
+      [
+        @command,
+        @subcommands,
+        @options,
+        @arguments,
+        @environment_variables,
+        @option_separator,
+        @option_quoting,
+        @option_placement
+      ]
+    end
 
     private
 
@@ -193,5 +220,6 @@ module Lino
         end
     end
   end
+
   # rubocop:enable Metrics/ClassLength
 end

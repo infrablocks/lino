@@ -902,4 +902,502 @@ describe Lino::CommandLine do
       )
     end
   end
+
+  describe '#==' do
+    let(:opts) do
+      {
+        option_separator: ' ',
+        option_quoting: nil,
+        option_placement: :after_command,
+        options: [
+          { components: %w[--opt1 val1] }
+        ],
+        subcommands: [
+          Lino::Subcommand.new('sub')
+        ],
+        arguments: [
+          { components: 'arg' }
+        ],
+        environment_variables: [
+          %w[ENV_VAR VAL]
+        ]
+      }
+    end
+
+    it 'returns true when class and state equal' do
+      first = described_class.new('command', opts)
+      second = described_class.new('command', opts)
+
+      expect(first == second).to(be(true))
+    end
+
+    it 'returns false when class different' do
+      first = Class.new(Lino::Subcommand).new('command', opts)
+      second = described_class.new('command', opts)
+
+      expect(first == second).to(be(false))
+    end
+
+    it 'returns false when command different' do
+      first = described_class.new('command1', opts)
+      second = described_class.new('command2', opts)
+
+      expect(first == second).to(be(false))
+    end
+
+    it 'returns false when options different' do
+      first = described_class.new(
+        'command',
+        opts.merge(
+          options: [
+            { components: %w[--opt1 val1] }
+          ]
+        )
+      )
+      second = described_class.new(
+        'command',
+        opts.merge(
+          options: [
+            { components: %w[--opt2 val2] }
+          ]
+        )
+      )
+
+      expect(first == second).to(be(false))
+    end
+
+    it 'returns false when subcommands different' do
+      first = described_class.new(
+        'command',
+        opts.merge(
+          subcommands: [
+            Lino::Subcommand.new('sub1')
+          ]
+        )
+      )
+      second = described_class.new(
+        'command',
+        opts.merge(
+          subcommands: [
+            Lino::Subcommand.new('sub2')
+          ]
+        )
+      )
+
+      expect(first == second).to(be(false))
+    end
+
+    it 'returns false when arguments different' do
+      first = described_class.new(
+        'command',
+        opts.merge(
+          arguments: [
+            { components: ['arg1'] }
+          ]
+        )
+      )
+      second = described_class.new(
+        'command',
+        opts.merge(
+          arguments: [
+            { components: ['arg2'] }
+          ]
+        )
+      )
+
+      expect(first == second).to(be(false))
+    end
+
+    it 'returns false when environment variables different' do
+      first = described_class.new(
+        'command',
+        opts.merge(
+          environment_variables: [
+            %w[ENV_VAR1 VAL1]
+          ]
+        )
+      )
+      second = described_class.new(
+        'command',
+        opts.merge(
+          environment_variables: [
+            %w[ENV_VAR2 VAL2]
+          ]
+        )
+      )
+
+      expect(first == second).to(be(false))
+    end
+
+    it 'returns false when option separator different' do
+      first = described_class.new(
+        'command',
+        opts.merge(option_separator: ' ')
+      )
+      second = described_class.new(
+        'command',
+        opts.merge(option_separator: '=')
+      )
+
+      expect(first == second).to(be(false))
+    end
+
+    it 'returns false when option quoting different' do
+      first = described_class.new(
+        'command',
+        opts.merge(option_quoting: '"')
+      )
+      second = described_class.new(
+        'command',
+        opts.merge(option_quoting: "'")
+      )
+
+      expect(first == second).to(be(false))
+    end
+
+    it 'returns false when option placement different' do
+      first = described_class.new(
+        'command',
+        opts.merge(option_placement: :after_subcommands)
+      )
+      second = described_class.new(
+        'command',
+        opts.merge(option_placement: :after_arguments)
+      )
+
+      expect(first == second).to(be(false))
+    end
+  end
+
+  describe '#eql?' do
+    let(:opts) do
+      {
+        option_separator: ' ',
+        option_quoting: nil,
+        option_placement: :after_command,
+        options: [
+          { components: %w[--opt1 val1] }
+        ],
+        subcommands: [
+          Lino::Subcommand.new('sub')
+        ],
+        arguments: [
+          { components: 'arg' }
+        ],
+        environment_variables: [
+          %w[ENV_VAR VAL]
+        ]
+      }
+    end
+
+    it 'returns true when class and state equal' do
+      first = described_class.new('command', opts)
+      second = described_class.new('command', opts)
+
+      expect(first.eql?(second)).to(be(true))
+    end
+
+    it 'returns false when class different' do
+      first = Class.new(Lino::Subcommand).new('command', opts)
+      second = described_class.new('command', opts)
+
+      expect(first.eql?(second)).to(be(false))
+    end
+
+    it 'returns false when command different' do
+      first = described_class.new('command1', opts)
+      second = described_class.new('command2', opts)
+
+      expect(first.eql?(second)).to(be(false))
+    end
+
+    it 'returns false when options different' do
+      first = described_class.new(
+        'command',
+        opts.merge(
+          options: [
+            { components: %w[--opt1 val1] }
+          ]
+        )
+      )
+      second = described_class.new(
+        'command',
+        opts.merge(
+          options: [
+            { components: %w[--opt2 val2] }
+          ]
+        )
+      )
+
+      expect(first.eql?(second)).to(be(false))
+    end
+
+    it 'returns false when subcommands different' do
+      first = described_class.new(
+        'command',
+        opts.merge(
+          subcommands: [
+            Lino::Subcommand.new('sub1')
+          ]
+        )
+      )
+      second = described_class.new(
+        'command',
+        opts.merge(
+          subcommands: [
+            Lino::Subcommand.new('sub2')
+          ]
+        )
+      )
+
+      expect(first.eql?(second)).to(be(false))
+    end
+
+    it 'returns false when arguments different' do
+      first = described_class.new(
+        'command',
+        opts.merge(
+          arguments: [
+            { components: ['arg1'] }
+          ]
+        )
+      )
+      second = described_class.new(
+        'command',
+        opts.merge(
+          arguments: [
+            { components: ['arg2'] }
+          ]
+        )
+      )
+
+      expect(first.eql?(second)).to(be(false))
+    end
+
+    it 'returns false when environment variables different' do
+      first = described_class.new(
+        'command',
+        opts.merge(
+          environment_variables: [
+            %w[ENV_VAR1 VAL1]
+          ]
+        )
+      )
+      second = described_class.new(
+        'command',
+        opts.merge(
+          environment_variables: [
+            %w[ENV_VAR2 VAL2]
+          ]
+        )
+      )
+
+      expect(first.eql?(second)).to(be(false))
+    end
+
+    it 'returns false when option separator different' do
+      first = described_class.new(
+        'command',
+        opts.merge(option_separator: ' ')
+      )
+      second = described_class.new(
+        'command',
+        opts.merge(option_separator: '=')
+      )
+
+      expect(first.eql?(second)).to(be(false))
+    end
+
+    it 'returns false when option quoting different' do
+      first = described_class.new(
+        'command',
+        opts.merge(option_quoting: '"')
+      )
+      second = described_class.new(
+        'command',
+        opts.merge(option_quoting: "'")
+      )
+
+      expect(first.eql?(second)).to(be(false))
+    end
+
+    it 'returns false when option placement different' do
+      first = described_class.new(
+        'command',
+        opts.merge(option_placement: :after_subcommands)
+      )
+      second = described_class.new(
+        'command',
+        opts.merge(option_placement: :after_arguments)
+      )
+
+      expect(first.eql?(second)).to(be(false))
+    end
+  end
+
+  describe '#hash' do
+    let(:opts) do
+      {
+        option_separator: ' ',
+        option_quoting: nil,
+        option_placement: :after_command,
+        options: [
+          { components: %w[--opt1 val1] }
+        ],
+        subcommands: [
+          Lino::Subcommand.new('sub')
+        ],
+        arguments: [
+          { components: 'arg' }
+        ],
+        environment_variables: [
+          %w[ENV_VAR VAL]
+        ]
+      }
+    end
+
+    it 'has same hash when class and state equal' do
+      first = described_class.new('command', opts)
+      second = described_class.new('command', opts)
+
+      expect(first.hash).to(eq(second.hash))
+    end
+
+    it 'has different hash when class different' do
+      first = Class.new(described_class).new('command', opts)
+      second = described_class.new('command', opts)
+
+      expect(first.hash).not_to(eq(second.hash))
+    end
+
+    it 'has different hash when command different' do
+      first = described_class.new('command1', opts)
+      second = described_class.new('command2', opts)
+
+      expect(first.hash).not_to(eq(second.hash))
+    end
+
+    it 'has different hash when options different' do
+      first = described_class.new(
+        'command',
+        opts.merge(
+          options: [
+            { components: %w[--opt1 val1] }
+          ]
+        )
+      )
+      second = described_class.new(
+        'command',
+        opts.merge(
+          options: [
+            { components: %w[--opt2 val2] }
+          ]
+        )
+      )
+
+      expect(first.hash).not_to(eq(second.hash))
+    end
+
+    it 'has different hash when subcommands different' do
+      first = described_class.new(
+        'command',
+        opts.merge(
+          subcommands: [
+            Lino::Subcommand.new('sub1')
+          ]
+        )
+      )
+      second = described_class.new(
+        'command',
+        opts.merge(
+          subcommands: [
+            Lino::Subcommand.new('sub2')
+          ]
+        )
+      )
+
+      expect(first.hash).not_to(eq(second.hash))
+    end
+
+    it 'has different hash when arguments different' do
+      first = described_class.new(
+        'command',
+        opts.merge(
+          arguments: [
+            { components: ['arg1'] }
+          ]
+        )
+      )
+      second = described_class.new(
+        'command',
+        opts.merge(
+          arguments: [
+            { components: ['arg2'] }
+          ]
+        )
+      )
+
+      expect(first.hash).not_to(eq(second.hash))
+    end
+
+    it 'has different hash when environment variables different' do
+      first = described_class.new(
+        'command',
+        opts.merge(
+          environment_variables: [
+            %w[ENV_VAR1 VAL1]
+          ]
+        )
+      )
+      second = described_class.new(
+        'command',
+        opts.merge(
+          environment_variables: [
+            %w[ENV_VAR2 VAL2]
+          ]
+        )
+      )
+
+      expect(first.hash).not_to(eq(second.hash))
+    end
+
+    it 'has different hash when option separator different' do
+      first = described_class.new(
+        'command',
+        opts.merge(option_separator: ' ')
+      )
+      second = described_class.new(
+        'command',
+        opts.merge(option_separator: '=')
+      )
+
+      expect(first.hash).not_to(eq(second.hash))
+    end
+
+    it 'has different hash when option quoting different' do
+      first = described_class.new(
+        'command',
+        opts.merge(option_quoting: '"')
+      )
+      second = described_class.new(
+        'command',
+        opts.merge(option_quoting: "'")
+      )
+
+      expect(first.hash).not_to(eq(second.hash))
+    end
+
+    it 'has different hash when option placement different' do
+      first = described_class.new(
+        'command',
+        opts.merge(option_placement: :after_subcommands)
+      )
+      second = described_class.new(
+        'command',
+        opts.merge(option_placement: :after_arguments)
+      )
+
+      expect(first.hash).not_to(eq(second.hash))
+    end
+  end
 end

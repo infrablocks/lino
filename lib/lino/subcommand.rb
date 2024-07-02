@@ -45,21 +45,23 @@ module Lino
 
     def ==(other)
       self.class == other.class &&
-        @subcommand == other.subcommand &&
-        @options == other.options &&
-        @option_separator == other.option_separator &&
-        @option_quoting == other.option_quoting
+        state == other.state
     end
     alias eql? ==
 
     def hash
+      [self.class, state].hash
+    end
+
+    protected
+
+    def state
       [
-        self.class,
         @subcommand,
         @options,
         @option_separator,
         @option_quoting
-      ].hash
+      ]
     end
 
     private
