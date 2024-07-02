@@ -43,6 +43,25 @@ module Lino
       ].flatten
     end
 
+    def ==(other)
+      self.class == other.class &&
+        @subcommand == other.subcommand &&
+        @options == other.options &&
+        @option_separator == other.option_separator &&
+        @option_quoting == other.option_quoting
+    end
+    alias eql? ==
+
+    def hash
+      [
+        self.class,
+        @subcommand,
+        @options,
+        @option_separator,
+        @option_quoting
+      ].hash
+    end
+
     private
 
     def with_defaults(opts)
