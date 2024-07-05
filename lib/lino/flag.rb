@@ -1,24 +1,25 @@
 # frozen_string_literal: true
 
 module Lino
-  class Subcommand
-    attr_reader :subcommand, :options
+  class Flag
+    attr_reader :flag,
+                :placement
 
-    def initialize(subcommand, opts = {})
+    def initialize(flag, opts = {})
       opts = with_defaults(opts)
-      @subcommand = subcommand
-      @options = Hamster::Vector.new(opts[:options])
+      @flag = flag
+      @placement = opts[:placement]
     end
 
     def string
-      [@subcommand, @options.map(&:string)].reject(&:empty?).join(' ')
+      flag
     end
     alias to_s string
 
     def array
-      [@subcommand, @options.map(&:array)].flatten
+      [flag]
     end
-    alias to_a array
+    alias to_a string
 
     def ==(other)
       self.class == other.class &&
@@ -34,8 +35,8 @@ module Lino
 
     def state
       [
-        @subcommand,
-        @options
+        @flag,
+        @placement
       ]
     end
 
@@ -43,7 +44,7 @@ module Lino
 
     def with_defaults(opts)
       {
-        options: opts.fetch(:options, [])
+        placement: opts[:placement] || :after_command
       }
     end
   end

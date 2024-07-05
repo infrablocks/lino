@@ -2,23 +2,14 @@
 
 require 'open4'
 
-require_relative 'construction'
-require_relative 'validation'
-
 module Lino
   # rubocop:disable Metrics/ClassLength
   class CommandLine
-    include Construction
-    include Validation
-
     attr_reader :command,
                 :subcommands,
                 :options,
                 :arguments,
-                :environment_variables,
-                :option_separator,
-                :option_quoting,
-                :option_placement
+                :environment_variables
 
     def initialize(command, opts = {})
       opts = with_defaults(opts)
@@ -27,9 +18,6 @@ module Lino
       @options = Hamster::Vector.new(opts[:options])
       @arguments = Hamster::Vector.new(opts[:arguments])
       @environment_variables = Hamster::Vector.new(opts[:environment_variables])
-      @option_separator = opts[:option_separator]
-      @option_quoting = opts[:option_quoting]
-      @option_placement = opts[:option_placement]
     end
 
     def execute(
@@ -86,10 +74,7 @@ module Lino
         @subcommands,
         @options,
         @arguments,
-        @environment_variables,
-        @option_separator,
-        @option_quoting,
-        @option_placement
+        @environment_variables
       ]
     end
 
@@ -100,10 +85,7 @@ module Lino
         subcommands: opts.fetch(:subcommands, []),
         options: opts.fetch(:options, []),
         arguments: opts.fetch(:arguments, []),
-        environment_variables: opts.fetch(:environment_variables, []),
-        option_separator: opts.fetch(:option_separator, ' '),
-        option_quoting: opts.fetch(:option_quoting, nil),
-        option_placement: opts.fetch(:option_placement, :after_command)
+        environment_variables: opts.fetch(:environment_variables, [])
       }
     end
 
@@ -146,24 +128,15 @@ module Lino
     end
 
     def string_formatted_environment_variables
-      map_and_join(@environment_variables) do |var|
-        "#{var[0]}=\"#{var[1].to_s.gsub('"', '\\"')}\""
-      end
+      @environment_variables.map(&:string).join(' ')
     end
 
     def array_formatted_options_with_placement(placement)
-      options_with_placement(placement).map do |option|
-        separator = option[:separator] || @option_separator
-        components = option[:components]
-        separator == ' ' ? components : [components.join(separator)]
-      end
+      options_with_placement(placement).map(&:array)
     end
 
     def string_formatted_options_with_placement(placement)
-      map_and_join(
-        options_with_placement(placement),
-        &(quote_with(@option_quoting) >> join_with(@option_separator))
-      )
+      options_with_placement(placement).map(&:string)
     end
 
     def array_formatted_options
@@ -191,22 +164,19 @@ module Lino
     end
 
     def array_formatted_subcommands
-      @subcommands.map(&:to_a)
+      @subcommands.map(&:array)
     end
 
     def string_formatted_subcommands
-      map_and_join(@subcommands, &:to_s)
+      @subcommands.map(&:string).join(' ')
     end
 
     def array_formatted_arguments
-      @arguments.map { |a| a[:components] }
+      @arguments.map(&:array)
     end
 
     def string_formatted_arguments
-      map_and_join(
-        @arguments,
-        &join_with(' ')
-      )
+      @arguments.map(&:string).join(' ')
     end
 
     def components_at_path(components, path)
@@ -214,10 +184,7 @@ module Lino
     end
 
     def options_with_placement(placement)
-      @options.select { |o| o[:placement] == placement } +
-        if @option_placement == placement
-          @options.select { |o| o[:placement].nil? }
-        end
+      @options.select { |o| o.placement == placement }
     end
   end
 

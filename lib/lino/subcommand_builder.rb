@@ -1,14 +1,15 @@
 # frozen_string_literal: true
 
 require 'hamster'
+
 require_relative 'subcommand'
-require_relative 'options'
-require_relative 'appliables'
+require_relative 'mixins/options'
+require_relative 'mixins/appliables'
 
 module Lino
   class SubcommandBuilder
-    include Options
-    include Appliables
+    include Mixins::Options
+    include Mixins::Appliables
 
     class << self
       def for_subcommand(subcommand)
@@ -16,25 +17,22 @@ module Lino
       end
     end
 
-    def initialize(subcommand: nil, options: [])
-      @subcommand = subcommand
-      @options = Hamster::Vector.new(options)
+    def initialize(state)
+      @subcommand = state[:subcommand]
+      @options = Hamster::Vector.new(state[:options] || [])
     end
 
-    def build(option_separator, option_quoting)
+    def build
       Subcommand.new(
         @subcommand,
-        state.merge(
-          option_separator: option_separator,
-          option_quoting: option_quoting
-        )
+        options: build_options
       )
     end
 
     private
 
-    def with(**replacements)
-      SubcommandBuilder.new(**state.merge(replacements))
+    def with(replacements)
+      SubcommandBuilder.new(state.merge(replacements))
     end
 
     def state
