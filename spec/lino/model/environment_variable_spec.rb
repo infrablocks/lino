@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-describe Lino::EnvironmentVariable do
+describe Lino::Model::EnvironmentVariable do
   describe '#==' do
     let(:opts) do
       {

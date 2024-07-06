@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-describe Lino::Option do
+describe Lino::Model::Option do
   describe '#==' do
     let(:opts) do
       {

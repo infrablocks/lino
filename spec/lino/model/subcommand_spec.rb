@@ -2,12 +2,12 @@
 
 require 'spec_helper'
 
-describe Lino::Subcommand do
+describe Lino::Model::Subcommand do
   describe '#==' do
     let(:opts) do
       {
         options: [
-          { components: %w[--opt1 val1] }
+          Lino::Model::Option.new('--opt1', 'val1')
         ]
       }
     end
@@ -38,7 +38,7 @@ describe Lino::Subcommand do
         'sub',
         opts.merge(
           options: [
-            { components: %w[--opt1 val1] }
+            Lino::Model::Option.new('--opt1', 'val1')
           ]
         )
       )
@@ -46,7 +46,7 @@ describe Lino::Subcommand do
         'sub',
         opts.merge(
           options: [
-            { components: %w[--opt2 val2] }
+            Lino::Model::Option.new('--opt2', 'val2')
           ]
         )
       )
@@ -59,7 +59,7 @@ describe Lino::Subcommand do
     let(:opts) do
       {
         options: [
-          { components: %w[--opt1 val1] }
+          Lino::Model::Option.new('--opt1', 'val1')
         ]
       }
     end
@@ -90,7 +90,7 @@ describe Lino::Subcommand do
         'sub',
         opts.merge(
           options: [
-            { components: %w[--opt1 val1] }
+            Lino::Model::Option.new('--opt1', 'val1')
           ]
         )
       )
@@ -98,7 +98,7 @@ describe Lino::Subcommand do
         'sub',
         opts.merge(
           options: [
-            { components: %w[--opt2 val2] }
+            Lino::Model::Option.new('--opt2', 'val2')
           ]
         )
       )
@@ -111,7 +111,7 @@ describe Lino::Subcommand do
     let(:opts) do
       {
         options: [
-          { components: %w[--opt1 val1] }
+          Lino::Model::Option.new('--opt1', 'val1')
         ]
       }
     end
@@ -142,7 +142,7 @@ describe Lino::Subcommand do
         'sub',
         opts.merge(
           options: [
-            { components: %w[--opt1 val1] }
+            Lino::Model::Option.new('--opt1', 'val1')
           ]
         )
       )
@@ -150,7 +150,7 @@ describe Lino::Subcommand do
         'sub',
         opts.merge(
           options: [
-            { components: %w[--opt2 val2] }
+            Lino::Model::Option.new('--opt2', 'val2')
           ]
         )
       )

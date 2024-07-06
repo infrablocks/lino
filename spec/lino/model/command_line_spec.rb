@@ -4,7 +4,7 @@ require 'open4'
 require 'stringio'
 require 'spec_helper'
 
-describe Lino::CommandLine do
+describe Lino::Model::CommandLine do
   describe '#string' do
     it 'includes the provided command' do
       expect(described_class.new('command').string)
@@ -15,10 +15,10 @@ describe Lino::CommandLine do
       expect(described_class
                .new('command-with-options',
                     options: [
-                      Lino::Option.new('--opt1', 'val1'),
-                      Lino::Option.new('--opt2', 'val2'),
-                      Lino::Flag.new('--flag'),
-                      Lino::Flag.new('-h')
+                      Lino::Model::Option.new('--opt1', 'val1'),
+                      Lino::Model::Option.new('--opt2', 'val2'),
+                      Lino::Model::Flag.new('--flag'),
+                      Lino::Model::Flag.new('-h')
                     ])
                .string)
         .to(eq('command-with-options --opt1 val1 --opt2 val2 --flag -h'))
@@ -28,13 +28,13 @@ describe Lino::CommandLine do
       expect(described_class
                .new('command-with-overridden-separator',
                     options: [
-                      Lino::Option.new(
+                      Lino::Model::Option.new(
                         '--opt1', 'val1', separator: '='
                       ),
-                      Lino::Option.new(
+                      Lino::Model::Option.new(
                         '--opt2', 'val2', separator: ':'
                       ),
-                      Lino::Option.new('--opt3', 'val3')
+                      Lino::Model::Option.new('--opt3', 'val3')
                     ])
                .string)
         .to(eq('command-with-overridden-separator ' \
@@ -45,13 +45,13 @@ describe Lino::CommandLine do
       expect(described_class
                .new('command-with-overridden-quoting',
                     options: [
-                      Lino::Option.new(
+                      Lino::Model::Option.new(
                         '--opt1', 'val1', quoting: '"'
                       ),
-                      Lino::Option.new(
+                      Lino::Model::Option.new(
                         '--opt2', 'val2', quoting: "'"
                       ),
-                      Lino::Option.new('--opt3', 'val3')
+                      Lino::Model::Option.new('--opt3', 'val3')
                     ])
                .string)
         .to(eq('command-with-overridden-quoting ' \
@@ -62,7 +62,7 @@ describe Lino::CommandLine do
       expect(described_class
                .new('command-with-subcommand',
                     subcommands: [
-                      Lino::Subcommand.new('sub')
+                      Lino::Model::Subcommand.new('sub')
                     ])
                .string)
         .to(eq('command-with-subcommand sub'))
@@ -72,11 +72,11 @@ describe Lino::CommandLine do
       expect(described_class
                .new('command-with-subcommand',
                     subcommands: [
-                      Lino::Subcommand.new(
+                      Lino::Model::Subcommand.new(
                         'sub',
                         options: [
-                          Lino::Option.new('--opt1', 'val1'),
-                          Lino::Option.new('--opt2', 'val2')
+                          Lino::Model::Option.new('--opt1', 'val1'),
+                          Lino::Model::Option.new('--opt2', 'val2')
                         ]
                       )
                     ])
@@ -88,16 +88,16 @@ describe Lino::CommandLine do
       expect(described_class
                .new('command-with-subcommand',
                     subcommands: [
-                      Lino::Subcommand.new(
+                      Lino::Model::Subcommand.new(
                         'sub',
                         options: [
-                          Lino::Option.new(
+                          Lino::Model::Option.new(
                             '--opt1', 'val1', separator: '='
                           ),
-                          Lino::Option.new(
+                          Lino::Model::Option.new(
                             '--opt2', 'val2', separator: ':'
                           ),
-                          Lino::Option.new('--opt3', 'val3')
+                          Lino::Model::Option.new('--opt3', 'val3')
                         ]
                       )
                     ])
@@ -110,16 +110,16 @@ describe Lino::CommandLine do
       expect(described_class
                .new('command-with-subcommand',
                     subcommands: [
-                      Lino::Subcommand.new(
+                      Lino::Model::Subcommand.new(
                         'sub',
                         options: [
-                          Lino::Option.new(
+                          Lino::Model::Option.new(
                             '--opt1', 'val1', quoting: '"'
                           ),
-                          Lino::Option.new(
+                          Lino::Model::Option.new(
                             '--opt2', 'val2', quoting: "'"
                           ),
-                          Lino::Option.new('--opt3', 'val3')
+                          Lino::Model::Option.new('--opt3', 'val3')
                         ]
                       )
                     ])
@@ -132,9 +132,9 @@ describe Lino::CommandLine do
       expect(described_class
                .new('command-with-arguments',
                     arguments: [
-                      Lino::Argument.new('arg1'),
-                      Lino::Argument.new('arg2'),
-                      Lino::Argument.new('arg3')
+                      Lino::Model::Argument.new('arg1'),
+                      Lino::Model::Argument.new('arg2'),
+                      Lino::Model::Argument.new('arg3')
                     ])
                .string)
         .to(eq('command-with-arguments arg1 arg2 arg3'))
@@ -144,12 +144,12 @@ describe Lino::CommandLine do
       expect(described_class
                .new('command-with-arguments',
                     options: [
-                      Lino::Option.new('--opt1', 'val1'),
-                      Lino::Flag.new('--flag')
+                      Lino::Model::Option.new('--opt1', 'val1'),
+                      Lino::Model::Flag.new('--flag')
                     ],
                     arguments: [
-                      Lino::Argument.new('arg1'),
-                      Lino::Argument.new('arg2')
+                      Lino::Model::Argument.new('arg1'),
+                      Lino::Model::Argument.new('arg2')
                     ])
                .string)
         .to(eq('command-with-arguments --opt1 val1 --flag arg1 arg2'))
@@ -159,19 +159,19 @@ describe Lino::CommandLine do
       expect(described_class
                .new('command-with-arguments',
                     subcommands: [
-                      Lino::Subcommand.new(
+                      Lino::Model::Subcommand.new(
                         'sub1',
                         options: [
-                          Lino::Option.new('--opt1', 'val1')
+                          Lino::Model::Option.new('--opt1', 'val1')
                         ]
                       ),
-                      Lino::Subcommand.new(
+                      Lino::Model::Subcommand.new(
                         'sub2'
                       )
                     ],
                     arguments: [
-                      Lino::Argument.new('arg1'),
-                      Lino::Argument.new('arg2')
+                      Lino::Model::Argument.new('arg1'),
+                      Lino::Model::Argument.new('arg2')
                     ])
                .string)
         .to(eq('command-with-arguments sub1 --opt1 val1 sub2 arg1 arg2'))
@@ -181,8 +181,8 @@ describe Lino::CommandLine do
       expect(described_class
                .new('command-with-environment-variables',
                     environment_variables: [
-                      Lino::EnvironmentVariable.new('ENV_VAR1', 'VAL1'),
-                      Lino::EnvironmentVariable.new('ENV_VAR2', 'VAL2')
+                      Lino::Model::EnvironmentVariable.new('ENV_VAR1', 'VAL1'),
+                      Lino::Model::EnvironmentVariable.new('ENV_VAR2', 'VAL2')
                     ])
                .string)
         .to(eq('ENV_VAR1="VAL1" ENV_VAR2="VAL2" ' \
@@ -193,11 +193,11 @@ describe Lino::CommandLine do
       expect(described_class
                .new('command-with-subcommand',
                     options: [
-                      Lino::Option.new('--opt1', 'val1'),
-                      Lino::Flag.new('--flag')
+                      Lino::Model::Option.new('--opt1', 'val1'),
+                      Lino::Model::Flag.new('--flag')
                     ],
                     subcommands: [
-                      Lino::Subcommand.new('sub')
+                      Lino::Model::Subcommand.new('sub')
                     ])
                .string)
         .to(eq('command-with-subcommand --opt1 val1 --flag sub'))
@@ -208,11 +208,11 @@ describe Lino::CommandLine do
                .new('command-with-subcommand',
                     option_placement: :after_command,
                     options: [
-                      Lino::Option.new('--opt1', 'val1'),
-                      Lino::Flag.new('--flag')
+                      Lino::Model::Option.new('--opt1', 'val1'),
+                      Lino::Model::Flag.new('--flag')
                     ],
                     subcommands: [
-                      Lino::Subcommand.new('sub')
+                      Lino::Model::Subcommand.new('sub')
                     ])
                .string)
         .to(eq('command-with-subcommand --opt1 val1 --flag sub'))
@@ -222,19 +222,19 @@ describe Lino::CommandLine do
       expect(described_class
                .new('command-with-subcommand',
                     options: [
-                      Lino::Option.new(
+                      Lino::Model::Option.new(
                         '--opt1', 'val1', placement: :after_subcommands
                       ),
-                      Lino::Flag.new(
+                      Lino::Model::Flag.new(
                         '--flag', placement: :after_subcommands
                       )
                     ],
                     arguments: [
-                      Lino::Argument.new('arg1'),
-                      Lino::Argument.new('arg2')
+                      Lino::Model::Argument.new('arg1'),
+                      Lino::Model::Argument.new('arg2')
                     ],
                     subcommands: [
-                      Lino::Subcommand.new('sub')
+                      Lino::Model::Subcommand.new('sub')
                     ])
                .string)
         .to(eq('command-with-subcommand sub ' \
@@ -245,19 +245,19 @@ describe Lino::CommandLine do
       expect(described_class
                .new('command-with-subcommand',
                     options: [
-                      Lino::Option.new(
+                      Lino::Model::Option.new(
                         '--opt1', 'val1', placement: :after_arguments
                       ),
-                      Lino::Flag.new(
+                      Lino::Model::Flag.new(
                         '--flag', placement: :after_arguments
                       )
                     ],
                     arguments: [
-                      Lino::Argument.new('arg1'),
-                      Lino::Argument.new('arg2')
+                      Lino::Model::Argument.new('arg1'),
+                      Lino::Model::Argument.new('arg2')
                     ],
                     subcommands: [
-                      Lino::Subcommand.new('sub')
+                      Lino::Model::Subcommand.new('sub')
                     ])
                .string)
         .to(eq('command-with-subcommand sub arg1 arg2 ' \
@@ -268,22 +268,22 @@ describe Lino::CommandLine do
       expect(described_class
                .new('command-with-subcommand',
                     options: [
-                      Lino::Option.new(
+                      Lino::Model::Option.new(
                         '--opt1', 'val1', placement: :after_command
                       ),
-                      Lino::Flag.new(
+                      Lino::Model::Flag.new(
                         '--flag1', placement: :after_arguments
                       ),
-                      Lino::Flag.new(
+                      Lino::Model::Flag.new(
                         '--flag2', placement: :after_subcommands
                       )
                     ],
                     arguments: [
-                      Lino::Argument.new('arg1'),
-                      Lino::Argument.new('arg2')
+                      Lino::Model::Argument.new('arg1'),
+                      Lino::Model::Argument.new('arg2')
                     ],
                     subcommands: [
-                      Lino::Subcommand.new('sub')
+                      Lino::Model::Subcommand.new('sub')
                     ])
                .string)
         .to(eq('command-with-subcommand --opt1 val1 sub --flag2 ' \
@@ -301,10 +301,10 @@ describe Lino::CommandLine do
       expect(described_class
                .new('command-with-options',
                     options: [
-                      Lino::Option.new('--opt1', 'val1'),
-                      Lino::Option.new('--opt2', 'val2'),
-                      Lino::Flag.new('--flag'),
-                      Lino::Flag.new('-h')
+                      Lino::Model::Option.new('--opt1', 'val1'),
+                      Lino::Model::Option.new('--opt2', 'val2'),
+                      Lino::Model::Flag.new('--flag'),
+                      Lino::Model::Flag.new('-h')
                     ])
                .array)
         .to(eq(%w[command-with-options --opt1 val1 --opt2 val2 --flag -h]))
@@ -314,9 +314,9 @@ describe Lino::CommandLine do
       expect(described_class
                .new('command-with-overridden-separator',
                     options: [
-                      Lino::Option.new('--opt1', 'val1', separator: '='),
-                      Lino::Option.new('--opt2', 'val2', separator: ':'),
-                      Lino::Option.new('--opt3', 'val3')
+                      Lino::Model::Option.new('--opt1', 'val1', separator: '='),
+                      Lino::Model::Option.new('--opt2', 'val2', separator: ':'),
+                      Lino::Model::Option.new('--opt3', 'val3')
                     ])
                .array)
         .to(eq(%w[command-with-overridden-separator
@@ -327,10 +327,10 @@ describe Lino::CommandLine do
       expect(described_class
                .new('command-with-quoting',
                     options: [
-                      Lino::Option.new(
+                      Lino::Model::Option.new(
                         '--opt1', 'val1', quoting: '"'
                       ),
-                      Lino::Option.new(
+                      Lino::Model::Option.new(
                         '--opt2', 'val2', quoting: '"'
                       )
                     ])
@@ -342,7 +342,7 @@ describe Lino::CommandLine do
       expect(described_class
                .new('command-with-subcommand',
                     subcommands: [
-                      Lino::Subcommand.new('sub')
+                      Lino::Model::Subcommand.new('sub')
                     ])
                .array)
         .to(eq(%w[command-with-subcommand sub]))
@@ -352,11 +352,11 @@ describe Lino::CommandLine do
       expect(described_class
                .new('command-with-subcommand',
                     subcommands: [
-                      Lino::Subcommand.new(
+                      Lino::Model::Subcommand.new(
                         'sub',
                         options: [
-                          Lino::Option.new('--opt1', 'val1'),
-                          Lino::Option.new('--opt2', 'val2')
+                          Lino::Model::Option.new('--opt1', 'val1'),
+                          Lino::Model::Option.new('--opt2', 'val2')
                         ]
                       )
                     ])
@@ -368,16 +368,16 @@ describe Lino::CommandLine do
       expect(described_class
                .new('command-with-subcommand',
                     subcommands: [
-                      Lino::Subcommand.new(
+                      Lino::Model::Subcommand.new(
                         'sub',
                         options: [
-                          Lino::Option.new(
+                          Lino::Model::Option.new(
                             '--opt1', 'val1', separator: '='
                           ),
-                          Lino::Option.new(
+                          Lino::Model::Option.new(
                             '--opt2', 'val2', separator: ':'
                           ),
-                          Lino::Option.new(
+                          Lino::Model::Option.new(
                             '--opt3', 'val3'
                           )
                         ]
@@ -392,13 +392,13 @@ describe Lino::CommandLine do
       expect(described_class
                .new('command-with-subcommand',
                     subcommands: [
-                      Lino::Subcommand.new(
+                      Lino::Model::Subcommand.new(
                         'sub',
                         options: [
-                          Lino::Option.new(
+                          Lino::Model::Option.new(
                             '--opt1', 'val1', quoting: '"'
                           ),
-                          Lino::Option.new(
+                          Lino::Model::Option.new(
                             '--opt2', 'val2', quoting: '"'
                           )
                         ]
@@ -412,9 +412,9 @@ describe Lino::CommandLine do
       expect(described_class
                .new('command-with-arguments',
                     arguments: [
-                      Lino::Argument.new('arg1'),
-                      Lino::Argument.new('arg2'),
-                      Lino::Argument.new('arg3')
+                      Lino::Model::Argument.new('arg1'),
+                      Lino::Model::Argument.new('arg2'),
+                      Lino::Model::Argument.new('arg3')
                     ])
                .array)
         .to(eq(%w[command-with-arguments arg1 arg2 arg3]))
@@ -424,12 +424,12 @@ describe Lino::CommandLine do
       expect(described_class
                .new('command-with-arguments',
                     options: [
-                      Lino::Option.new('--opt1', 'val1'),
-                      Lino::Flag.new('--flag')
+                      Lino::Model::Option.new('--opt1', 'val1'),
+                      Lino::Model::Flag.new('--flag')
                     ],
                     arguments: [
-                      Lino::Argument.new('arg1'),
-                      Lino::Argument.new('arg2')
+                      Lino::Model::Argument.new('arg1'),
+                      Lino::Model::Argument.new('arg2')
                     ])
                .array)
         .to(eq(%w[command-with-arguments --opt1 val1 --flag arg1 arg2]))
@@ -439,19 +439,19 @@ describe Lino::CommandLine do
       expect(described_class
                .new('command-with-arguments',
                     subcommands: [
-                      Lino::Subcommand.new(
+                      Lino::Model::Subcommand.new(
                         'sub1',
                         options: [
-                          Lino::Option.new('--opt1', 'val1')
+                          Lino::Model::Option.new('--opt1', 'val1')
                         ]
                       ),
-                      Lino::Subcommand.new(
+                      Lino::Model::Subcommand.new(
                         'sub2'
                       )
                     ],
                     arguments: [
-                      Lino::Argument.new('arg1'),
-                      Lino::Argument.new('arg2')
+                      Lino::Model::Argument.new('arg1'),
+                      Lino::Model::Argument.new('arg2')
                     ])
                .array)
         .to(eq(%w[command-with-arguments sub1 --opt1 val1 sub2 arg1 arg2]))
@@ -461,8 +461,8 @@ describe Lino::CommandLine do
       expect(described_class
                .new('command-with-environment-variables',
                     environment_variables: [
-                      Lino::EnvironmentVariable.new('ENV_VAR1', 'VAL1'),
-                      Lino::EnvironmentVariable.new('ENV_VAR2', 'VAL2')
+                      Lino::Model::EnvironmentVariable.new('ENV_VAR1', 'VAL1'),
+                      Lino::Model::EnvironmentVariable.new('ENV_VAR2', 'VAL2')
                     ])
                .array)
         .to(eq(%w[command-with-environment-variables]))
@@ -472,11 +472,11 @@ describe Lino::CommandLine do
       expect(described_class
                .new('command-with-subcommand',
                     options: [
-                      Lino::Option.new('--opt1', 'val1'),
-                      Lino::Flag.new('--flag')
+                      Lino::Model::Option.new('--opt1', 'val1'),
+                      Lino::Model::Flag.new('--flag')
                     ],
                     subcommands: [
-                      Lino::Subcommand.new('sub')
+                      Lino::Model::Subcommand.new('sub')
                     ])
                .array)
         .to(eq(%w[command-with-subcommand --opt1 val1 --flag sub]))
@@ -486,13 +486,13 @@ describe Lino::CommandLine do
       expect(described_class
                .new('command-with-subcommand',
                     options: [
-                      Lino::Option.new(
+                      Lino::Model::Option.new(
                         '--opt1', 'val1', placement: :after_command
                       ),
-                      Lino::Flag.new('--flag', placement: :after_command)
+                      Lino::Model::Flag.new('--flag', placement: :after_command)
                     ],
                     subcommands: [
-                      Lino::Subcommand.new('sub')
+                      Lino::Model::Subcommand.new('sub')
                     ])
                .array)
         .to(eq(%w[command-with-subcommand --opt1 val1 --flag sub]))
@@ -502,20 +502,20 @@ describe Lino::CommandLine do
       expect(described_class
                .new('command-with-subcommand',
                     options: [
-                      Lino::Option.new(
+                      Lino::Model::Option.new(
                         '--opt1', 'val1',
                         placement: :after_subcommands
                       ),
-                      Lino::Flag.new(
+                      Lino::Model::Flag.new(
                         '--flag', placement: :after_subcommands
                       )
                     ],
                     arguments: [
-                      Lino::Argument.new('arg1'),
-                      Lino::Argument.new('arg2')
+                      Lino::Model::Argument.new('arg1'),
+                      Lino::Model::Argument.new('arg2')
                     ],
                     subcommands: [
-                      Lino::Subcommand.new('sub')
+                      Lino::Model::Subcommand.new('sub')
                     ])
                .array)
         .to(eq(%w[command-with-subcommand sub
@@ -526,20 +526,20 @@ describe Lino::CommandLine do
       expect(described_class
                .new('command-with-subcommand',
                     options: [
-                      Lino::Option.new(
+                      Lino::Model::Option.new(
                         '--opt1', 'val1',
                         placement: :after_arguments
                       ),
-                      Lino::Flag.new(
+                      Lino::Model::Flag.new(
                         '--flag', placement: :after_arguments
                       )
                     ],
                     arguments: [
-                      Lino::Argument.new('arg1'),
-                      Lino::Argument.new('arg2')
+                      Lino::Model::Argument.new('arg1'),
+                      Lino::Model::Argument.new('arg2')
                     ],
                     subcommands: [
-                      Lino::Subcommand.new('sub')
+                      Lino::Model::Subcommand.new('sub')
                     ])
                .array)
         .to(eq(%w[command-with-subcommand sub arg1 arg2
@@ -550,25 +550,25 @@ describe Lino::CommandLine do
       expect(described_class
                .new('command-with-subcommand',
                     options: [
-                      Lino::Option.new(
+                      Lino::Model::Option.new(
                         '--opt1', 'val1',
                         placement: :after_command
                       ),
-                      Lino::Flag.new(
+                      Lino::Model::Flag.new(
                         '--flag1',
                         placement: :after_arguments
                       ),
-                      Lino::Flag.new(
+                      Lino::Model::Flag.new(
                         '--flag2',
                         placement: :after_subcommands
                       )
                     ],
                     arguments: [
-                      Lino::Argument.new('arg1'),
-                      Lino::Argument.new('arg2')
+                      Lino::Model::Argument.new('arg1'),
+                      Lino::Model::Argument.new('arg2')
                     ],
                     subcommands: [
-                      Lino::Subcommand.new('sub')
+                      Lino::Model::Subcommand.new('sub')
                     ])
                .array)
         .to(eq(%w[command-with-subcommand --opt1 val1 sub --flag2
@@ -582,8 +582,8 @@ describe Lino::CommandLine do
       command_line = described_class.new(
         'ls',
         options: [
-          Lino::Flag.new('-l'),
-          Lino::Flag.new('-a')
+          Lino::Model::Flag.new('-l'),
+          Lino::Model::Flag.new('-a')
         ]
       )
 
@@ -606,8 +606,8 @@ describe Lino::CommandLine do
       command_line = described_class.new(
         'ls',
         options: [
-          Lino::Flag.new('-l'),
-          Lino::Flag.new('-a')
+          Lino::Model::Flag.new('-l'),
+          Lino::Model::Flag.new('-a')
         ]
       )
 
@@ -639,16 +639,16 @@ describe Lino::CommandLine do
     let(:opts) do
       {
         options: [
-          Lino::Option.new('--opt1', 'val1')
+          Lino::Model::Option.new('--opt1', 'val1')
         ],
         subcommands: [
-          Lino::Subcommand.new('sub')
+          Lino::Model::Subcommand.new('sub')
         ],
         arguments: [
-          Lino::Argument.new('arg')
+          Lino::Model::Argument.new('arg')
         ],
         environment_variables: [
-          Lino::EnvironmentVariable.new('ENV_VAR', 'VAL')
+          Lino::Model::EnvironmentVariable.new('ENV_VAR', 'VAL')
         ]
       }
     end
@@ -679,7 +679,7 @@ describe Lino::CommandLine do
         'command',
         opts.merge(
           options: [
-            Lino::Option.new('--opt1', 'val1')
+            Lino::Model::Option.new('--opt1', 'val1')
           ]
         )
       )
@@ -687,7 +687,7 @@ describe Lino::CommandLine do
         'command',
         opts.merge(
           options: [
-            Lino::Option.new('--opt2', 'val2')
+            Lino::Model::Option.new('--opt2', 'val2')
           ]
         )
       )
@@ -700,7 +700,7 @@ describe Lino::CommandLine do
         'command',
         opts.merge(
           subcommands: [
-            Lino::Subcommand.new('sub1')
+            Lino::Model::Subcommand.new('sub1')
           ]
         )
       )
@@ -708,7 +708,7 @@ describe Lino::CommandLine do
         'command',
         opts.merge(
           subcommands: [
-            Lino::Subcommand.new('sub2')
+            Lino::Model::Subcommand.new('sub2')
           ]
         )
       )
@@ -721,7 +721,7 @@ describe Lino::CommandLine do
         'command',
         opts.merge(
           arguments: [
-            Lino::Argument.new('arg1')
+            Lino::Model::Argument.new('arg1')
           ]
         )
       )
@@ -729,7 +729,7 @@ describe Lino::CommandLine do
         'command',
         opts.merge(
           arguments: [
-            Lino::Argument.new('arg2')
+            Lino::Model::Argument.new('arg2')
           ]
         )
       )
@@ -742,7 +742,7 @@ describe Lino::CommandLine do
         'command',
         opts.merge(
           environment_variables: [
-            Lino::EnvironmentVariable.new('ENV_VAR1', 'VAL1')
+            Lino::Model::EnvironmentVariable.new('ENV_VAR1', 'VAL1')
           ]
         )
       )
@@ -750,7 +750,7 @@ describe Lino::CommandLine do
         'command',
         opts.merge(
           environment_variables: [
-            Lino::EnvironmentVariable.new('ENV_VAR2', 'VAL2')
+            Lino::Model::EnvironmentVariable.new('ENV_VAR2', 'VAL2')
           ]
         )
       )
@@ -763,16 +763,16 @@ describe Lino::CommandLine do
     let(:opts) do
       {
         options: [
-          Lino::Option.new('--opt1', 'val1')
+          Lino::Model::Option.new('--opt1', 'val1')
         ],
         subcommands: [
-          Lino::Subcommand.new('sub')
+          Lino::Model::Subcommand.new('sub')
         ],
         arguments: [
-          Lino::Argument.new('arg')
+          Lino::Model::Argument.new('arg')
         ],
         environment_variables: [
-          Lino::EnvironmentVariable.new('ENV_VAR', 'VAL')
+          Lino::Model::EnvironmentVariable.new('ENV_VAR', 'VAL')
         ]
       }
     end
@@ -803,7 +803,7 @@ describe Lino::CommandLine do
         'command',
         opts.merge(
           options: [
-            Lino::Option.new('--opt1', 'val1')
+            Lino::Model::Option.new('--opt1', 'val1')
           ]
         )
       )
@@ -811,7 +811,7 @@ describe Lino::CommandLine do
         'command',
         opts.merge(
           options: [
-            Lino::Option.new('--opt2', 'val2')
+            Lino::Model::Option.new('--opt2', 'val2')
           ]
         )
       )
@@ -824,7 +824,7 @@ describe Lino::CommandLine do
         'command',
         opts.merge(
           subcommands: [
-            Lino::Subcommand.new('sub1')
+            Lino::Model::Subcommand.new('sub1')
           ]
         )
       )
@@ -832,7 +832,7 @@ describe Lino::CommandLine do
         'command',
         opts.merge(
           subcommands: [
-            Lino::Subcommand.new('sub2')
+            Lino::Model::Subcommand.new('sub2')
           ]
         )
       )
@@ -845,7 +845,7 @@ describe Lino::CommandLine do
         'command',
         opts.merge(
           arguments: [
-            Lino::Argument.new('arg1')
+            Lino::Model::Argument.new('arg1')
           ]
         )
       )
@@ -853,7 +853,7 @@ describe Lino::CommandLine do
         'command',
         opts.merge(
           arguments: [
-            Lino::Argument.new('arg2')
+            Lino::Model::Argument.new('arg2')
           ]
         )
       )
@@ -866,7 +866,7 @@ describe Lino::CommandLine do
         'command',
         opts.merge(
           environment_variables: [
-            Lino::EnvironmentVariable.new('ENV_VAR1', 'VAL1')
+            Lino::Model::EnvironmentVariable.new('ENV_VAR1', 'VAL1')
           ]
         )
       )
@@ -874,7 +874,7 @@ describe Lino::CommandLine do
         'command',
         opts.merge(
           environment_variables: [
-            Lino::EnvironmentVariable.new('ENV_VAR2', 'VAL2')
+            Lino::Model::EnvironmentVariable.new('ENV_VAR2', 'VAL2')
           ]
         )
       )
@@ -887,16 +887,16 @@ describe Lino::CommandLine do
     let(:opts) do
       {
         options: [
-          Lino::Option.new('--opt1', 'val1')
+          Lino::Model::Option.new('--opt1', 'val1')
         ],
         subcommands: [
-          Lino::Subcommand.new('sub')
+          Lino::Model::Subcommand.new('sub')
         ],
         arguments: [
-          Lino::Argument.new('arg')
+          Lino::Model::Argument.new('arg')
         ],
         environment_variables: [
-          Lino::EnvironmentVariable.new('ENV_VAR', 'VAL')
+          Lino::Model::EnvironmentVariable.new('ENV_VAR', 'VAL')
         ]
       }
     end
@@ -927,7 +927,7 @@ describe Lino::CommandLine do
         'command',
         opts.merge(
           options: [
-            Lino::Option.new('--opt1', 'val1')
+            Lino::Model::Option.new('--opt1', 'val1')
           ]
         )
       )
@@ -935,7 +935,7 @@ describe Lino::CommandLine do
         'command',
         opts.merge(
           options: [
-            Lino::Option.new('--opt2', 'val2')
+            Lino::Model::Option.new('--opt2', 'val2')
           ]
         )
       )
@@ -948,7 +948,7 @@ describe Lino::CommandLine do
         'command',
         opts.merge(
           subcommands: [
-            Lino::Subcommand.new('sub1')
+            Lino::Model::Subcommand.new('sub1')
           ]
         )
       )
@@ -956,7 +956,7 @@ describe Lino::CommandLine do
         'command',
         opts.merge(
           subcommands: [
-            Lino::Subcommand.new('sub2')
+            Lino::Model::Subcommand.new('sub2')
           ]
         )
       )
@@ -969,7 +969,7 @@ describe Lino::CommandLine do
         'command',
         opts.merge(
           arguments: [
-            Lino::Argument.new('arg1')
+            Lino::Model::Argument.new('arg1')
           ]
         )
       )
@@ -977,7 +977,7 @@ describe Lino::CommandLine do
         'command',
         opts.merge(
           arguments: [
-            Lino::Argument.new('arg2')
+            Lino::Model::Argument.new('arg2')
           ]
         )
       )
@@ -990,7 +990,7 @@ describe Lino::CommandLine do
         'command',
         opts.merge(
           environment_variables: [
-            Lino::EnvironmentVariable.new('ENV_VAR1', 'VAL1')
+            Lino::Model::EnvironmentVariable.new('ENV_VAR1', 'VAL1')
           ]
         )
       )
@@ -998,7 +998,7 @@ describe Lino::CommandLine do
         'command',
         opts.merge(
           environment_variables: [
-            Lino::EnvironmentVariable.new('ENV_VAR2', 'VAL2')
+            Lino::Model::EnvironmentVariable.new('ENV_VAR2', 'VAL2')
           ]
         )
       )

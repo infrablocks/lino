@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-describe Lino::Argument do
+describe Lino::Model::Argument do
   describe '#==' do
     it 'returns true when class and state equal' do
       first = described_class.new('arg')
