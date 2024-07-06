@@ -21,6 +21,9 @@ Style/Documentation:
 RSpec/ExampleLength:
   Max: 40
 
+RSpec/MultipleExpectations:
+  Enabled: false
+
 Gemspec/RequireMFA:
   Enabled: false
 

@@ -3,6 +3,8 @@
 require 'lino/version'
 require 'lino/model'
 require 'lino/builders'
+require 'lino/executors'
+require 'lino/errors'
 
 module Lino
   class CommandLineBuilder

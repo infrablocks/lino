@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'open4'
 require 'stringio'
 require 'spec_helper'
 
@@ -577,60 +576,56 @@ describe Lino::Model::CommandLine do
   end
 
   describe '#execute' do
-    it 'executes the command line with an empty stdin and default ' \
-       'stdout and stderr when not provided' do
+    it 'uses the executor to execute the command line' do
+      executor = instance_double(Lino::Executors::Childprocess)
+
+      allow(executor).to(receive(:execute))
+
       command_line = described_class.new(
         'ls',
         options: [
           Lino::Model::Flag.new('-l'),
           Lino::Model::Flag.new('-a')
-        ]
+        ],
+        executor: executor
       )
-
-      allow(Open4).to(receive(:spawn))
 
       command_line.execute
 
-      expect(Open4).to(
-        have_received(:spawn).with(
-          {},
-          'ls', '-l', '-a',
-          stdin: '',
-          stdout: $stdout,
-          stderr: $stderr
-        )
+      expect(executor).to(
+        have_received(:execute)
+          .with(command_line, {})
       )
     end
 
     it 'uses the supplied stdin, stdout and stderr when provided' do
+      executor = instance_double(Lino::Executors::Childprocess)
+
+      allow(executor).to(receive(:execute))
+
       command_line = described_class.new(
         'ls',
         options: [
           Lino::Model::Flag.new('-l'),
           Lino::Model::Flag.new('-a')
-        ]
+        ],
+        executor: executor
       )
 
       stdin = 'hello'
       stdout = StringIO.new
       stderr = StringIO.new
 
-      allow(Open4).to(receive(:spawn))
+      command_line.execute(stdin: stdin, stdout: stdout, stderr: stderr)
 
-      command_line.execute(
-        stdin: stdin,
-        stdout: stdout,
-        stderr: stderr
-      )
-
-      expect(Open4).to(
-        have_received(:spawn).with(
-          {},
-          'ls', '-l', '-a',
-          stdin: stdin,
-          stdout: stdout,
-          stderr: stderr
-        )
+      expect(executor).to(
+        have_received(:execute)
+          .with(
+            command_line,
+            stdin: stdin,
+            stdout: stdout,
+            stderr: stderr
+          )
       )
     end
   end

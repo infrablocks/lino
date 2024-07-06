@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'open4'
-
 module Lino
   module Model
     class CommandLine
@@ -29,20 +27,15 @@ module Lino
         @arguments = Hamster::Vector.new(opts[:arguments])
         @environment_variables =
           Hamster::Vector.new(opts[:environment_variables])
+        @executor = opts[:executor]
       end
 
-      def execute(
-        stdin: '',
-        stdout: $stdout,
-        stderr: $stderr
-      )
-        Open4.spawn(
-          env,
-          *to_a,
-          stdin: stdin,
-          stdout: stdout,
-          stderr: stderr
-        )
+      def execute(opts = {})
+        @executor.execute(self, opts)
+      end
+
+      def env
+        @environment_variables.to_h(&:array)
       end
 
       def array
@@ -86,12 +79,9 @@ module Lino
           subcommands: opts.fetch(:subcommands, []),
           options: opts.fetch(:options, []),
           arguments: opts.fetch(:arguments, []),
-          environment_variables: opts.fetch(:environment_variables, [])
+          environment_variables: opts.fetch(:environment_variables, []),
+          executor: opts.fetch(:executor, nil)
         }
-      end
-
-      def env
-        @environment_variables.to_h(&:array)
       end
 
       def format_components(format, paths)

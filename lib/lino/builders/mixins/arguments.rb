@@ -10,9 +10,10 @@ module Lino
         include Validation
 
         def with_argument(argument)
-          return self if nil_or_empty?(argument.to_s)
+          return self if nil?(argument)
+          return self if empty?(argument.to_s)
 
-          with(arguments: @arguments.add(Model::Argument.new(argument.to_s)))
+          with(arguments: @arguments.add(Model::Argument.new(argument)))
         end
 
         def with_arguments(arguments)

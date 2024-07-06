@@ -1,0 +1,143 @@
+# frozen_string_literal: true
+
+require 'spec_helper'
+
+describe Lino::Executors::Childprocess do
+  describe '#execute' do
+    it 'executes the command line with inherited streams by default' do
+      command_line = Lino::Model::CommandLine.new(
+        'ls',
+        options: [
+          Lino::Model::Flag.new('-l'),
+          Lino::Model::Flag.new('-a')
+        ]
+      )
+      executor = described_class.new
+
+      child_process = instance_double(ChildProcess::AbstractProcess)
+      io = instance_double(ChildProcess::AbstractIO)
+      allow(ChildProcess).to(receive(:build)).and_return(child_process)
+      allow(child_process).to(receive(:io)).and_return(io)
+      allow(child_process).to(receive(:start))
+      allow(child_process).to(receive(:wait).and_return(0))
+      allow(io).to(receive(:inherit!))
+
+      executor.execute(command_line)
+
+      expect(ChildProcess)
+        .to(have_received(:build).with('ls', '-l', '-a').ordered)
+      expect(io).to(have_received(:inherit!).ordered)
+      expect(child_process).to(have_received(:start).ordered)
+      expect(child_process).to(have_received(:wait).ordered)
+    end
+
+    it 'uses the environment supplied in the command line' do
+      command_line = Lino::Model::CommandLine.new(
+        'ls',
+        environment_variables: [
+          Lino::Model::EnvironmentVariable.new('ENV_VAR1', 'val1'),
+          Lino::Model::EnvironmentVariable.new('ENV_VAR2', 'val2')
+        ]
+      )
+      executor = described_class.new
+
+      child_process = instance_double(ChildProcess::AbstractProcess)
+      io = instance_double(ChildProcess::AbstractIO)
+      environment = instance_double(Hash)
+      allow(ChildProcess).to(receive(:build)).and_return(child_process)
+      allow(child_process).to(receive(:io)).and_return(io)
+      allow(child_process).to(receive(:start))
+      allow(child_process).to(receive_messages(environment: environment,
+                                               wait: 0))
+      allow(io).to(receive(:inherit!))
+      allow(environment).to(receive(:[]=))
+
+      executor.execute(command_line)
+
+      expect(ChildProcess)
+        .to(have_received(:build).with('ls').ordered)
+      expect(io).to(have_received(:inherit!).ordered)
+      expect(environment)
+        .to(have_received(:[]=)
+              .with('ENV_VAR1', 'val1').ordered)
+      expect(environment)
+        .to(have_received(:[]=)
+              .with('ENV_VAR2', 'val2').ordered)
+      expect(child_process).to(have_received(:start).ordered)
+      expect(child_process).to(have_received(:wait).ordered)
+    end
+
+    it 'uses the supplied stdout and stderr when provided' do
+      command_line = Lino::Model::CommandLine.new('ls')
+      executor = described_class.new
+
+      stdout = StringIO.new
+      stderr = StringIO.new
+
+      child_process = instance_double(ChildProcess::AbstractProcess)
+      io = instance_double(ChildProcess::AbstractIO)
+      allow(ChildProcess).to(receive(:build)).and_return(child_process)
+      allow(child_process).to(receive(:io)).and_return(io)
+      allow(child_process).to(receive(:start))
+      allow(child_process).to(receive(:wait).and_return(0))
+      allow(io).to(receive(:inherit!))
+      allow(io).to(receive(:stdout=))
+      allow(io).to(receive(:stderr=))
+
+      executor.execute(command_line, stdout: stdout, stderr: stderr)
+
+      expect(ChildProcess)
+        .to(have_received(:build).with('ls').ordered)
+      expect(io).to(have_received(:inherit!).ordered)
+      expect(io).to(have_received(:stdout=).with(stdout).ordered)
+      expect(io).to(have_received(:stderr=).with(stderr).ordered)
+      expect(child_process).to(have_received(:start).ordered)
+      expect(child_process).to(have_received(:wait).ordered)
+    end
+
+    it 'writes provided stdin to stdin on the IO of the process' do
+      command_line = Lino::Model::CommandLine.new('ls')
+      executor = described_class.new
+
+      input = 'hello'
+
+      child_process = instance_double(ChildProcess::AbstractProcess)
+      io = instance_double(ChildProcess::AbstractIO)
+      stdin = instance_double(IO)
+      allow(ChildProcess).to(receive(:build)).and_return(child_process)
+      allow(child_process).to(receive(:io)).and_return(io)
+      allow(child_process).to(receive(:duplex=))
+      allow(child_process).to(receive(:start))
+      allow(child_process).to(receive(:wait).and_return(0))
+      allow(io).to(receive(:inherit!))
+      allow(io).to(receive(:stdin)).and_return(stdin)
+      allow(stdin).to(receive(:write))
+
+      executor.execute(command_line, stdin: input)
+
+      expect(ChildProcess)
+        .to(have_received(:build).with('ls').ordered)
+      expect(io).to(have_received(:inherit!).ordered)
+      expect(child_process).to(have_received(:duplex=).with(true).ordered)
+      expect(child_process).to(have_received(:start).ordered)
+      expect(stdin).to(have_received(:write).with(input).ordered)
+      expect(child_process).to(have_received(:wait).ordered)
+    end
+
+    it 'raises an error if the exit code is not zero' do
+      command_line = Lino::Model::CommandLine.new('ls')
+      executor = described_class.new
+
+      child_process = instance_double(ChildProcess::AbstractProcess)
+      io = instance_double(ChildProcess::AbstractIO)
+      allow(ChildProcess).to(receive(:build)).and_return(child_process)
+      allow(child_process).to(receive(:io)).and_return(io)
+      allow(child_process).to(receive(:start))
+      allow(child_process).to(receive(:wait).and_return(2))
+      allow(io).to(receive(:inherit!))
+
+      expect { executor.execute(command_line) }
+        .to(raise_error(Lino::Errors::ExecutionError))
+    end
+  end
+end
