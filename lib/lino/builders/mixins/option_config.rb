@@ -4,6 +4,13 @@ module Lino
   module Builders
     module Mixins
       module OptionConfig
+        def initialize(state)
+          @option_separator = state[:option_separator] || ' '
+          @option_quoting = state[:option_quoting]
+          @option_placement = state[:option_placement] || :after_command
+          super
+        end
+
         def with_option_separator(option_separator)
           with(option_separator: option_separator)
         end

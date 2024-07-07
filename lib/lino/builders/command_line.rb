@@ -2,6 +2,7 @@
 
 require 'hamster'
 
+require_relative 'mixins/state_boundary'
 require_relative 'mixins/appliables'
 require_relative 'mixins/arguments'
 require_relative 'mixins/environment_variables'
@@ -15,20 +16,19 @@ require_relative '../model'
 module Lino
   module Builders
     class CommandLine
-      include Mixins::Appliables
+      include Mixins::StateBoundary
       include Mixins::Arguments
       include Mixins::EnvironmentVariables
       include Mixins::OptionConfig
       include Mixins::Options
       include Mixins::Subcommands
       include Mixins::Executor
+      include Mixins::Appliables
       include Mixins::Validation
 
       def initialize(state)
-        state = with_defaults(state)
-        initialize_components(state)
-        initialize_option_config(state)
-        initialize_executor(state)
+        @command = state[:command]
+        super
       end
 
       def build
@@ -71,51 +71,6 @@ module Lino
 
       def executor_state
         { executor: @executor }
-      end
-
-      def initialize_components(state)
-        @command = state[:command]
-        @subcommands = Hamster::Vector.new(state[:subcommands])
-        @options = Hamster::Vector.new(state[:options])
-        @arguments = Hamster::Vector.new(state[:arguments])
-        @environment_variables =
-          Hamster::Vector.new(state[:environment_variables])
-      end
-
-      def initialize_option_config(state)
-        @option_separator = state[:option_separator]
-        @option_quoting = state[:option_quoting]
-        @option_placement = state[:option_placement]
-      end
-
-      def initialize_executor(state)
-        @executor = state[:executor]
-      end
-
-      def with_defaults(state)
-        state.merge(component_defaults(state))
-             .merge(option_config_defaults(state))
-             .merge(executor_defaults(state))
-      end
-
-      def component_defaults(state)
-        {
-          subcommands: state[:subcommands] || [],
-          options: state[:options] || [],
-          arguments: state[:arguments] || [],
-          environment_variables: state[:environment_variables] || []
-        }
-      end
-
-      def option_config_defaults(state)
-        {
-          option_separator: state[:option_separator] || ' ',
-          option_placement: state[:option_placement] || :after_command
-        }
-      end
-
-      def executor_defaults(state)
-        { executor: state[:executor] || Executors::Childprocess.new }
       end
 
       def with(replacements)

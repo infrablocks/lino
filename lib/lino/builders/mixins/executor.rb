@@ -4,6 +4,11 @@ module Lino
   module Builders
     module Mixins
       module Executor
+        def initialize(state)
+          @executor = state[:executor] || Executors::Childprocess.new
+          super
+        end
+
         def with_executor(executor)
           with(executor: executor)
         end

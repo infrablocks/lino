@@ -11,6 +11,11 @@ module Lino
         include Validation
         include Defaulting
 
+        def initialize(state)
+          @options = Hamster::Vector.new(state[:options] || [])
+          super
+        end
+
         def with_option(
           option,
           value,

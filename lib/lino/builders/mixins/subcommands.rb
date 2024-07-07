@@ -9,6 +9,11 @@ module Lino
       module Subcommands
         include Validation
 
+        def initialize(state)
+          @subcommands = Hamster::Vector.new(state[:subcommands] || [])
+          super
+        end
+
         def with_subcommand(subcommand, &block)
           return self if nil_or_empty?(subcommand)
 

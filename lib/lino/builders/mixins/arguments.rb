@@ -9,6 +9,11 @@ module Lino
       module Arguments
         include Validation
 
+        def initialize(state)
+          @arguments = Hamster::Vector.new(state[:arguments] || [])
+          super
+        end
+
         def with_argument(argument)
           return self if nil?(argument)
           return self if empty?(argument.to_s)

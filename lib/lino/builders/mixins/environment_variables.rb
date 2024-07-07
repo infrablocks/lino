@@ -9,6 +9,12 @@ module Lino
       module EnvironmentVariables
         include Validation
 
+        def initialize(state)
+          @environment_variables =
+            Hamster::Vector.new(state[:environment_variables] || [])
+          super
+        end
+
         def with_environment_variable(environment_variable, value)
           with(
             environment_variables:
