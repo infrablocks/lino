@@ -29,9 +29,9 @@ module Lino
             {
               type: :option,
               components: [option, value],
-              separator: separator,
-              quoting: quoting,
-              placement: placement
+              separator:,
+              quoting:,
+              placement:
             }
           ))
         end
@@ -61,9 +61,9 @@ module Lino
             s.with_option(
               option,
               value,
-              separator: separator,
-              quoting: quoting,
-              placement: placement
+              separator:,
+              quoting:,
+              placement:
             )
           end
         end

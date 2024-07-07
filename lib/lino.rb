@@ -10,7 +10,7 @@ module Lino
   class CommandLineBuilder
     class << self
       def for_command(command)
-        Lino::Builders::CommandLine.new(command: command)
+        Lino::Builders::CommandLine.new(command:)
       end
     end
   end

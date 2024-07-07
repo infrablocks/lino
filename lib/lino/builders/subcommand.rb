@@ -14,7 +14,7 @@ module Lino
 
       class << self
         def for_subcommand(subcommand)
-          Builders::Subcommand.new(subcommand: subcommand)
+          Builders::Subcommand.new(subcommand:)
         end
       end
 

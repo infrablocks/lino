@@ -12,7 +12,7 @@ module Lino
         end
 
         def with_option_separator(option_separator)
-          with(option_separator: option_separator)
+          with(option_separator:)
         end
 
         def with_option_quoting(character)
@@ -20,7 +20,7 @@ module Lino
         end
 
         def with_option_placement(option_placement)
-          with(option_placement: option_placement)
+          with(option_placement:)
         end
 
         def with_options_after_command

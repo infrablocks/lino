@@ -77,7 +77,7 @@ describe Lino::Executors::Childprocess do
       allow(child_process).to(receive(:io)).and_return(io)
       allow(child_process).to(receive(:cwd=))
       allow(child_process).to(receive(:start))
-      allow(child_process).to(receive_messages(environment: environment,
+      allow(child_process).to(receive_messages(environment:,
                                                wait: 0))
       allow(io).to(receive(:inherit!))
       allow(environment).to(receive(:[]=))
@@ -115,7 +115,7 @@ describe Lino::Executors::Childprocess do
       allow(io).to(receive(:stdout=))
       allow(io).to(receive(:stderr=))
 
-      executor.execute(command_line, stdout: stdout, stderr: stderr)
+      executor.execute(command_line, stdout:, stderr:)
 
       expect(ChildProcess)
         .to(have_received(:build).with('ls').ordered)

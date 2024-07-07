@@ -26,7 +26,7 @@ module Lino
           )
         end
 
-        def with_subcommands(subcommands, &block)
+        def with_subcommands(subcommands, &)
           return self if nil_or_empty?(subcommands)
 
           without_block = subcommands[0...-1]
@@ -34,7 +34,7 @@ module Lino
 
           without_block
             .inject(self) { |s, sc| s.with_subcommand(sc) }
-            .with_subcommand(with_block, &block)
+            .with_subcommand(with_block, &)
         end
 
         private

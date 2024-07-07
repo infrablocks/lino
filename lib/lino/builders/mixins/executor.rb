@@ -10,7 +10,7 @@ module Lino
         end
 
         def with_executor(executor)
-          with(executor: executor)
+          with(executor:)
         end
 
         private

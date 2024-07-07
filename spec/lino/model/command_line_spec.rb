@@ -587,7 +587,7 @@ describe Lino::Model::CommandLine do
           Lino::Model::Flag.new('-l'),
           Lino::Model::Flag.new('-a')
         ],
-        executor: executor
+        executor:
       )
 
       command_line.execute
@@ -609,22 +609,22 @@ describe Lino::Model::CommandLine do
           Lino::Model::Flag.new('-l'),
           Lino::Model::Flag.new('-a')
         ],
-        executor: executor
+        executor:
       )
 
       stdin = 'hello'
       stdout = StringIO.new
       stderr = StringIO.new
 
-      command_line.execute(stdin: stdin, stdout: stdout, stderr: stderr)
+      command_line.execute(stdin:, stdout:, stderr:)
 
       expect(executor).to(
         have_received(:execute)
           .with(
             command_line,
-            stdin: stdin,
-            stdout: stdout,
-            stderr: stderr
+            stdin:,
+            stdout:,
+            stderr:
           )
       )
     end

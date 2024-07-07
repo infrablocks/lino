@@ -55,18 +55,18 @@ describe Lino::Executors::Open4 do
 
       executor.execute(
         command_line,
-        stdin: stdin,
-        stdout: stdout,
-        stderr: stderr
+        stdin:,
+        stdout:,
+        stderr:
       )
 
       expect(Open4).to(
         have_received(:spawn).with(
           { 'ENV_VAR' => 'val' },
           'ls', '-l', '-a',
-          stdin: stdin,
-          stdout: stdout,
-          stderr: stderr,
+          stdin:,
+          stdout:,
+          stderr:,
           cwd: nil
         )
       )

@@ -10,7 +10,7 @@ module Lino
         end
 
         def with_working_directory(working_directory)
-          with(working_directory: working_directory)
+          with(working_directory:)
         end
 
         private
