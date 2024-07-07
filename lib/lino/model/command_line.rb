@@ -17,7 +17,8 @@ module Lino
                   :subcommands,
                   :options,
                   :arguments,
-                  :environment_variables
+                  :environment_variables,
+                  :executor
 
       def initialize(command, opts = {})
         opts = with_defaults(opts)
@@ -68,7 +69,8 @@ module Lino
           @subcommands,
           @options,
           @arguments,
-          @environment_variables
+          @environment_variables,
+          @executor
         ]
       end
 
@@ -80,7 +82,7 @@ module Lino
           options: opts.fetch(:options, []),
           arguments: opts.fetch(:arguments, []),
           environment_variables: opts.fetch(:environment_variables, []),
-          executor: opts.fetch(:executor, nil)
+          executor: opts.fetch(:executor, Executors::Childprocess.new)
         }
       end
 

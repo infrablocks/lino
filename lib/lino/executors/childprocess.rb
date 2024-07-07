@@ -23,6 +23,16 @@ module Lino
         )
       end
 
+      def ==(other)
+        self.class == other.class
+      end
+
+      alias eql? ==
+
+      def hash
+        self.class.hash
+      end
+
       private
 
       def start_process(process, opts)

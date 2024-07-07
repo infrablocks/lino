@@ -70,4 +70,52 @@ describe Lino::Executors::Open4 do
       )
     end
   end
+
+  describe '#==' do
+    it 'returns true when class equal' do
+      first = described_class.new
+      second = described_class.new
+
+      expect(first == second).to(be(true))
+    end
+
+    it 'returns false when class different' do
+      first = Class.new(described_class).new
+      second = described_class.new
+
+      expect(first == second).to(be(false))
+    end
+  end
+
+  describe '#eql?' do
+    it 'returns true when class equal' do
+      first = described_class.new
+      second = described_class.new
+
+      expect(first.eql?(second)).to(be(true))
+    end
+
+    it 'returns false when class different' do
+      first = Class.new(described_class).new
+      second = described_class.new
+
+      expect(first.eql?(second)).to(be(false))
+    end
+  end
+
+  describe '#hash' do
+    it 'has same hash when class equal' do
+      first = described_class.new
+      second = described_class.new
+
+      expect(first.hash).to(eq(second.hash))
+    end
+
+    it 'has different hash when class different' do
+      first = Class.new(described_class).new
+      second = described_class.new
+
+      expect(first.hash).not_to(eq(second.hash))
+    end
+  end
 end

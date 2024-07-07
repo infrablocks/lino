@@ -644,7 +644,8 @@ describe Lino::Model::CommandLine do
         ],
         environment_variables: [
           Lino::Model::EnvironmentVariable.new('ENV_VAR', 'VAL')
-        ]
+        ],
+        executor: Lino::Executors::Childprocess.new
       }
     end
 
@@ -752,6 +753,23 @@ describe Lino::Model::CommandLine do
 
       expect(first == second).to(be(false))
     end
+
+    it 'returns false when executors different' do
+      first = described_class.new(
+        'command',
+        opts.merge(
+          executor: Lino::Executors::Childprocess.new
+        )
+      )
+      second = described_class.new(
+        'command',
+        opts.merge(
+          executor: Lino::Executors::Open4.new
+        )
+      )
+
+      expect(first == second).to(be(false))
+    end
   end
 
   describe '#eql?' do
@@ -768,7 +786,8 @@ describe Lino::Model::CommandLine do
         ],
         environment_variables: [
           Lino::Model::EnvironmentVariable.new('ENV_VAR', 'VAL')
-        ]
+        ],
+        executor: Lino::Executors::Childprocess.new
       }
     end
 
@@ -876,6 +895,23 @@ describe Lino::Model::CommandLine do
 
       expect(first.eql?(second)).to(be(false))
     end
+
+    it 'returns false when executors different' do
+      first = described_class.new(
+        'command',
+        opts.merge(
+          executor: Lino::Executors::Childprocess.new
+        )
+      )
+      second = described_class.new(
+        'command',
+        opts.merge(
+          executor: Lino::Executors::Open4.new
+        )
+      )
+
+      expect(first.eql?(second)).to(be(false))
+    end
   end
 
   describe '#hash' do
@@ -892,7 +928,8 @@ describe Lino::Model::CommandLine do
         ],
         environment_variables: [
           Lino::Model::EnvironmentVariable.new('ENV_VAR', 'VAL')
-        ]
+        ],
+        executor: Lino::Executors::Childprocess.new
       }
     end
 
@@ -995,6 +1032,23 @@ describe Lino::Model::CommandLine do
           environment_variables: [
             Lino::Model::EnvironmentVariable.new('ENV_VAR2', 'VAL2')
           ]
+        )
+      )
+
+      expect(first.hash).not_to(eq(second.hash))
+    end
+
+    it 'has different hash when executors different' do
+      first = described_class.new(
+        'command',
+        opts.merge(
+          executor: Lino::Executors::Childprocess.new
+        )
+      )
+      second = described_class.new(
+        'command',
+        opts.merge(
+          executor: Lino::Executors::Open4.new
         )
       )
 

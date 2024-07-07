@@ -1819,4 +1819,31 @@ RSpec.describe Lino::CommandLineBuilder do
         )
     end
   end
+
+  describe 'executor' do
+    it 'uses a childprocess executor by default' do
+      expect(
+        described_class
+          .for_command('command')
+          .build
+      )
+        .to(eq(Lino::Model::CommandLine.new(
+                 'command',
+                 executor: Lino::Executors::Childprocess.new
+               )))
+    end
+
+    it 'uses the supplied executor when provided' do
+      expect(
+        described_class
+          .for_command('command')
+          .with_executor(Lino::Executors::Open4.new)
+          .build
+      )
+        .to(eq(Lino::Model::CommandLine.new(
+                 'command',
+                 executor: Lino::Executors::Open4.new
+               )))
+    end
+  end
 end

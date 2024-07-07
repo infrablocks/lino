@@ -82,7 +82,7 @@ module Lino
 
         private
 
-        # rubocop:disable Metrics/Metrics/MethodLength
+        # rubocop:disable Metrics/MethodLength
         def build_options
           @options.map do |o|
             if o[:type] == :option
@@ -100,7 +100,7 @@ module Lino
             end
           end
         end
-        # rubocop:enable Metrics/Metrics/MethodLength
+        # rubocop:enable Metrics/MethodLength
       end
     end
   end
