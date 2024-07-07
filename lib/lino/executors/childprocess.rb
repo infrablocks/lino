@@ -11,6 +11,7 @@ module Lino
         process = ::ChildProcess.build(*command_line.array)
 
         set_output_streams(process, opts)
+        set_working_directory(process, command_line.working_directory)
         set_environment(process, command_line.environment_variables)
         start_process(process, opts)
 
@@ -45,6 +46,10 @@ module Lino
         process.io.inherit!
         process.io.stdout = opts[:stdout] if opts[:stdout]
         process.io.stderr = opts[:stderr] if opts[:stderr]
+      end
+
+      def set_working_directory(process, working_directory)
+        process.cwd = working_directory
       end
 
       def set_environment(process, environment_variables)

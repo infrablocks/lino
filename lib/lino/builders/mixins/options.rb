@@ -87,25 +87,31 @@ module Lino
 
         private
 
-        # rubocop:disable Metrics/MethodLength
+        def state
+          super.merge(options: @options)
+        end
+
         def build_options
-          @options.map do |o|
-            if o[:type] == :option
-              Model::Option.new(
-                *o[:components],
-                separator: o[:separator] || @option_separator,
-                quoting: o[:quoting] || @option_quoting,
-                placement: o[:placement] || @option_placement
-              )
-            else
-              Model::Flag.new(
-                *o[:components],
-                placement: o[:placement] || @option_placement
-              )
-            end
+          @options.map do |data|
+            data[:type] == :option ? build_option(data) : build_flag(data)
           end
         end
-        # rubocop:enable Metrics/MethodLength
+
+        def build_option(option_data)
+          Model::Option.new(
+            *option_data[:components],
+            separator: option_data[:separator] || @option_separator,
+            quoting: option_data[:quoting] || @option_quoting,
+            placement: option_data[:placement] || @option_placement
+          )
+        end
+
+        def build_flag(flag_data)
+          Model::Flag.new(
+            *flag_data[:components],
+            placement: flag_data[:placement] || @option_placement
+          )
+        end
       end
     end
   end

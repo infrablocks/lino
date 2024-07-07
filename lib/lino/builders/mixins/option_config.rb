@@ -34,6 +34,16 @@ module Lino
         def with_options_after_arguments
           with_option_placement(:after_arguments)
         end
+
+        private
+
+        def state
+          super.merge(
+            option_separator: @option_separator,
+            option_quoting: @option_quoting,
+            option_placement: @option_placement
+          )
+        end
       end
     end
   end

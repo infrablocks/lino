@@ -26,6 +26,12 @@ module Lino
 
           arguments.inject(self) { |s, argument| s.with_argument(argument) }
         end
+
+        private
+
+        def state
+          super.merge(arguments: @arguments)
+        end
       end
     end
   end

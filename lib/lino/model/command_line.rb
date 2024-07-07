@@ -18,7 +18,8 @@ module Lino
                   :options,
                   :arguments,
                   :environment_variables,
-                  :executor
+                  :executor,
+                  :working_directory
 
       def initialize(command, opts = {})
         opts = with_defaults(opts)
@@ -29,6 +30,7 @@ module Lino
         @environment_variables =
           Hamster::Vector.new(opts[:environment_variables])
         @executor = opts[:executor]
+        @working_directory = opts[:working_directory]
       end
 
       def execute(opts = {})
@@ -70,7 +72,8 @@ module Lino
           @options,
           @arguments,
           @environment_variables,
-          @executor
+          @executor,
+          @working_directory
         ]
       end
 
@@ -82,7 +85,8 @@ module Lino
           options: opts.fetch(:options, []),
           arguments: opts.fetch(:arguments, []),
           environment_variables: opts.fetch(:environment_variables, []),
-          executor: opts.fetch(:executor, Executors::Childprocess.new)
+          executor: opts.fetch(:executor, Executors::Childprocess.new),
+          working_directory: opts.fetch(:working_directory, nil)
         }
       end
 

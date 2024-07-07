@@ -28,7 +28,8 @@ describe Lino::Executors::Open4 do
           'ls', '-l', '-a',
           stdin: '',
           stdout: $stdout,
-          stderr: $stderr
+          stderr: $stderr,
+          cwd: nil
         )
       )
     end
@@ -65,7 +66,31 @@ describe Lino::Executors::Open4 do
           'ls', '-l', '-a',
           stdin: stdin,
           stdout: stdout,
-          stderr: stderr
+          stderr: stderr,
+          cwd: nil
+        )
+      )
+    end
+
+    it 'passes the working directory when present' do
+      command_line = Lino::Model::CommandLine.new(
+        'ls',
+        working_directory: 'some/path/to/directory'
+      )
+      executor = described_class.new
+
+      allow(Open4).to(receive(:spawn))
+
+      executor.execute(command_line)
+
+      expect(Open4).to(
+        have_received(:spawn).with(
+          {},
+          'ls',
+          stdin: '',
+          stdout: $stdout,
+          stderr: $stderr,
+          cwd: 'some/path/to/directory'
         )
       )
     end

@@ -39,6 +39,10 @@ module Lino
 
         private
 
+        def state
+          super.merge(subcommands: @subcommands)
+        end
+
         def build_subcommands
           @subcommands.map(&:build)
         end

@@ -645,7 +645,8 @@ describe Lino::Model::CommandLine do
         environment_variables: [
           Lino::Model::EnvironmentVariable.new('ENV_VAR', 'VAL')
         ],
-        executor: Lino::Executors::Childprocess.new
+        executor: Lino::Executors::Childprocess.new,
+        working_directory: 'some/directory'
       }
     end
 
@@ -770,6 +771,23 @@ describe Lino::Model::CommandLine do
 
       expect(first == second).to(be(false))
     end
+
+    it 'returns false when working directories different' do
+      first = described_class.new(
+        'command',
+        opts.merge(
+          working_directory: 'some/directory'
+        )
+      )
+      second = described_class.new(
+        'command',
+        opts.merge(
+          working_directory: 'other/directory'
+        )
+      )
+
+      expect(first == second).to(be(false))
+    end
   end
 
   describe '#eql?' do
@@ -787,7 +805,8 @@ describe Lino::Model::CommandLine do
         environment_variables: [
           Lino::Model::EnvironmentVariable.new('ENV_VAR', 'VAL')
         ],
-        executor: Lino::Executors::Childprocess.new
+        executor: Lino::Executors::Childprocess.new,
+        working_directory: 'some/directory'
       }
     end
 
@@ -912,6 +931,23 @@ describe Lino::Model::CommandLine do
 
       expect(first.eql?(second)).to(be(false))
     end
+
+    it 'returns false when working directories different' do
+      first = described_class.new(
+        'command',
+        opts.merge(
+          working_directory: 'some/directory'
+        )
+      )
+      second = described_class.new(
+        'command',
+        opts.merge(
+          working_directory: 'other/directory'
+        )
+      )
+
+      expect(first.eql?(second)).to(be(false))
+    end
   end
 
   describe '#hash' do
@@ -929,7 +965,8 @@ describe Lino::Model::CommandLine do
         environment_variables: [
           Lino::Model::EnvironmentVariable.new('ENV_VAR', 'VAL')
         ],
-        executor: Lino::Executors::Childprocess.new
+        executor: Lino::Executors::Childprocess.new,
+        working_directory: 'some/directory'
       }
     end
 
@@ -1049,6 +1086,23 @@ describe Lino::Model::CommandLine do
         'command',
         opts.merge(
           executor: Lino::Executors::Open4.new
+        )
+      )
+
+      expect(first.hash).not_to(eq(second.hash))
+    end
+
+    it 'has different hash when working directories different' do
+      first = described_class.new(
+        'command',
+        opts.merge(
+          working_directory: 'some/directory'
+        )
+      )
+      second = described_class.new(
+        'command',
+        opts.merge(
+          working_directory: 'other/directory'
         )
       )
 

@@ -34,6 +34,12 @@ module Lino
             )
           end
         end
+
+        private
+
+        def state
+          super.merge(environment_variables: @environment_variables)
+        end
       end
     end
   end

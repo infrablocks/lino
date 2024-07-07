@@ -18,6 +18,7 @@ describe Lino::Executors::Childprocess do
       io = instance_double(ChildProcess::AbstractIO)
       allow(ChildProcess).to(receive(:build)).and_return(child_process)
       allow(child_process).to(receive(:io)).and_return(io)
+      allow(child_process).to(receive(:cwd=))
       allow(child_process).to(receive(:start))
       allow(child_process).to(receive(:wait).and_return(0))
       allow(io).to(receive(:inherit!))
@@ -27,6 +28,34 @@ describe Lino::Executors::Childprocess do
       expect(ChildProcess)
         .to(have_received(:build).with('ls', '-l', '-a').ordered)
       expect(io).to(have_received(:inherit!).ordered)
+      expect(child_process).to(have_received(:start).ordered)
+      expect(child_process).to(have_received(:wait).ordered)
+    end
+
+    it 'uses the working directory supplied in the command line' do
+      command_line = Lino::Model::CommandLine.new(
+        'ls',
+        working_directory: 'some/path/to/directory'
+      )
+      executor = described_class.new
+
+      child_process = instance_double(ChildProcess::AbstractProcess)
+      io = instance_double(ChildProcess::AbstractIO)
+      allow(ChildProcess).to(receive(:build)).and_return(child_process)
+      allow(child_process).to(receive(:io)).and_return(io)
+      allow(child_process).to(receive(:cwd=))
+      allow(child_process).to(receive(:start))
+      allow(child_process).to(receive(:wait).and_return(0))
+      allow(io).to(receive(:inherit!))
+
+      executor.execute(command_line)
+
+      expect(ChildProcess)
+        .to(have_received(:build).with('ls').ordered)
+      expect(io).to(have_received(:inherit!).ordered)
+      expect(child_process)
+        .to(have_received(:cwd=)
+              .with('some/path/to/directory').ordered)
       expect(child_process).to(have_received(:start).ordered)
       expect(child_process).to(have_received(:wait).ordered)
     end
@@ -46,6 +75,7 @@ describe Lino::Executors::Childprocess do
       environment = instance_double(Hash)
       allow(ChildProcess).to(receive(:build)).and_return(child_process)
       allow(child_process).to(receive(:io)).and_return(io)
+      allow(child_process).to(receive(:cwd=))
       allow(child_process).to(receive(:start))
       allow(child_process).to(receive_messages(environment: environment,
                                                wait: 0))
@@ -78,6 +108,7 @@ describe Lino::Executors::Childprocess do
       io = instance_double(ChildProcess::AbstractIO)
       allow(ChildProcess).to(receive(:build)).and_return(child_process)
       allow(child_process).to(receive(:io)).and_return(io)
+      allow(child_process).to(receive(:cwd=))
       allow(child_process).to(receive(:start))
       allow(child_process).to(receive(:wait).and_return(0))
       allow(io).to(receive(:inherit!))
@@ -106,6 +137,7 @@ describe Lino::Executors::Childprocess do
       stdin = instance_double(IO)
       allow(ChildProcess).to(receive(:build)).and_return(child_process)
       allow(child_process).to(receive(:io)).and_return(io)
+      allow(child_process).to(receive(:cwd=))
       allow(child_process).to(receive(:duplex=))
       allow(child_process).to(receive(:start))
       allow(child_process).to(receive(:wait).and_return(0))
@@ -132,6 +164,7 @@ describe Lino::Executors::Childprocess do
       io = instance_double(ChildProcess::AbstractIO)
       allow(ChildProcess).to(receive(:build)).and_return(child_process)
       allow(child_process).to(receive(:io)).and_return(io)
+      allow(child_process).to(receive(:cwd=))
       allow(child_process).to(receive(:start))
       allow(child_process).to(receive(:wait).and_return(2))
       allow(io).to(receive(:inherit!))

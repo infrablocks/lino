@@ -1846,4 +1846,28 @@ RSpec.describe Lino::CommandLineBuilder do
                )))
     end
   end
+
+  describe 'working directory' do
+    it 'uses a nil working directory by default' do
+      expect(
+        described_class
+          .for_command('command')
+          .build
+      )
+        .to(eq(Lino::Model::CommandLine.new('command', working_directory: nil)))
+    end
+
+    it 'uses the supplied working directory when provided' do
+      expect(
+        described_class
+          .for_command('command')
+          .with_working_directory('some/path/to/directory')
+          .build
+      )
+        .to(eq(Lino::Model::CommandLine.new(
+                 'command',
+                 working_directory: 'some/path/to/directory'
+               )))
+    end
+  end
 end

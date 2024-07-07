@@ -10,6 +10,12 @@ module Lino
         def initialize(_state)
           super()
         end
+
+        private
+
+        def state
+          {}
+        end
       end
     end
   end

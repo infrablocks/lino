@@ -12,6 +12,12 @@ module Lino
         def with_executor(executor)
           with(executor: executor)
         end
+
+        private
+
+        def state
+          super.merge(executor: @executor)
+        end
       end
     end
   end
