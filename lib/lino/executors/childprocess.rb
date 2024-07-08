@@ -39,7 +39,8 @@ module Lino
       def start_process(process, opts)
         process.duplex = true if opts[:stdin]
         process.start
-        process.io.stdin.write(opts[:stdin]) if opts[:stdin]
+        process.io.stdin.write(opts[:stdin].read) if opts[:stdin]
+        process.io.stdin.close if opts[:stdin]
       end
 
       def set_output_streams(process, opts)

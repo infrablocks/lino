@@ -126,11 +126,12 @@ describe Lino::Executors::Childprocess do
       expect(child_process).to(have_received(:wait).ordered)
     end
 
-    it 'writes provided stdin to stdin on the IO of the process' do
+    it 'writes contents of provided stdin to stdin on the ' \
+         'IO of the process and closes it' do
       command_line = Lino::Model::CommandLine.new('ls')
       executor = described_class.new
 
-      input = 'hello'
+      input = StringIO.new('hello')
 
       child_process = instance_double(ChildProcess::AbstractProcess)
       io = instance_double(ChildProcess::AbstractIO)
@@ -144,6 +145,7 @@ describe Lino::Executors::Childprocess do
       allow(io).to(receive(:inherit!))
       allow(io).to(receive(:stdin)).and_return(stdin)
       allow(stdin).to(receive(:write))
+      allow(stdin).to(receive(:close))
 
       executor.execute(command_line, stdin: input)
 
@@ -152,7 +154,8 @@ describe Lino::Executors::Childprocess do
       expect(io).to(have_received(:inherit!).ordered)
       expect(child_process).to(have_received(:duplex=).with(true).ordered)
       expect(child_process).to(have_received(:start).ordered)
-      expect(stdin).to(have_received(:write).with(input).ordered)
+      expect(stdin).to(have_received(:write).with('hello').ordered)
+      expect(stdin).to(have_received(:close).ordered)
       expect(child_process).to(have_received(:wait).ordered)
     end
 
