@@ -12,11 +12,13 @@ describe Lino::Executors::Mock do
 
     expect(executor.executions)
       .to(eq(
-            [{
-              command_line:,
-              opts: { some: 'options' },
-              exit_code: 0
-            }]
+            [
+              Lino::Executors::Mock::Execution.new(
+                command_line:,
+                opts: { some: 'options' },
+                exit_code: 0
+              )
+            ]
           ))
   end
 
@@ -32,16 +34,16 @@ describe Lino::Executors::Mock do
     expect(executor.executions)
       .to(eq(
             [
-              {
+              Lino::Executors::Mock::Execution.new(
                 command_line: command_line1,
                 opts: { some: 'options' },
                 exit_code: 0
-              },
-              {
+              ),
+              Lino::Executors::Mock::Execution.new(
                 command_line: command_line2,
                 opts: { other: 'options' },
                 exit_code: 0
-              }
+              )
             ]
           ))
   end
@@ -56,11 +58,13 @@ describe Lino::Executors::Mock do
       .to(raise_error(Lino::Errors::ExecutionError))
     expect(executor.executions)
       .to(eq(
-            [{
-              command_line:,
-              opts: { some: 'options' },
-              exit_code: 2
-            }]
+            [
+              Lino::Executors::Mock::Execution.new(
+                command_line:,
+                opts: { some: 'options' },
+                exit_code: 2
+              )
+            ]
           ))
   end
 
@@ -102,12 +106,14 @@ describe Lino::Executors::Mock do
 
     expect(executor.executions)
       .to(eq(
-            [{
-              command_line:,
-              opts: { stdout: },
-              exit_code: 0,
-              stdout_contents: 'Hello!'
-            }]
+            [
+              Lino::Executors::Mock::Execution.new(
+                command_line:,
+                opts: { stdout: },
+                exit_code: 0,
+                stdout_contents: 'Hello!'
+              )
+            ]
           ))
   end
 
@@ -122,11 +128,13 @@ describe Lino::Executors::Mock do
 
     expect(executor.executions)
       .to(eq(
-            [{
-              command_line:,
-              opts: {},
-              exit_code: 0
-            }]
+            [
+              Lino::Executors::Mock::Execution.new(
+                command_line:,
+                opts: {},
+                exit_code: 0
+              )
+            ]
           ))
   end
 
@@ -156,12 +164,14 @@ describe Lino::Executors::Mock do
 
     expect(executor.executions)
       .to(eq(
-            [{
-              command_line:,
-              opts: { stderr: },
-              exit_code: 0,
-              stderr_contents: 'Error!'
-            }]
+            [
+              Lino::Executors::Mock::Execution.new(
+                command_line:,
+                opts: { stderr: },
+                exit_code: 0,
+                stderr_contents: 'Error!'
+              )
+            ]
           ))
   end
 
@@ -176,11 +186,13 @@ describe Lino::Executors::Mock do
 
     expect(executor.executions)
       .to(eq(
-            [{
-              command_line:,
-              opts: {},
-              exit_code: 0
-            }]
+            [
+              Lino::Executors::Mock::Execution.new(
+                command_line:,
+                opts: {},
+                exit_code: 0
+              )
+            ]
           ))
   end
 
@@ -198,12 +210,14 @@ describe Lino::Executors::Mock do
 
     expect(executor.executions)
       .to(eq(
-            [{
-              command_line:,
-              opts: { stdin: },
-              exit_code: 0,
-              stdin_contents: 'Input!'
-            }]
+            [
+              Lino::Executors::Mock::Execution.new(
+                command_line:,
+                opts: { stdin: },
+                exit_code: 0,
+                stdin_contents: 'Input!'
+              )
+            ]
           ))
   end
 
