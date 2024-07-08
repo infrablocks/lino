@@ -85,7 +85,7 @@ module Lino
           options: opts.fetch(:options, []),
           arguments: opts.fetch(:arguments, []),
           environment_variables: opts.fetch(:environment_variables, []),
-          executor: opts.fetch(:executor, Executors::Childprocess.new),
+          executor: opts.fetch(:executor, Lino.configuration.executor),
           working_directory: opts.fetch(:working_directory, nil)
         }
       end

@@ -7,6 +7,30 @@ require 'lino/executors'
 require 'lino/errors'
 
 module Lino
+  class << self
+    attr_writer :configuration
+
+    def configuration
+      @configuration ||= Configuration.new
+    end
+
+    def configure
+      yield(configuration)
+    end
+
+    def reset!
+      @configuration = nil
+    end
+  end
+
+  class Configuration
+    attr_accessor :executor
+
+    def initialize
+      @executor = Executors::Childprocess.new
+    end
+  end
+
   class CommandLineBuilder
     class << self
       def for_command(command)

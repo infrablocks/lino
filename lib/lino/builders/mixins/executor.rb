@@ -5,8 +5,8 @@ module Lino
     module Mixins
       module Executor
         def initialize(state)
-          @executor = state[:executor] || Executors::Childprocess.new
           super
+          @executor = state[:executor] || Lino.configuration.executor
         end
 
         def with_executor(executor)

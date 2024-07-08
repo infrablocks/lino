@@ -17,7 +17,7 @@ module Lino
 
         exit_code = process.wait
 
-        return unless exit_code != 0
+        return if exit_code.zero?
 
         raise Lino::Errors::ExecutionError.new(
           command_line.string, exit_code

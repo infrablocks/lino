@@ -1821,16 +1821,21 @@ RSpec.describe Lino::CommandLineBuilder do
   end
 
   describe 'executor' do
-    it 'uses a childprocess executor by default' do
+    it 'uses the executor from global configuration by default' do
+      executor = Lino::Executors::Mock.new
+
+      Lino.configure do |config|
+        config.executor = executor
+      end
+
       expect(
         described_class
           .for_command('command')
           .build
       )
-        .to(eq(Lino::Model::CommandLine.new(
-                 'command',
-                 executor: Lino::Executors::Childprocess.new
-               )))
+        .to(eq(Lino::Model::CommandLine.new('command', executor:)))
+    ensure
+      Lino.reset!
     end
 
     it 'uses the supplied executor when provided' do
