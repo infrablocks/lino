@@ -248,4 +248,285 @@ describe Lino::Executors::Mock do
     expect(executor.stdout_contents).to(be_nil)
     expect(executor.stderr_contents).to(be_nil)
   end
+
+  describe Lino::Executors::Mock::Execution do
+    describe '#==' do
+      let(:state) do
+        {
+          command_line: Lino::Model::CommandLine.new('ls'),
+          opts: {},
+          exit_code: 0,
+          stdin_contents: 'Input!',
+          stdout_contents: 'Hello!',
+          stderr_contents: 'Error!'
+        }
+      end
+
+      it 'returns true when class and state equal' do
+        first = described_class.new(state)
+        second = described_class.new(state)
+
+        expect(first == second).to(be(true))
+      end
+
+      it 'returns false when class different' do
+        first = Class.new(described_class).new(state)
+        second = described_class.new(state)
+
+        expect(first == second).to(be(false))
+      end
+
+      it 'returns false when command line different' do
+        first = described_class.new(
+          state.merge(command_line: Lino::Model::CommandLine.new('ls'))
+        )
+        second = described_class.new(
+          state.merge(command_line: Lino::Model::CommandLine.new('pwd'))
+        )
+
+        expect(first == second).to(be(false))
+      end
+
+      it 'returns false when opts different' do
+        first = described_class.new(
+          state.merge(opts: { some: 'options' })
+        )
+        second = described_class.new(
+          state.merge(opts: { other: 'options' })
+        )
+
+        expect(first == second).to(be(false))
+      end
+
+      it 'returns false when exit code different' do
+        first = described_class.new(
+          state.merge(exit_code: 0)
+        )
+        second = described_class.new(
+          state.merge(exit_code: 1)
+        )
+
+        expect(first == second).to(be(false))
+      end
+
+      it 'returns false when stdin contents different' do
+        first = described_class.new(
+          state.merge(stdin_contents: 'contents 1')
+        )
+        second = described_class.new(
+          state.merge(stdin_contents: 'contents 2')
+        )
+
+        expect(first == second).to(be(false))
+      end
+
+      it 'returns false when stdout contents different' do
+        first = described_class.new(
+          state.merge(stdout_contents: 'contents 1')
+        )
+        second = described_class.new(
+          state.merge(stdout_contents: 'contents 2')
+        )
+
+        expect(first == second).to(be(false))
+      end
+
+      it 'returns false when stderr contents different' do
+        first = described_class.new(
+          state.merge(stderr_contents: 'contents 1')
+        )
+        second = described_class.new(
+          state.merge(stderr_contents: 'contents 2')
+        )
+
+        expect(first == second).to(be(false))
+      end
+    end
+
+    describe '#eql?' do
+      let(:state) do
+        {
+          command_line: Lino::Model::CommandLine.new('ls'),
+          opts: {},
+          exit_code: 0,
+          stdin_contents: 'Input!',
+          stdout_contents: 'Hello!',
+          stderr_contents: 'Error!'
+        }
+      end
+
+      it 'returns true when class and state equal' do
+        first = described_class.new(state)
+        second = described_class.new(state)
+
+        expect(first.eql?(second)).to(be(true))
+      end
+
+      it 'returns false when class different' do
+        first = Class.new(described_class).new(state)
+        second = described_class.new(state)
+
+        expect(first.eql?(second)).to(be(false))
+      end
+
+      it 'returns false when command line different' do
+        first = described_class.new(
+          state.merge(command_line: Lino::Model::CommandLine.new('ls'))
+        )
+        second = described_class.new(
+          state.merge(command_line: Lino::Model::CommandLine.new('pwd'))
+        )
+
+        expect(first.eql?(second)).to(be(false))
+      end
+
+      it 'returns false when opts different' do
+        first = described_class.new(
+          state.merge(opts: { some: 'options' })
+        )
+        second = described_class.new(
+          state.merge(opts: { other: 'options' })
+        )
+
+        expect(first.eql?(second)).to(be(false))
+      end
+
+      it 'returns false when exit code different' do
+        first = described_class.new(
+          state.merge(exit_code: 0)
+        )
+        second = described_class.new(
+          state.merge(exit_code: 1)
+        )
+
+        expect(first.eql?(second)).to(be(false))
+      end
+
+      it 'returns false when stdin contents different' do
+        first = described_class.new(
+          state.merge(stdin_contents: 'contents 1')
+        )
+        second = described_class.new(
+          state.merge(stdin_contents: 'contents 2')
+        )
+
+        expect(first.eql?(second)).to(be(false))
+      end
+
+      it 'returns false when stdout contents different' do
+        first = described_class.new(
+          state.merge(stdout_contents: 'contents 1')
+        )
+        second = described_class.new(
+          state.merge(stdout_contents: 'contents 2')
+        )
+
+        expect(first.eql?(second)).to(be(false))
+      end
+
+      it 'returns false when stderr contents different' do
+        first = described_class.new(
+          state.merge(stderr_contents: 'contents 1')
+        )
+        second = described_class.new(
+          state.merge(stderr_contents: 'contents 2')
+        )
+
+        expect(first.eql?(second)).to(be(false))
+      end
+    end
+
+    describe '#hash' do
+      let(:state) do
+        {
+          command_line: Lino::Model::CommandLine.new('ls'),
+          opts: {},
+          exit_code: 0,
+          stdin_contents: 'Input!',
+          stdout_contents: 'Hello!',
+          stderr_contents: 'Error!'
+        }
+      end
+
+      it 'has same hash when class and state equal' do
+        first = described_class.new(state)
+        second = described_class.new(state)
+
+        expect(first.hash).to(eq(second.hash))
+      end
+
+      it 'has different hash when class different' do
+        first = Class.new(described_class).new(state)
+        second = described_class.new(state)
+
+        expect(first.hash).not_to(eq(second.hash))
+      end
+
+      it 'has different hash when command line different' do
+        first = described_class.new(
+          state.merge(command_line: Lino::Model::CommandLine.new('ls'))
+        )
+        second = described_class.new(
+          state.merge(command_line: Lino::Model::CommandLine.new('pwd'))
+        )
+
+        expect(first.hash).not_to(eq(second.hash))
+      end
+
+      it 'has different hash when opts different' do
+        first = described_class.new(
+          state.merge(opts: { some: 'options' })
+        )
+        second = described_class.new(
+          state.merge(opts: { other: 'options' })
+        )
+
+        expect(first.hash).not_to(eq(second.hash))
+      end
+
+      it 'has different hash when exit code different' do
+        first = described_class.new(
+          state.merge(exit_code: 0)
+        )
+        second = described_class.new(
+          state.merge(exit_code: 1)
+        )
+
+        expect(first.hash).not_to(eq(second.hash))
+      end
+
+      it 'has different hash when stdin contents different' do
+        first = described_class.new(
+          state.merge(stdin_contents: 'contents 1')
+        )
+        second = described_class.new(
+          state.merge(stdin_contents: 'contents 2')
+        )
+
+        expect(first.hash).not_to(eq(second.hash))
+      end
+
+      it 'has different hash when stdout contents different' do
+        first = described_class.new(
+          state.merge(stdout_contents: 'contents 1')
+        )
+        second = described_class.new(
+          state.merge(stdout_contents: 'contents 2')
+        )
+
+        expect(first.hash).not_to(eq(second.hash))
+      end
+
+      it 'has different hash when stderr contents different' do
+        first = described_class.new(
+          state.merge(stderr_contents: 'contents 1')
+        )
+        second = described_class.new(
+          state.merge(stderr_contents: 'contents 2')
+        )
+
+        expect(first.hash).not_to(eq(second.hash))
+      end
+    end
+  end
 end
