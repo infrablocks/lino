@@ -11,25 +11,8 @@ module Lino
       end
 
       def execute(command_line, opts = {})
-        stdin = opts[:stdin]
-        stdout = opts[:stdout]
-        stderr = opts[:stderr]
-
         execution = { command_line:, opts:, exit_code: @exit_code }
-
-        if stdout && stdout_contents
-          execution[:stdout_contents] = stdout_contents
-          stdout.write(stdout_contents)
-        end
-
-        if stderr && stderr_contents
-          execution[:stderr_contents] = stderr_contents
-          stderr.write(stderr_contents)
-        end
-
-        if stdin
-          execution[:stdin_contents] = stdin.read
-        end
+        execution = process_streams(execution, opts)
 
         @executions << execution
 
@@ -57,6 +40,38 @@ module Lino
         @exit_code = 0
         @stdout_contents = nil
         @stderr_contents = nil
+      end
+
+      private
+
+      def process_streams(execution, opts)
+        execution = process_stdout(execution, opts[:stdout])
+        execution = process_stderr(execution, opts[:stderr])
+        process_stdin(execution, opts[:stdin])
+      end
+
+      def process_stdout(execution, stdout)
+        if stdout && stdout_contents
+          stdout.write(stdout_contents)
+          return execution.merge(stdout_contents:)
+        end
+
+        execution
+      end
+
+      def process_stderr(execution, stderr)
+        if stderr && stderr_contents
+          stderr.write(stderr_contents)
+          return execution.merge(stderr_contents:)
+        end
+
+        execution
+      end
+
+      def process_stdin(execution, stdin)
+        return execution.merge(stdin_contents: stdin.read) if stdin
+
+        execution
       end
     end
   end

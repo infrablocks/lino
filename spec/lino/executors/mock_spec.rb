@@ -84,13 +84,13 @@ describe Lino::Executors::Mock do
 
     stdout = StringIO.new
 
-    executor.execute(command_line, stdout: stdout)
+    executor.execute(command_line, stdout:)
 
     expect(stdout.string).to(eq('Hello!'))
   end
 
   it 'captures stdout contents on execution when ' \
-       'stdout and contents provided' do
+     'stdout and contents provided' do
     command_line = Lino::Model::CommandLine.new('ls')
 
     executor = described_class.new
@@ -98,21 +98,21 @@ describe Lino::Executors::Mock do
 
     stdout = StringIO.new
 
-    executor.execute(command_line, stdout: stdout)
+    executor.execute(command_line, stdout:)
 
     expect(executor.executions)
       .to(eq(
             [{
-               command_line:,
-               opts: { stdout: stdout },
-               exit_code: 0,
-               stdout_contents: 'Hello!'
-             }]
+              command_line:,
+              opts: { stdout: },
+              exit_code: 0,
+              stdout_contents: 'Hello!'
+            }]
           ))
   end
 
   it 'does not capture stdout contents on execution when ' \
-       'stdout not provided' do
+     'stdout not provided' do
     command_line = Lino::Model::CommandLine.new('ls')
 
     executor = described_class.new
@@ -123,10 +123,10 @@ describe Lino::Executors::Mock do
     expect(executor.executions)
       .to(eq(
             [{
-               command_line:,
-               opts: {},
-               exit_code: 0
-             }]
+              command_line:,
+              opts: {},
+              exit_code: 0
+            }]
           ))
   end
 
@@ -138,13 +138,13 @@ describe Lino::Executors::Mock do
 
     stderr = StringIO.new
 
-    executor.execute(command_line, stderr: stderr)
+    executor.execute(command_line, stderr:)
 
     expect(stderr.string).to(eq('Error!'))
   end
 
   it 'captures stderr contents on execution when ' \
-       'stderr and contents provided' do
+     'stderr and contents provided' do
     command_line = Lino::Model::CommandLine.new('ls')
 
     executor = described_class.new
@@ -152,21 +152,21 @@ describe Lino::Executors::Mock do
 
     stderr = StringIO.new
 
-    executor.execute(command_line, stderr: stderr)
+    executor.execute(command_line, stderr:)
 
     expect(executor.executions)
       .to(eq(
             [{
-               command_line:,
-               opts: { stderr: stderr },
-               exit_code: 0,
-               stderr_contents: 'Error!'
-             }]
+              command_line:,
+              opts: { stderr: },
+              exit_code: 0,
+              stderr_contents: 'Error!'
+            }]
           ))
   end
 
   it 'does not capture stderr contents on execution when ' \
-       'stderr not provided' do
+     'stderr not provided' do
     command_line = Lino::Model::CommandLine.new('ls')
 
     executor = described_class.new
@@ -177,10 +177,10 @@ describe Lino::Executors::Mock do
     expect(executor.executions)
       .to(eq(
             [{
-               command_line:,
-               opts: {},
-               exit_code: 0
-             }]
+              command_line:,
+              opts: {},
+              exit_code: 0
+            }]
           ))
   end
 
@@ -194,20 +194,18 @@ describe Lino::Executors::Mock do
     stdin.write('Input!')
     stdin.rewind
 
-    executor.execute(command_line, stdin: stdin)
+    executor.execute(command_line, stdin:)
 
     expect(executor.executions)
       .to(eq(
             [{
-               command_line:,
-               opts: { stdin: stdin },
-               exit_code: 0,
-               stdin_contents: 'Input!'
-             }]
+              command_line:,
+              opts: { stdin: },
+              exit_code: 0,
+              stdin_contents: 'Input!'
+            }]
           ))
   end
-
-
 
   it 'resets the mock' do
     command_line1 = Lino::Model::CommandLine.new('ls')

@@ -127,7 +127,7 @@ describe Lino::Executors::Childprocess do
     end
 
     it 'writes contents of provided stdin to stdin on the ' \
-         'IO of the process and closes it' do
+       'IO of the process and closes it' do
       command_line = Lino::Model::CommandLine.new('ls')
       executor = described_class.new
 
