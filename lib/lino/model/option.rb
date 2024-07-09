@@ -29,7 +29,7 @@ module Lino
 
       def array
         if separator == ' '
-          [option, value]
+          [option.to_s, value.to_s]
         else
           ["#{option}#{separator}#{value}"]
         end

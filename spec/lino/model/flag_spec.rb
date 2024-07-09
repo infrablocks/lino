@@ -130,9 +130,21 @@ describe Lino::Model::Flag do
   end
 
   describe '#string' do
-    it 'returns flag' do
+    it 'returns flag if string' do
       expect(described_class.new('--flag').string)
         .to(eq('--flag'))
+    end
+
+    it 'converts non-string flag to string before returning' do
+      flag_class = Class.new do
+        def to_s
+          '-h'
+        end
+      end
+      flag = flag_class.new
+
+      expect(described_class.new(flag).string)
+        .to(eq('-h'))
     end
   end
 
@@ -140,6 +152,18 @@ describe Lino::Model::Flag do
     it 'returns array with flag as only item' do
       expect(described_class.new('--flag').array)
         .to(eq(%w[--flag]))
+    end
+
+    it 'converts non-string flag to string before adding to array' do
+      flag_class = Class.new do
+        def to_s
+          '-h'
+        end
+      end
+      flag = flag_class.new
+
+      expect(described_class.new(flag).array)
+        .to(eq(%w[-h]))
     end
   end
 end

@@ -10,12 +10,12 @@ module Lino
       end
 
       def string
-        argument
+        argument.to_s
       end
       alias to_s string
 
       def array
-        [argument]
+        [argument.to_s]
       end
       alias to_a string
 

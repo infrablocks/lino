@@ -13,12 +13,12 @@ module Lino
       end
 
       def string
-        flag
+        flag.to_s
       end
       alias to_s string
 
       def array
-        [flag]
+        [flag.to_s]
       end
       alias to_a string
 

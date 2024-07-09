@@ -26,7 +26,7 @@ module Lino
       alias to_s string
 
       def array
-        [name, value]
+        [name.to_s, value.to_s]
       end
       alias to_a array
 

@@ -77,12 +77,22 @@ describe Lino::Model::Argument do
       expect(described_class.new('arg').string)
         .to(eq('arg'))
     end
+
+    it 'converts non-string value to string before returning' do
+      expect(described_class.new(true).string)
+        .to(eq('true'))
+    end
   end
 
   describe '#array' do
     it 'returns array with flag as only item' do
       expect(described_class.new('arg').array)
         .to(eq(%w[arg]))
+    end
+
+    it 'converts non-string value to string before adding to array' do
+      expect(described_class.new(true).array)
+        .to(eq(%w[true]))
     end
   end
 end

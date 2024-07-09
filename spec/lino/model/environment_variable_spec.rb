@@ -154,6 +154,16 @@ describe Lino::Model::EnvironmentVariable do
         .to(eq('ENV_VAR="val"'))
     end
 
+    it 'converts non-string name to string before returning' do
+      expect(described_class.new(24, 'val').string)
+        .to(eq('24="val"'))
+    end
+
+    it 'converts non-string value to string before returning' do
+      expect(described_class.new('ENV_VAR', true).string)
+        .to(eq('ENV_VAR="true"'))
+    end
+
     it 'uses specified quoting when provided' do
       expect(described_class
                .new('ENV_VAR', 'val', quoting: "'")
@@ -166,6 +176,16 @@ describe Lino::Model::EnvironmentVariable do
     it 'returns name and value as items in an array' do
       expect(described_class.new('ENV_VAR', 'val').array)
         .to(eq(%w[ENV_VAR val]))
+    end
+
+    it 'converts non-string name to string before adding to array' do
+      expect(described_class.new(24, 'val').array)
+        .to(eq(%w[24 val]))
+    end
+
+    it 'converts non-string value to string before adding to array' do
+      expect(described_class.new('ENV_VAR', true).array)
+        .to(eq(%w[ENV_VAR true]))
     end
 
     it 'ignores quoting' do

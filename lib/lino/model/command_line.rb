@@ -100,7 +100,7 @@ module Lino
       def formatted_components(format)
         {
           environment_variables: @environment_variables.map(&format),
-          command: @command,
+          command: @command.to_s,
           options: @options
             .group_by(&:placement)
             .map { |p, o| [p, o.map(&format)] },

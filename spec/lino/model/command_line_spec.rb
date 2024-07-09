@@ -10,6 +10,18 @@ describe Lino::Model::CommandLine do
         .to(eq('command'))
     end
 
+    it 'converts non-string command to string before using' do
+      command_class = Class.new do
+        def to_s
+          'command'
+        end
+      end
+      command = command_class.new
+
+      expect(described_class.new(command).string)
+        .to(eq('command'))
+    end
+
     it 'includes options' do
       expect(described_class
                .new('command-with-options',
@@ -62,6 +74,23 @@ describe Lino::Model::CommandLine do
                .new('command-with-subcommand',
                     subcommands: [
                       Lino::Model::Subcommand.new('sub')
+                    ])
+               .string)
+        .to(eq('command-with-subcommand sub'))
+    end
+
+    it 'converts non-string subcommand to string before using' do
+      subcommand_class = Class.new do
+        def to_s
+          'sub'
+        end
+      end
+      subcommand = subcommand_class.new
+
+      expect(described_class
+               .new('command-with-subcommand',
+                    subcommands: [
+                      Lino::Model::Subcommand.new(subcommand)
                     ])
                .string)
         .to(eq('command-with-subcommand sub'))
@@ -296,6 +325,18 @@ describe Lino::Model::CommandLine do
         .to(eq(%w[command]))
     end
 
+    it 'converts non-string command to string before using' do
+      command_class = Class.new do
+        def to_s
+          'command'
+        end
+      end
+      command = command_class.new
+
+      expect(described_class.new(command).array)
+        .to(eq(%w[command]))
+    end
+
     it 'includes options' do
       expect(described_class
                .new('command-with-options',
@@ -342,6 +383,23 @@ describe Lino::Model::CommandLine do
                .new('command-with-subcommand',
                     subcommands: [
                       Lino::Model::Subcommand.new('sub')
+                    ])
+               .array)
+        .to(eq(%w[command-with-subcommand sub]))
+    end
+
+    it 'converts non-string subcommand to string before using' do
+      subcommand_class = Class.new do
+        def to_s
+          'sub'
+        end
+      end
+      subcommand = subcommand_class.new
+
+      expect(described_class
+               .new('command-with-subcommand',
+                    subcommands: [
+                      Lino::Model::Subcommand.new(subcommand)
                     ])
                .array)
         .to(eq(%w[command-with-subcommand sub]))

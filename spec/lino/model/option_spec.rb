@@ -235,6 +235,23 @@ describe Lino::Model::Option do
   end
 
   describe '#string' do
+    it 'converts non-string option to string before returning' do
+      option_class = Class.new do
+        def to_s
+          '--opt'
+        end
+      end
+      option = option_class.new
+
+      expect(described_class.new(option, 'val').string)
+        .to(eq('--opt val'))
+    end
+
+    it 'converts non-string value to string before returning' do
+      expect(described_class.new('--opt', true).string)
+        .to(eq('--opt true'))
+    end
+
     it 'uses space separator with no quoting by default' do
       expect(described_class.new('--opt', 'val').string)
         .to(eq('--opt val'))
@@ -259,6 +276,23 @@ describe Lino::Model::Option do
     it 'returns option and value as separate items by default' do
       expect(described_class.new('--opt', 'val').array)
         .to(eq(%w[--opt val]))
+    end
+
+    it 'converts non-string option to string before using in array' do
+      option_class = Class.new do
+        def to_s
+          '--opt'
+        end
+      end
+      option = option_class.new
+
+      expect(described_class.new(option, 'val').array)
+        .to(eq(%w[--opt val]))
+    end
+
+    it 'converts non-string value to string before using in array' do
+      expect(described_class.new('--opt', true).array)
+        .to(eq(%w[--opt true]))
     end
 
     it 'returns option and value as single item with separator ' \

@@ -12,12 +12,12 @@ module Lino
       end
 
       def string
-        [@subcommand, @options.map(&:string)].reject(&:empty?).join(' ')
+        [@subcommand.to_s, @options.map(&:string)].reject(&:empty?).join(' ')
       end
       alias to_s string
 
       def array
-        [@subcommand, @options.map(&:array)].flatten
+        [@subcommand.to_s, @options.map(&:array)].flatten
       end
       alias to_a array
 
