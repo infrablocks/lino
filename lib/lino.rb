@@ -10,6 +10,10 @@ module Lino
   class << self
     attr_writer :configuration
 
+    def builder_for_command(command)
+      Lino::Builders::CommandLine.new(command:)
+    end
+
     def configuration
       @configuration ||= Configuration.new
     end

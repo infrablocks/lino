@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
+require 'stringio'
+require 'tempfile'
 
 describe Lino::Executors::Open4 do
   describe '#execute' do
@@ -47,9 +49,9 @@ describe Lino::Executors::Open4 do
       )
       executor = described_class.new
 
-      stdin = 'hello'
-      stdout = StringIO.new
-      stderr = StringIO.new
+      stdin = StringIO.new('hello')
+      stdout = Tempfile.new
+      stderr = Tempfile.new
 
       allow(Open4).to(receive(:spawn))
 
@@ -64,7 +66,7 @@ describe Lino::Executors::Open4 do
         have_received(:spawn).with(
           { 'ENV_VAR' => 'val' },
           'ls', '-l', '-a',
-          stdin:,
+          stdin: 'hello',
           stdout:,
           stderr:,
           cwd: nil

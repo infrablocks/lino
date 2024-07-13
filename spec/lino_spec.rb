@@ -23,4 +23,11 @@ RSpec.describe Lino do
         .to(eq(executor))
     end
   end
+
+  describe 'builder_for_command' do
+    it 'creates a command line builder for the provided command' do
+      expect(described_class.builder_for_command('ls'))
+        .to(be_instance_of(Lino::Builders::CommandLine))
+    end
+  end
 end

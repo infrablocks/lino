@@ -23,7 +23,7 @@ module Lino
           quoting: nil,
           placement: nil
         )
-          return self if nil?(value)
+          return self if value.nil?
 
           with(options: @options.add(
             {
@@ -69,7 +69,7 @@ module Lino
         end
 
         def with_flag(flag)
-          return self if nil?(flag)
+          return self if flag.nil?
 
           with(options: @options.add(
             {

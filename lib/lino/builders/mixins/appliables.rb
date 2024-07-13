@@ -9,7 +9,7 @@ module Lino
         include Validation
 
         def with_appliable(appliable)
-          return self if nil?(appliable)
+          return self if appliable.nil?
 
           appliable.apply(self)
         end

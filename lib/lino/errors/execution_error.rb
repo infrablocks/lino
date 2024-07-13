@@ -3,6 +3,10 @@
 module Lino
   module Errors
     class ExecutionError < StandardError
+      attr_reader :command_line,
+                  :exit_code,
+                  :cause
+
       def initialize(
         command_line = nil,
         exit_code = nil,

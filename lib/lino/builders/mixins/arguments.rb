@@ -15,7 +15,7 @@ module Lino
         end
 
         def with_argument(argument)
-          return self if nil?(argument)
+          return self if argument.nil?
           return self if empty?(argument.to_s)
 
           with(arguments: @arguments.add(Model::Argument.new(argument)))

@@ -32,7 +32,7 @@ module Lino
 
       def with_defaults(opts)
         {
-          stdin: opts[:stdin] || '',
+          stdin: opts[:stdin] ? opts[:stdin].read : '',
           stdout: opts[:stdout] || $stdout,
           stderr: opts[:stderr] || $stderr
         }

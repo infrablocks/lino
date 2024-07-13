@@ -1,6 +1,6 @@
 # Lino
 
-Command line execution utilities.
+Command line building and execution utilities.
 
 ## Installation
 
@@ -25,12 +25,15 @@ Lino allows commands to be built and executed:
 ```ruby
 require 'lino'
   
-command_line = Lino::CommandLineBuilder.for_command('ruby')
+command_line = Lino.builder_for_command('ruby')
     .with_flag('-v')
     .with_option('-e', 'puts "Hello"')
     .build
     
-puts command_line.to_s 
+puts command_line.array
+# => ['ruby', '-v', '-e', 'puts "Hello"']
+  
+puts command_line.string
 # => ruby -v -e puts "Hello"
   
 command_line.execute 
@@ -38,34 +41,66 @@ command_line.execute
 # Hello
 ```
 
-### `Lino::CommandLineBuilder`
+### Building command lines
 
-The `CommandLineBuilder` allows a number of different styles of commands to be 
-built.
+`Lino` supports building command lines via instances of the 
+`Lino::Builder::CommandLine` class. `Lino::Builder::CommandLine` allows a 
+number of different styles of commands to be built. The object built by 
+`Lino::Builder::CommandLine` is an instance of `Lino::Model::CommandLine`, which
+represents the components and context of a command line and allows the 
+command line to be executed. 
+
+Aside from the object model, `Lino::Model::CommandLine` instances have two 
+representations, accessible via the `#string` and `#array` instance methods.
+
+The string representation is useful when the command line is intended to be
+executed by a shell, where quoting is important. However, it can present a 
+security risk if the components (option values, arguments, environment 
+variables) of the command line are user provided. For this reason, the array
+representation is preferable and is the representation used by default whenever 
+`Lino` executes commands.
+
+#### Getting a command line builder
+
+A `Lino::Builder::CommandLine` can be instantiated using:
+
+```ruby
+Lino.builder_for_command('ls')
+```
+
+or using the now deprecated:
+
+```ruby
+Lino::CommandLineBuilder.for_command('ls')
+```
 
 #### Flags
 
 Flags can be added with `#with_flag`:
 
 ```ruby
-Lino::CommandLineBuilder.for_command('ls')
+command_line = Lino.builder_for_command('ls')
     .with_flag('-l')
     .with_flag('-a')
     .build
-    .to_s
 
-# => ls -l -a
+command_line.array
+# => ["ls", "-l", "-a"]
+command_line.string
+# => "ls -l -a"
 ```
 
 or `#with_flags`:
 
 ```ruby
-Lino::CommandLineBuilder.for_command('ls')
+command_line = Lino.builder_for_command('ls')
     .with_flags(%w[-l -a])
     .build
-    .to_s
 
-# => ls -l -a
+command_line.array
+# => ["ls", "-l", "-a"]
+command_line.string
+# => "ls -l -a"
 ```
 
 #### Options
@@ -73,33 +108,38 @@ Lino::CommandLineBuilder.for_command('ls')
 Options with values can be added with `#with_option`:
 
 ```ruby
-Lino::CommandLineBuilder.for_command('gpg')
+command_line = Lino.builder_for_command('gpg')
     .with_option('--recipient', 'tobyclemson@gmail.com')
     .with_option('--sign', './doc.txt')
     .build
-    .to_s
 
-# => gpg --recipient tobyclemson@gmail.com --sign ./doc.txt
+command_line.array
+# => ["gpg", "--recipient", "tobyclemson@gmail.com", "--sign", "./doc.txt"]
+command_line.string
+# => "gpg --recipient tobyclemson@gmail.com --sign ./doc.txt"
+
 ```
 
 or `#with_options`, either as a hash:
 
 ```ruby
-Lino::CommandLineBuilder.for_command('gpg')
+command_line = Lino.builder_for_command('gpg')
     .with_options({
       '--recipient' => 'tobyclemson@gmail.com',
       '--sign' => './doc.txt'
     })
     .build
-    .to_s
 
-# => gpg --recipient tobyclemson@gmail.com --sign ./doc.txt
+command_line.array
+# => ["gpg", "--recipient", "tobyclemson@gmail.com", "--sign", "./doc.txt"]
+command_line.string
+# => "gpg --recipient tobyclemson@gmail.com --sign ./doc.txt"
 ```
 
 or as an array:
 
 ```ruby
-Lino::CommandLineBuilder.for_command('gpg')
+command_line = Lino.builder_for_command('gpg')
     .with_options(
       [
         { option: '--recipient', value: 'tobyclemson@gmail.com' },
@@ -107,20 +147,24 @@ Lino::CommandLineBuilder.for_command('gpg')
       ]
     )
     .build
-    .to_s
 
-# => gpg --recipient tobyclemson@gmail.com --sign ./doc.txt
+command_line.array
+# => ["gpg", "--recipient", "tobyclemson@gmail.com", "--sign", "./doc.txt"]
+command_line.string
+# => "gpg --recipient tobyclemson@gmail.com --sign ./doc.txt"
 ```
 
 Some commands allow options to be repeated:
 
 ```ruby
-Lino::CommandLineBuilder.for_command('example.sh')
+command_line = Lino.builder_for_command('example.sh')
     .with_repeated_option('--opt', ['file1.txt', nil, '', 'file2.txt'])
     .build
-    .to_s
 
-# => example.sh --opt file1.txt --opt file2.txt
+command_line.array
+# => ["example.sh", "--opt", "file1.txt", "--opt", "file2.txt"]
+command_line.string
+# => "example.sh --opt file1.txt --opt file2.txt"
 ```
 
 > Note: `lino` ignores `nil` or empty option values in the resulting command 
@@ -131,24 +175,28 @@ Lino::CommandLineBuilder.for_command('example.sh')
 Arguments can be added using `#with_argument`:
 
 ```ruby 
-Lino::CommandLineBuilder.for_command('diff')
+command_line = Lino.builder_for_command('diff')
     .with_argument('./file1.txt')
     .with_argument('./file2.txt')
     .build
-    .to_s
 
-# => diff ./file1.txt ./file2.txt
+command_line.array
+# => ["diff", "./file1.txt", "./file2.txt"]
+command_line.string
+# => "diff ./file1.txt ./file2.txt"
 ```
 
 or `#with_arguments`, as an array:
 
 ```ruby
-Lino::CommandLineBuilder.for_command('diff')
+command_line = Lino.builder_for_command('diff')
     .with_arguments(['./file1.txt', nil, '', './file2.txt'])
     .build
-    .to_s
 
-# => diff ./file1.txt ./file2.txt
+command_line.array
+# => ["diff", "./file1.txt", "./file2.txt"]
+command_line.string
+# => "diff ./file1.txt ./file2.txt"
 ```
 
 > Note: `lino` ignores `nil` or empty argument values in the resulting command 
@@ -156,30 +204,35 @@ Lino::CommandLineBuilder.for_command('diff')
 
 #### Option Separators
 
-By default, `lino` separates option values from the option by a space. This
-can be overridden globally using `#with_option_separator`:
+By default, when rendering command lines as a string, `lino` separates option 
+values from the option by a space. This can be overridden globally using 
+`#with_option_separator`:
 
 ```ruby
-Lino::CommandLineBuilder.for_command('java')
+command_line = Lino.builder_for_command('java')
     .with_option_separator(':')
     .with_option('-splash', './images/splash.jpg')
     .with_argument('./application.jar')
     .build
-    .to_s
 
-# => java -splash:./images/splash.jpg ./application.jar
+command_line.array
+# => ["java", "-splash:./images/splash.jpg", "./application.jar"]
+command_line.string
+# => "java -splash:./images/splash.jpg ./application.jar"
 ```
 
-The option separator can be overridden on an option by option basis:
+The option separator can also be overridden on an option by option basis:
 
 ```ruby
-Lino::CommandLineBuilder.for_command('java')
+command_line = Lino.builder_for_command('java')
     .with_option('-splash', './images/splash.jpg', separator: ':')
     .with_argument('./application.jar')
     .build
-    .to_s
 
-# => java -splash:./images/splash.jpg ./application.jar
+command_line.array
+# => ["java", "-splash:./images/splash.jpg", "./application.jar"]
+command_line.string
+# => "java -splash:./images/splash.jpg ./application.jar"
 ```
 
 > Note: `#with_options` supports separator overriding when the options are
@@ -193,29 +246,34 @@ Lino::CommandLineBuilder.for_command('java')
 
 #### Option Quoting
 
-By default, `lino` does not quote option values. This can be overridden 
-globally using `#with_option_quoting`:
+By default, when rendering command line strings, `lino` does not quote option 
+values. This can be overridden globally using `#with_option_quoting`:
 
 ```ruby
-Lino::CommandLineBuilder.for_command('gpg')
+command_line = Lino.builder_for_command('gpg')
     .with_option_quoting('"')
     .with_option('--sign', 'some file.txt')
     .build
-    .to_s
 
-# => gpg --sign "some file.txt"
+command_line.string
+# => "gpg --sign \"some file.txt\""
+command_line.array
+# => ["gpg", "--sign", "some file.txt"]
 ```
 
-The option quoting can be overridden on an option by option basis:
+The option quoting can also be overridden on an option by option basis:
 
 ```ruby
-Lino::CommandLineBuilder.for_command('java')
+command_line = Lino.builder_for_command('java')
     .with_option('-splash', './images/splash.jpg', quoting: '"')
     .with_argument('./application.jar')
     .build
-    .to_s
+    .string
 
-# => java -splash "./images/splash.jpg" ./application.jar
+command_line.string
+# => "java -splash \"./images/splash.jpg\" ./application.jar"
+command_line.array
+# => ["java", "-splash", "./images/splash.jpg", "./application.jar"]
 ```
 
 > Note: `#with_options` supports quoting overriding when the options are
@@ -227,46 +285,55 @@ Lino::CommandLineBuilder.for_command('java')
 > Note: option specific quoting take precedence over the global option 
 >       quoting 
 
+> Note: option quoting has no impact on the array representation of a command 
+>       line
+
 #### Subcommands
 
 Subcommands can be added using `#with_subcommand`:
 
 ```ruby
-Lino::CommandLineBuilder.for_command('git')
+command_line = Lino.builder_for_command('git')
     .with_flag('--no-pager')
     .with_subcommand('log')
     .build
-    .to_s
 
-# => git --no-pager log
+command_line.array
+# => ["git", "--no-pager", "log"]
+command_line.string
+# => "git --no-pager log"
 ```
 
 Multi-level subcommands can be added using multiple `#with_subcommand` 
 invocations:
 
 ```ruby
-Lino::CommandLineBuilder.for_command('gcloud')
+command_line = Lino.builder_for_command('gcloud')
     .with_subcommand('sql')
     .with_subcommand('instances')
     .with_subcommand('set-root-password')
     .with_subcommand('some-database')
     .build
-    .to_s
 
-# => gcloud sql instances set-root-password some-database
+command_line.array
+# => ["gcloud", "sql", "instances", "set-root-password", "some-database"]
+command_line.string
+# => "gcloud sql instances set-root-password some-database"
 ```
 
 or using `#with_subcommands`:
      
 ```ruby
-Lino::CommandLineBuilder.for_command('gcloud')
+command_line = Lino.builder_for_command('gcloud')
     .with_subcommands(
       %w[sql instances set-root-password some-database]
     )
     .build
-    .to_s
-    
-# => gcloud sql instances set-root-password some-database
+
+command_line.array
+# => ["gcloud", "sql", "instances", "set-root-password", "some-database"]
+command_line.string
+# => "gcloud sql instances set-root-password some-database"
 ```
 
 Subcommands also support options via `#with_flag`, `#with_flags`, 
@@ -274,15 +341,17 @@ Subcommands also support options via `#with_flag`, `#with_flags`,
 via a block, for example: 
 
 ```ruby
-Lino::CommandLineBuilder.for_command('git')
+command_line = Lino.builder_for_command('git')
     .with_flag('--no-pager')
     .with_subcommand('log') do |sub|
       sub.with_option('--since', '2016-01-01')
     end
     .build
-    .to_s
 
-# => git --no-pager log --since 2016-01-01
+command_line.array
+# => ["git", "--no-pager", "log", "--since", "2016-01-01"]
+command_line.string
+# => "git --no-pager log --since 2016-01-01"
 ```
 
 > Note: `#with_subcommands` also supports a block, which applies in the context
@@ -290,38 +359,46 @@ Lino::CommandLineBuilder.for_command('git')
 
 #### Environment Variables
 
-Command lines can be prefixed with environment variables using 
+Environment variables can be added to command lines using 
 `#with_environment_variable`:
   
 ```ruby
-Lino::CommandLineBuilder.for_command('node')
+command_line = Lino.builder_for_command('node')
     .with_environment_variable('PORT', '3030')
     .with_environment_variable('LOG_LEVEL', 'debug')
     .with_argument('./server.js')
     .build
-    .to_s
-    
-# => PORT=3030 LOG_LEVEL=debug node ./server.js
+
+command_line.string
+# => "PORT=\"3030\" LOG_LEVEL=\"debug\" node ./server.js"
+command_line.array
+# => ["node", "./server.js"]
+command_line.env
+# => {"PORT"=>"3030", "LOG_LEVEL"=>"debug"}
 ```
 
 or `#with_environment_variables`, either as a hash:
 
 ```ruby
-Lino::CommandLineBuilder.for_command('node')
+command_line = Lino.builder_for_command('node')
     .with_environment_variables({
       'PORT' => '3030',
       'LOG_LEVEL' => 'debug'
     })
     .build
-    .to_s
-    
-# => PORT=3030 LOG_LEVEL=debug node ./server.js
+
+command_line.string
+# => "PORT=\"3030\" LOG_LEVEL=\"debug\" node ./server.js"
+command_line.array
+# => ["node", "./server.js"]
+command_line.env
+# => {"PORT"=>"3030", "LOG_LEVEL"=>"debug"}
 ```
 
 or as an array:
 
 ```ruby
-Lino::CommandLineBuilder.for_command('node')
+command_line = Lino.builder_for_command('node')
     .with_environment_variables(
       [
         { name: 'PORT', value: '3030' },
@@ -329,9 +406,13 @@ Lino::CommandLineBuilder.for_command('node')
       ]
     )
     .build
-    .to_s
-    
-# => PORT=3030 LOG_LEVEL=debug node ./server.js
+
+command_line.string
+# => "PORT=\"3030\" LOG_LEVEL=\"debug\" node ./server.js"
+command_line.array
+# => ["node", "./server.js"]
+command_line.env
+# => {"PORT"=>"3030", "LOG_LEVEL"=>"debug"}
 ```
 
 #### Option Placement
@@ -342,13 +423,21 @@ subcommands and arguments.
 This is equivalent to calling `#with_options_after_command`:
 
 ```ruby
-Lino::CommandLineBuilder.for_command('gcloud')
+command_line = Lino.builder_for_command('gcloud')
     .with_options_after_command
     .with_option('--password', 'super-secure')
     .with_subcommands(%w[sql instances set-root-password])
     .build
-    .to_s
 
+command_line.array
+# => 
+# ["gcloud", 
+#  "--password", 
+#  "super-secure", 
+#  "sql", 
+#  "instances", 
+#  "set-root-password"]
+command_line.string
 # => gcloud --password super-secure sql instances set-root-password
 ```
 
@@ -356,42 +445,61 @@ Alternatively, top-level options can be placed after all subcommands using
 `#with_options_after_subcommands`:
 
 ```ruby
-Lino::CommandLineBuilder.for_command('gcloud')
+command_line = Lino.builder_for_command('gcloud')
     .with_options_after_subcommands
     .with_option('--password', 'super-secure')
     .with_subcommands(%w[sql instances set-root-password])
     .build
-    .to_s
 
+command_line.array
+# => 
+# ["gcloud",  
+#  "sql", 
+#  "instances", 
+#  "set-root-password",
+#  "--password", 
+#  "super-secure"]
+command_line.string
 # => gcloud sql instances set-root-password --password super-secure
 ```
 
 or, after all arguments, using `#with_options_after_arguments`:
 
 ```ruby
-Lino::CommandLineBuilder.for_command('ls')
+command_line = Lino.builder_for_command('ls')
     .with_options_after_arguments
     .with_flag('-l')
     .with_argument('/some/directory')
     .build
-    .to_s
 
-# => ls /some/directory -l
+command_line.array
+# => ["ls", "/some/directory", "-l"]
+command_line.string
+# => "ls /some/directory -l"
 ```
 
 The option placement can be overridden on an option by option basis:
 
 ```ruby
-Lino::CommandLineBuilder.for_command('gcloud')
+command_line = Lino.builder_for_command('gcloud')
     .with_options_after_subcommands
     .with_option('--log-level', 'debug', placement: :after_command)
-    .with_option('--password', 'super-secure')
+    .with_option('--password', 'pass1')
     .with_subcommands(%w[sql instances set-root-password])
     .build
-    .to_s
 
-# => gcloud --log-level debug sql instances set-root-password \ 
-#      --password super-secure
+command_line.array
+# => 
+# ["gcloud", 
+#  "--log-level", 
+#  "debug", 
+#  "sql", 
+#  "instances", 
+#  "set-root-password",
+#  "--password",
+#  "pass1"]
+command_line.string
+# => "gcloud --log-level debug sql instances set-root-password --password pass1"
 ```
 
 The `:placement` keyword argument accepts placement values of `:after_command`,
@@ -429,20 +537,22 @@ end
 an instance of the appliable can be applied using `#with_appliable`:
 
 ```ruby
-Lino::CommandLineBuilder.for_command('gpg')
+command_line = Lino.builder_for_command('gpg')
     .with_appliable(AppliableOption.new('--recipient', 'tobyclemson@gmail.com'))
     .with_flag('--sign')
     .with_argument('/some/file.txt')
     .build
-    .to_s
 
-# => gpg --recipient tobyclemson@gmail.com --sign /some/file.txt 
+command_line.array
+# => ["gpg", "--recipient", "tobyclemson@gmail.com", "--sign", "/some/file.txt"]
+command_line.string
+# => "gpg --recipient tobyclemson@gmail.com --sign /some/file.txt" 
 ```
 
 or multiple with `#with_appliables`:
 
 ```ruby
-Lino::CommandLineBuilder.for_command('gpg')
+command_line = Lino.builder_for_command('gpg')
     .with_appliables([
       AppliableOption.new('--recipient', 'user@example.com'),
       AppliableOption.new('--output', '/signed.txt')
@@ -450,57 +560,285 @@ Lino::CommandLineBuilder.for_command('gpg')
     .with_flag('--sign')
     .with_argument('/file.txt')
     .build
-    .to_s
 
-# => gpg --recipient user@example.com --output /signed.txt --sign /file.txt 
+command_line.array
+# => 
+# ["gpg", 
+#  "--recipient", 
+#  "tobyclemson@gmail.com",
+#  "--output", 
+#  "/signed.txt",
+#  "--sign", 
+#  "/some/file.txt"]
+command_line.string
+# => "gpg --recipient user@example.com --output /signed.txt --sign /file.txt" 
 ```
 
 > Note: an 'appliable' is any object that has an `#apply` method.
 
 > Note: `lino` ignores `nil` or empty appliables in the resulting command line.
 
-### `Lino::CommandLine`
+#### Working Directory
 
-A `CommandLine` can be executed using the `#execute` method:
+By default, when a command line is executed, the working directory of the parent
+process is used. This can be overridden with `#with_working_directory`:
 
 ```ruby
-command_line = Lino::CommandLineBuilder.for_command('ls')
+command_line = Lino.builder_for_command('ls')
+                   .with_flag('-l')
+                   .with_working_directory('/home/tobyclemson')
+                   .build
+
+command_line.working_directory
+# => "/home/tobyclemson"
+```
+
+All built in executors honour the provided working directory, setting it on
+spawned processes.
+
+### Executing command lines
+
+`Lino::Model::CommandLine` instances can be executed after construction. They
+utilise an executor to achieve this, which is any object that has an
+`#execute(command_line, opts)` method. `Lino` provides default executors such
+that a custom executor only needs to be provided in special cases.
+
+#### `#execute`
+
+A `Lino::Model::CommandLine` instance can be executed using the `#execute` 
+method:
+
+```ruby
+command_line = Lino.builder_for_command('ls')
     .with_flag('-l')
     .with_flag('-a')
     .with_argument('/')
     .build
     
 command_line.execute
-  
 # => <contents of / directory> 
 ```
 
-By default, the standard input stream is empty and the process writes to the 
-standard output and error streams.
+#### Standard Streams
+
+By default, all streams are inherited from the parent process.
 
 To populate standard input:
 
 ```ruby
-command_line.execute(stdin: 'something to be passed to standard input')
+require 'stringio'
+
+command_line.execute(
+  stdin: StringIO.new('something to be passed to standard input')
+)
 ```
 
-The `stdin` option supports any object that responds to `each`, `read` or 
-`to_s`.
+The `stdin` option supports any object that responds to `read`.
 
 To provide custom streams for standard output or standard error:
 
 ```ruby
-require 'stringio'
+require 'tempfile'
   
-stdout = StringIO.new
-stderr = StringIO.new
+stdout = Tempfile.new
+stderr = Tempfile.new
   
 command_line.execute(stdout: stdout, stderr: stderr)
+
+stdout.rewind
+stderr.rewind
   
-puts "[output: #{stdout.string}, error: #{stderr.string}]"
+puts "[output: #{stdout.read}, error: #{stderr.read}]"
 ```
 
-The `stdout` and `stderr` options support any object that responds to `<<`.
+The `stdout` and `stderr` options support any instance of `IO` or a subclass.
+
+#### Executors
+
+`Lino` includes three built-in executors:
+
+* `Lino::Executors::Childprocess` which is based on the
+  [`childprocess` gem](https://github.com/enkessler/childprocess)
+* `Lino::Executors::Open4` which is based on the
+  [`open4` gem](https://github.com/ahoward/open4)
+* `Lino::Executors::Mock` which does not start real processes and is useful for
+  use in tests.
+
+##### Configuration
+
+By default, an instance of `Lino::Executors::Childprocess` is used. This is
+controlled by the default executor configured on `Lino`:
+
+```ruby
+Lino.configuration.executor
+# => #<Lino::Executors::Childprocess:0x0000000103007108>
+
+executor = Lino::Executors::Mock.new
+
+Lino.configure do |config|
+  config.executor = executor
+end
+
+Lino.configuration.executor
+# =>
+# #<Lino::Executors::Mock:0x0000000106d4d3c8   
+#  @executions=[],
+#  @exit_code=0,
+#  @stderr_contents=nil,
+#  @stdout_contents=nil>
+
+Lino.reset!
+
+Lino.configuration.executor
+# => #<Lino::Executors::Childprocess:0x00000001090fcb48>
+```
+
+##### Builder overrides
+
+Any built command will inherit the executor set as default at build time. 
+
+To override the executor on the builder, use `#with_executor`:
+
+```ruby
+executor = Lino::Executors::Mock.new
+command_line = Lino.builder_for_command('ls')
+    .with_executor(executor)
+    .build
+
+command_line.executor
+# =>
+# #<Lino::Executors::Mock:0x0000000108e7d890   
+#  @executions=[],
+#  @exit_code=0,
+#  @stderr_contents=nil,
+#  @stdout_contents=nil>
+```
+
+##### Mock executor
+
+The `Lino::Executors::Mock` captures executions without spawning any real
+processes:
+
+```ruby
+executor = Lino::Executors::Mock.new
+command_line = Lino.builder_for_command('ls')
+    .with_executor(executor)
+    .build
+
+command_line.execute
+
+executor.executions.length
+# => 1
+
+execution = executor.executions.first
+execution.command_line == command_line
+# => true
+execution.exit_code
+# => 0
+```
+
+The mock can be configured to write to any provided `stdout` or `stderr`:
+
+```ruby
+require 'tempfile'
+
+executor = Lino::Executors::Mock.new
+executor.write_to_stdout('hello!')
+executor.write_to_stderr('error!')
+
+command_line = Lino.builder_for_command('ls')
+    .with_executor(executor)
+    .build
+
+stdout = Tempfile.new
+stderr = Tempfile.new
+
+command_line.execute(stdout:, stderr:)
+
+stdout.rewind
+stderr.rewind
+
+stdout.read == 'hello!'
+# => true
+stderr.read == 'error!'
+# => true
+```
+
+The mock also captures any provided `stdin`:
+
+```ruby
+require 'stringio'
+
+executor = Lino::Executors::Mock.new
+command_line = Lino.builder_for_command('ls')
+                   .with_executor(executor)
+                   .build
+
+stdin = StringIO.new("input\n")
+
+command_line.execute(stdin:)
+
+execution = executor.executions.first
+execution.stdin_contents
+# => "input\n"
+```
+
+The mock can be configured to fail all executions:
+
+```ruby
+executor = Lino::Executors::Mock.new
+executor.fail_all_executions
+
+command_line = Lino.builder_for_command('ls')
+                   .with_executor(executor)
+                   .build
+
+command_line.execute
+# ...in `execute': Failed while executing command line. 
+# (Lino::Errors::ExecutionError)
+
+command_line.execute
+# ...in `execute': Failed while executing command line. 
+# (Lino::Errors::ExecutionError)
+```
+
+The exit code, which defaults to zero, can also be set explicitly, with anything
+other than zero causing a `Lino::Errors::ExecutionError` to be raised:
+
+```ruby
+executor = Lino::Executors::Mock.new
+executor.exit_code = 128
+
+command_line = Lino.builder_for_command('ls')
+                   .with_executor(executor)
+                   .build
+
+begin
+  command_line.execute
+rescue Lino::Errors::ExecutionError => e
+  e.exit_code
+end
+# => 128
+```
+
+The mock is stateful and accumulates executions and configurations. To reset the
+mock to its initial state:
+
+```ruby
+executor = Lino::Executors::Mock.new
+executor.exit_code = 128
+executor.write_to_stdout('hello!')
+executor.write_to_stderr('error!')
+
+executor.reset
+
+executor.exit_code
+# => 0
+executor.stdout_contents
+# => nil
+executor.stderr_contents
+# => nil
+```
 
 ## Development
 
