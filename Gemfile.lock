@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    lino (4.0.0.pre.2)
+    lino (4.0.0)
       childprocess (~> 5.0.0)
       hamster (~> 3.0)
       open4 (~> 1.3)
