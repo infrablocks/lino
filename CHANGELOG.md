@@ -8,6 +8,8 @@ and this project adheres to
 
 ## [Unreleased]
 
+## [4.0.0] - 2024-07-14
+
 ### Added
 
 * A richer model for command lines has been introduced within the `Lino::Model`
