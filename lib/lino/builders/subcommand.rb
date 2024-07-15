@@ -23,10 +23,14 @@ module Lino
         @options = Hamster::Vector.new(state[:options] || [])
       end
 
-      def build
+      def build(option_separator, option_quoting, option_placement)
         Model::Subcommand.new(
           @subcommand,
-          options: build_options
+          options: build_options(
+            option_separator,
+            option_quoting,
+            option_placement
+          )
         )
       end
 

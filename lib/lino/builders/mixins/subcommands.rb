@@ -43,8 +43,12 @@ module Lino
           super.merge(subcommands: @subcommands)
         end
 
-        def build_subcommands
-          @subcommands.map(&:build)
+        def build_subcommands(
+          option_separator, option_quoting, option_placement
+        )
+          @subcommands.map do |s|
+            s.build(option_separator, option_quoting, option_placement)
+          end
         end
       end
     end

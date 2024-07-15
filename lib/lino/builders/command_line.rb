@@ -37,8 +37,10 @@ module Lino
         Model::CommandLine.new(
           @command,
           state.merge(
-            options: build_options,
-            subcommands: build_subcommands
+            options: build_options(@option_separator, @option_quoting,
+                                   @option_placement),
+            subcommands: build_subcommands(@option_separator, @option_quoting,
+                                           @option_placement)
           )
         )
       end

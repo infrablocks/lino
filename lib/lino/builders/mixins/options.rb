@@ -91,25 +91,33 @@ module Lino
           super.merge(options: @options)
         end
 
-        def build_options
+        def build_options(option_separator, option_quoting, option_placement)
           @options.map do |data|
-            data[:type] == :option ? build_option(data) : build_flag(data)
+            if data[:type] == :option
+              build_option(
+                data, option_separator, option_quoting, option_placement
+              )
+            else
+              build_flag(data, option_placement)
+            end
           end
         end
 
-        def build_option(option_data)
+        def build_option(
+          option_data, option_separator, option_quoting, option_placement
+        )
           Model::Option.new(
             *option_data[:components],
-            separator: option_data[:separator] || @option_separator,
-            quoting: option_data[:quoting] || @option_quoting,
-            placement: option_data[:placement] || @option_placement
+            separator: option_data[:separator] || option_separator,
+            quoting: option_data[:quoting] || option_quoting,
+            placement: option_data[:placement] || option_placement
           )
         end
 
-        def build_flag(flag_data)
+        def build_flag(flag_data, option_placement)
           Model::Flag.new(
             *flag_data[:components],
-            placement: flag_data[:placement] || @option_placement
+            placement: flag_data[:placement] || option_placement
           )
         end
       end

@@ -626,6 +626,92 @@ RSpec.describe Lino::CommandLineBuilder do
                )))
     end
 
+    it 'uses the specified option separator when provided when passing ' \
+       'subcommand single options' do
+      expect(
+        described_class
+          .for_command('command-with-options')
+          .with_option_separator('=')
+          .with_subcommand('sub') do |sub|
+          sub.with_option('--opt1', 'val1')
+             .with_option('--opt2', 'val2')
+        end
+          .build
+      )
+        .to(eq(Lino::Model::CommandLine.new(
+                 'command-with-options',
+                 subcommands: [
+                   Lino::Model::Subcommand.new(
+                     'sub',
+                     options: [
+                       Lino::Model::Option.new('--opt1', 'val1',
+                                               separator: '='),
+                       Lino::Model::Option.new('--opt2', 'val2', separator: '=')
+                     ]
+                   )
+                 ]
+               )))
+    end
+
+    it 'uses the specified option separator when provided when passing ' \
+       'subcommand multiple options' do
+      expect(
+        described_class
+          .for_command('command-with-option-separator')
+          .with_option_separator('=')
+          .with_subcommand('sub') do |sub|
+          sub.with_options(
+            {
+              '--opt1' => 'val1',
+              '--opt2' => 'val2'
+            }
+          )
+        end
+          .build
+      )
+        .to(eq(Lino::Model::CommandLine.new(
+                 'command-with-option-separator',
+                 subcommands: [
+                   Lino::Model::Subcommand.new(
+                     'sub',
+                     options: [
+                       Lino::Model::Option.new(
+                         '--opt1', 'val1', separator: '='
+                       ),
+                       Lino::Model::Option.new(
+                         '--opt2', 'val2', separator: '='
+                       )
+                     ]
+                   )
+                 ]
+               )))
+    end
+
+    it 'uses the specified option separator when provided when passing ' \
+       'subcommand repeated options' do
+      expect(
+        described_class
+          .for_command('command-with-options')
+          .with_option_separator('=')
+          .with_subcommand('sub') do |sub|
+          sub.with_repeated_option('--opt', %w[val1 val2])
+        end
+          .build
+      )
+        .to(eq(Lino::Model::CommandLine.new(
+                 'command-with-options',
+                 subcommands: [
+                   Lino::Model::Subcommand.new(
+                     'sub',
+                     options: [
+                       Lino::Model::Option.new('--opt', 'val1', separator: '='),
+                       Lino::Model::Option.new('--opt', 'val2', separator: '=')
+                     ]
+                   )
+                 ]
+               )))
+    end
+
     it 'allows the option separator to be overridden for each single option' do
       expect(
         described_class
@@ -896,6 +982,102 @@ RSpec.describe Lino::CommandLineBuilder do
                    ),
                    Lino::Model::Option.new(
                      '--opt', 'another value with spaces', quoting: '"'
+                   )
+                 ]
+               )))
+    end
+
+    it 'uses the specified option quoting character for ' \
+       'subcommand single options when provided' do
+      expect(
+        described_class
+          .for_command('command-with-quoting')
+          .with_option_quoting('"')
+          .with_subcommand('sub') do |sub|
+          sub.with_option('--opt1', 'value1 with spaces')
+             .with_option('--opt2', 'value2 with spaces')
+        end
+          .build
+      )
+        .to(eq(Lino::Model::CommandLine.new(
+                 'command-with-quoting',
+                 subcommands: [
+                   Lino::Model::Subcommand.new(
+                     'sub',
+                     options: [
+                       Lino::Model::Option.new(
+                         '--opt1', 'value1 with spaces', quoting: '"'
+                       ),
+                       Lino::Model::Option.new(
+                         '--opt2', 'value2 with spaces', quoting: '"'
+                       )
+                     ]
+                   )
+                 ]
+               )))
+    end
+
+    it 'uses the specified option quoting character for ' \
+       'subcommand multiple options when provided' do
+      expect(
+        described_class
+          .for_command('command-with-quoting')
+          .with_option_quoting('"')
+          .with_subcommand('sub') do |sub|
+          sub.with_options(
+            {
+              '--opt1' => 'value1 with spaces',
+              '--opt2' => 'value2 with spaces'
+            }
+          )
+        end
+          .build
+      )
+        .to(eq(Lino::Model::CommandLine.new(
+                 'command-with-quoting',
+                 subcommands: [
+                   Lino::Model::Subcommand.new(
+                     'sub',
+                     options: [
+                       Lino::Model::Option.new(
+                         '--opt1', 'value1 with spaces', quoting: '"'
+                       ),
+                       Lino::Model::Option.new(
+                         '--opt2', 'value2 with spaces', quoting: '"'
+                       )
+                     ]
+                   )
+                 ]
+               )))
+    end
+
+    it 'uses the specified option quoting character for ' \
+       'subcommand repeated options when provided' do
+      expect(
+        described_class
+          .for_command('command-with-quoting')
+          .with_option_quoting('"')
+          .with_subcommand('sub') do |sub|
+          sub.with_repeated_option(
+            '--opt',
+            ['value with spaces', 'another value with spaces']
+          )
+        end
+          .build
+      )
+        .to(eq(Lino::Model::CommandLine.new(
+                 'command-with-quoting',
+                 subcommands: [
+                   Lino::Model::Subcommand.new(
+                     'sub',
+                     options: [
+                       Lino::Model::Option.new(
+                         '--opt', 'value with spaces', quoting: '"'
+                       ),
+                       Lino::Model::Option.new(
+                         '--opt', 'another value with spaces', quoting: '"'
+                       )
+                     ]
                    )
                  ]
                )))
@@ -1191,6 +1373,333 @@ RSpec.describe Lino::CommandLineBuilder do
                    Lino::Model::Option.new('--opt2', 'val4', separator: '~'),
                    Lino::Model::Option.new('--opt3', 'val5', separator: '='),
                    Lino::Model::Option.new('--opt3', 'val6', separator: '=')
+                 ]
+               )))
+    end
+
+    it 'treats option specific separators as higher precedence than the ' \
+       'global option separator for subcommand single options' do
+      expect(
+        described_class
+          .for_command('command-with-overridden-separator')
+          .with_option_separator('=')
+          .with_subcommand('sub') do |sub|
+          sub
+            .with_option('--opt1', 'val1', separator: ':')
+            .with_option('--opt2', 'val2', separator: '~')
+            .with_option('--opt3', 'val3')
+        end
+          .build
+      )
+        .to(eq(Lino::Model::CommandLine.new(
+                 'command-with-overridden-separator',
+                 subcommands: [
+                   Lino::Model::Subcommand.new(
+                     'sub',
+                     options: [
+                       Lino::Model::Option.new(
+                         '--opt1', 'val1', separator: ':'
+                       ),
+                       Lino::Model::Option.new(
+                         '--opt2', 'val2', separator: '~'
+                       ),
+                       Lino::Model::Option.new(
+                         '--opt3', 'val3', separator: '='
+                       )
+                     ]
+                   )
+                 ]
+               )))
+    end
+
+    it 'treats option specific separators as higher precedence than the ' \
+       'global option separator for subcommand multiple options' do
+      expect(
+        described_class
+          .for_command('command-with-overridden-separator')
+          .with_option_separator('=')
+          .with_subcommand('sub') do |sub|
+          sub.with_options(
+            [
+              { option: '--opt1', value: 'val1', separator: ':' },
+              { option: '--opt2', value: 'val2', separator: '~' },
+              { option: '--opt3', value: 'val3' }
+            ]
+          )
+        end
+          .build
+      )
+        .to(eq(Lino::Model::CommandLine.new(
+                 'command-with-overridden-separator',
+                 subcommands: [
+                   Lino::Model::Subcommand.new(
+                     'sub',
+                     options: [
+                       Lino::Model::Option.new(
+                         '--opt1', 'val1', separator: ':'
+                       ),
+                       Lino::Model::Option.new(
+                         '--opt2', 'val2', separator: '~'
+                       ),
+                       Lino::Model::Option.new(
+                         '--opt3', 'val3', separator: '='
+                       )
+                     ]
+                   )
+                 ]
+               )))
+    end
+
+    it 'treats option specific separators as higher precedence than ' \
+       'the global option separator for subcommand repeated options' do
+      expect(
+        described_class
+          .for_command('command-with-overridden-separator')
+          .with_option_separator('=')
+          .with_subcommand('sub') do |sub|
+          sub.with_repeated_option(
+            '--opt1', %w[val1 val2], separator: ':'
+          )
+             .with_repeated_option(
+               '--opt2', %w[val3 val4], separator: '~'
+             )
+             .with_repeated_option(
+               '--opt3', %w[val5 val6]
+             )
+        end
+          .build
+      )
+        .to(eq(Lino::Model::CommandLine.new(
+                 'command-with-overridden-separator',
+                 subcommands: [
+                   Lino::Model::Subcommand.new(
+                     'sub',
+                     options: [
+                       Lino::Model::Option.new('--opt1', 'val1',
+                                               separator: ':'),
+                       Lino::Model::Option.new('--opt1', 'val2',
+                                               separator: ':'),
+                       Lino::Model::Option.new('--opt2', 'val3',
+                                               separator: '~'),
+                       Lino::Model::Option.new('--opt2', 'val4',
+                                               separator: '~'),
+                       Lino::Model::Option.new('--opt3', 'val5',
+                                               separator: '='),
+                       Lino::Model::Option.new('--opt3', 'val6', separator: '=')
+                     ]
+                   )
+                 ]
+               )))
+    end
+
+    it 'treats option specific quoting character as higher precedence ' \
+       'than the global option quoting character for single options' do
+      expect(
+        described_class
+          .for_command('command-with-overridden-quoting-character')
+          .with_option_quoting('"')
+          .with_option('--opt1', 'val1', quoting: "'")
+          .with_option('--opt2', 'val2', quoting: "'")
+          .with_option('--opt3', 'val3')
+          .build
+      )
+        .to(eq(Lino::Model::CommandLine.new(
+                 'command-with-overridden-quoting-character',
+                 options: [
+                   Lino::Model::Option.new(
+                     '--opt1', 'val1', quoting: "'"
+                   ),
+                   Lino::Model::Option.new(
+                     '--opt2', 'val2', quoting: "'"
+                   ),
+                   Lino::Model::Option.new(
+                     '--opt3', 'val3', quoting: '"'
+                   )
+                 ]
+               )))
+    end
+
+    it 'treats option specific quoting character as higher precedence ' \
+       'than the global option quoting character for multiple options' do
+      expect(
+        described_class
+          .for_command('command-with-overridden-quoting-character')
+          .with_option_quoting('"')
+          .with_options(
+            [
+              {
+                option: '--opt1',
+                value: 'val1',
+                quoting: "'"
+              },
+              {
+                option: '--opt2',
+                value: 'val2',
+                quoting: "'"
+              },
+              {
+                option: '--opt3',
+                value: 'val3'
+              }
+            ]
+          )
+          .build
+      )
+        .to(eq(Lino::Model::CommandLine.new(
+                 'command-with-overridden-quoting-character',
+                 options: [
+                   Lino::Model::Option.new(
+                     '--opt1', 'val1', quoting: "'"
+                   ),
+                   Lino::Model::Option.new(
+                     '--opt2', 'val2', quoting: "'"
+                   ),
+                   Lino::Model::Option.new(
+                     '--opt3', 'val3', quoting: '"'
+                   )
+                 ]
+               )))
+    end
+
+    it 'treats option specific quoting character as higher precedence than ' \
+       'the global option quoting character for repeated options' do
+      expect(
+        described_class
+          .for_command('command-with-overridden-quoting-character')
+          .with_option_quoting('"')
+          .with_repeated_option(
+            '--opt1', %w[val1 val2], quoting: "'"
+          )
+          .with_repeated_option(
+            '--opt2', %w[val3 val4], quoting: "'"
+          )
+          .with_repeated_option(
+            '--opt3', %w[val5 val6]
+          )
+          .build
+      )
+        .to(eq(Lino::Model::CommandLine.new(
+                 'command-with-overridden-quoting-character',
+                 options: [
+                   Lino::Model::Option.new('--opt1', 'val1', quoting: "'"),
+                   Lino::Model::Option.new('--opt1', 'val2', quoting: "'"),
+                   Lino::Model::Option.new('--opt2', 'val3', quoting: "'"),
+                   Lino::Model::Option.new('--opt2', 'val4', quoting: "'"),
+                   Lino::Model::Option.new('--opt3', 'val5', quoting: '"'),
+                   Lino::Model::Option.new('--opt3', 'val6', quoting: '"')
+                 ]
+               )))
+    end
+
+    it 'treats option specific quoting character as higher precedence ' \
+       'than the global option quoting character for subcommand ' \
+       'single options' do
+      expect(
+        described_class
+          .for_command('command-with-overridden-quoting-character')
+          .with_option_quoting('"')
+          .with_subcommand('sub') do |sub|
+          sub
+            .with_option('--opt1', 'val1', quoting: "'")
+            .with_option('--opt2', 'val2', quoting: "'")
+            .with_option('--opt3', 'val3')
+        end
+          .build
+      )
+        .to(eq(Lino::Model::CommandLine.new(
+                 'command-with-overridden-quoting-character',
+                 subcommands: [
+                   Lino::Model::Subcommand.new(
+                     'sub',
+                     options: [
+                       Lino::Model::Option.new(
+                         '--opt1', 'val1', quoting: "'"
+                       ),
+                       Lino::Model::Option.new(
+                         '--opt2', 'val2', quoting: "'"
+                       ),
+                       Lino::Model::Option.new(
+                         '--opt3', 'val3', quoting: '"'
+                       )
+                     ]
+                   )
+                 ]
+               )))
+    end
+
+    it 'treats option specific quoting character as higher precedence ' \
+       'than the global option quoting character for subcommand ' \
+       'multiple options' do
+      expect(
+        described_class
+          .for_command('command-with-overridden-quoting-character')
+          .with_option_quoting('"')
+          .with_subcommand('sub') do |sub|
+          sub.with_options(
+            [
+              { option: '--opt1', value: 'val1', quoting: "'" },
+              { option: '--opt2', value: 'val2', quoting: "'" },
+              { option: '--opt3', value: 'val3' }
+            ]
+          )
+        end
+          .build
+      )
+        .to(eq(Lino::Model::CommandLine.new(
+                 'command-with-overridden-quoting-character',
+                 subcommands: [
+                   Lino::Model::Subcommand.new(
+                     'sub',
+                     options: [
+                       Lino::Model::Option.new(
+                         '--opt1', 'val1', quoting: "'"
+                       ),
+                       Lino::Model::Option.new(
+                         '--opt2', 'val2', quoting: "'"
+                       ),
+                       Lino::Model::Option.new(
+                         '--opt3', 'val3', quoting: '"'
+                       )
+                     ]
+                   )
+                 ]
+               )))
+    end
+
+    it 'treats option specific quoting character as higher precedence than ' \
+       'the global option quoting character for subcommand ' \
+       'repeated options' do
+      expect(
+        described_class
+          .for_command('command-with-overridden-quoting-character')
+          .with_option_quoting("'")
+          .with_subcommand('sub') do |sub|
+          sub.with_repeated_option(
+            '--opt1', %w[val1 val2], quoting: '"'
+          )
+             .with_repeated_option(
+               '--opt2', %w[val3 val4], quoting: '"'
+             )
+             .with_repeated_option(
+               '--opt3', %w[val5 val6]
+             )
+        end
+          .build
+      )
+        .to(eq(Lino::Model::CommandLine.new(
+                 'command-with-overridden-quoting-character',
+                 subcommands: [
+                   Lino::Model::Subcommand.new(
+                     'sub',
+                     options: [
+                       Lino::Model::Option.new('--opt1', 'val1', quoting: '"'),
+                       Lino::Model::Option.new('--opt1', 'val2', quoting: '"'),
+                       Lino::Model::Option.new('--opt2', 'val3', quoting: '"'),
+                       Lino::Model::Option.new('--opt2', 'val4', quoting: '"'),
+                       Lino::Model::Option.new('--opt3', 'val5', quoting: "'"),
+                       Lino::Model::Option.new('--opt3', 'val6', quoting: "'")
+                     ]
+                   )
                  ]
                )))
     end
