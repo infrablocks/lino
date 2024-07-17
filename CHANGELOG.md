@@ -8,6 +8,14 @@ and this project adheres to
 
 ## [Unreleased]
 
+## [4.0.0] - 2024-07-17
+
+### Fixed
+
+* Subcommand options were not honouring the global option separator and quoting
+  which was a regression introduced during the preparation of version 4. This
+  has now been resolved and additional test coverage has been introduced.
+
 ## [4.0.0] - 2024-07-14
 
 ### Added
