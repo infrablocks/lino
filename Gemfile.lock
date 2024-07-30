@@ -36,7 +36,7 @@ GEM
     faraday (2.10.0)
       faraday-net_http (>= 2.0, < 3.2)
       logger
-    faraday-net_http (3.1.0)
+    faraday-net_http (3.1.1)
       net-http
     ffi (1.17.0)
     formatador (1.1.0)
@@ -112,10 +112,10 @@ GEM
       rake_factory (~> 0.33)
       ruby_git_crypt (~> 0.1)
       ruby_gpg2 (~> 0.12)
-    rake_github (0.13.0)
+    rake_github (0.15.0)
       colored2 (~> 3.1)
       octokit (>= 4.16, < 9.0)
-      rake_factory (~> 0.23)
+      rake_factory (~> 0.33)
       sshkey (~> 2.0)
     rake_gpg (0.20.0)
       rake_factory (~> 0.33)
