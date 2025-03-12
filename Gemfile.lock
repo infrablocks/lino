@@ -66,7 +66,7 @@ GEM
     i18n (1.14.5)
       concurrent-ruby (~> 1.0)
     immutable-struct (2.4.1)
-    json (2.10.1)
+    json (2.10.2)
     language_server-protocol (3.17.0.4)
     lint_roller (1.1.0)
     listen (3.9.0)
